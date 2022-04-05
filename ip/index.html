@@ -404,9 +404,9 @@
 		if (navigator.share) { $('#share').show(); }
 		$('#share a').on('click', function() {
 			navigator.share({
-				title: '明志科大英文段考考場、考試時間',
+				title: '明志科大宿舍分機 / 網路 IP 查詢',
 				text: '',
-				url: 'https://mcut.henrywu.tw/exam',
+				url: 'https://mcut.henrywu.tw/ip',
 			}).then(() => console.log('Successful share'))
 			.catch((error) => console.log('Error sharing', error));
 		});
