@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>明志科大宿舍分機 / 網路 IP 查詢</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="format-detection" content="telephone=no">
+	<link rel="icon" type="image/png" href="../res/logo.png">
+	<link rel="stylesheet" href="tocas.css">
+	<style>
+	body {
+		background: #F8F8F8
+	}
+
+	.ts.top.menu .item {
+		padding-left: 10px !important;
+		padding-right: 10px !important
+	}
+
+	.ts.menu .small.item {
+		padding-left: 0 !important;
+		padding-right: 0 !important
+	}
+
+	.chevron.right.icon,
+	.phone.icon {
+		color: #CCC !important
+	}
+
+	.welcome i,
+	[data-room] i {
+		float: right
+	}
+
+	.ts.center.aligned.header {
+		margin-top: 25px !important;
+		margin-bottom: 5px !important
+	}
+
+	.ts.dropdown > .text + .icon {
+		margin-left: 0.25rem!important
+	}
+
+	.welcome > div {
+		margin: 15px 0
+	}
+
+	#tutorial img {
+		max-width: 100%
+	}
+
+	@media (max-width: 767px) {
+		#tutorial .menu .tab_ {
+			margin-left: 0 !important;
+			margin-right: 0 !important;
+		}
+	}
+
+	#tutorial ol {
+		padding-left: 20px;
+	}
+
+	#tutorial em,
+	#tutorial b {
+		color: #000;
+	}
+
+	#tutorial b {
+		font-weight: bold;
+	}
+
+	#tutorial .borderless .item {
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+
+	footer {
+		padding: 5px 0;
+		text-align: center;
+		font-size: 90%;
+		color: #666;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background: #FFF;
+		z-index: 1000;
+	}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.2/tocas.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-128644546-1"></script>
+<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'UA-128644546-1');
+</script>
+<script>
+	$(function() {
+		var intToText = ["", "一", "二", "三", "四", "五", "六", "七", "八"];
+		var current_building = 1;
+		var current_floor = 1;
+		var ip;
+		var gw;
+		var phone;
+
+		function pad(i) {
+			if (i < 10) return "0" + i;
+			return "" + i;
+		}
+		$('[data-building]').on('click', function() {
+			$('.welcome').hide();
+			$('.fixed').show();
+			$('#select-building').text(intToText[$(this).attr('data-building')] + '宿');
+			if ($(this).attr('data-building') == 7) $('#select-building').text('研究交流會館');
+			if ($(this).attr('data-building') == 8) $('#select-building').text('學人會館');
+			if ($(this).attr('data-building') == 9) {
+				$('#select-building').text('舍監室分機 & 緊急電話');
+				$('.toggleAdmin').hide();
+			} else $('.toggleAdmin').show();
+			current_floor = 1;
+			if ($(this).attr('data-building') >= 1 && $(this).attr('data-building') <= 4 || $(this).attr('data-building') == 7 || $(this).attr('data-building') == 8) {
+				$('[data-floor=1]').show();
+				$('[data-floor=2]').show();
+				$('[data-floor=3]').show();
+				$('[data-floor=4]').hide();
+				$('[data-floor=5]').hide();
+				$('[data-floor=6]').hide();
+				$('[data-floor=7]').hide();
+			} else if ($(this).attr('data-building') == 5) {
+				$('[data-floor=1]').show();
+				$('[data-floor=2]').show();
+				$('[data-floor=3]').show();
+				$('[data-floor=4]').show();
+				$('[data-floor=5]').show();
+				$('[data-floor=6]').hide();
+				$('[data-floor=7]').hide();
+			} else if ($(this).attr('data-building') == 6) {
+				$('[data-floor=1]').hide();
+				$('[data-floor=2]').hide();
+				$('[data-floor=3]').hide();
+				$('[data-floor=4]').show();
+				$('[data-floor=5]').show();
+				$('[data-floor=6]').show();
+				$('[data-floor=7]').show();
+				current_floor = 4;
+			}
+			$('#select-floor').text(current_floor + 'F');
+			current_building = $(this).attr('data-building');
+			$('[data-floor=' + current_floor + ']').click();
+			$('#data').hide();
+			$('#list').show();
+			$('.toggleroom').hide();
+		});
+
+		function appendToList(a, b) {
+			$('#list').append('<a class="item" data-room="' + a + '"><div class="ts very narrow container">' + b + '<i class="chevron right icon"></i></div></a>');
+		}
+		$('[data-bf]').on('click', function() {
+			$('[data-building=' + $(this).attr('data-bf').substr(0, 1) + ']').click();
+			$('[data-floor=' + $(this).attr('data-bf').substr(1, 1) + ']').click();
+		});
+		$('[data-floor]').on('click', function() {
+			current_floor = $(this).attr('data-floor');
+			$('#select-floor').text($(this).attr('data-floor') + 'F');
+			$('#list').html('');
+			var bf = parseInt(current_building + "" + current_floor);
+			switch (bf) {
+				case 11:
+					for (i = 1; i <= 13; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					for (i = 15; i <= 17; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					for (i = 20; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 12:
+					for (i = 1; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 13:
+					for (i = 1; i <= 23; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 21:
+					for (i = 1; i <= 19; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 22:
+				case 23:
+					for (i = 1; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 31:
+					for (i = 1; i <= 14; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					appendToList(3116, 116);
+					for (i = 21; i <= 26; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 32:
+				case 33:
+					for (i = 1; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 41:
+					for (i = 1; i <= 7; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					for (i = 9; i <= 20; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					for (i = 22; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 42:
+				case 43:
+					for (i = 1; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 51:
+					for (i = 1; i <= 16; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 52:
+				case 53:
+				case 54:
+				case 55:
+					for (i = 1; i <= 32; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 64:
+				case 65:
+				case 66:
+					for (i = 1; i <= 39; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 67:
+					for (i = 1; i <= 35; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					for (i = 38; i <= 40; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 71:
+					for (i = 1; i <= 18; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 72:
+				case 73:
+					for (i = 1; i <= 21; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 81:
+					for (i = 1; i <= 13; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 82:
+					for (i = 1; i <= 17; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+				case 83:
+					for (i = 1; i <= 18; i++) appendToList(bf + pad(i), current_floor + pad(i));
+					break;
+
+				case 91:
+					$('#list').append('<div class="item" style="border-bottom:10px solid #F8F8f8!important;padding:.6em 1.14286em"><div class="ts very narrow container" style="text-align:center;font-size:90%">點選以下電話即可直接撥打</div></div><a href="tel:0229089899" class="item"><div class="ts very narrow container">學校總機<div style="float:right;color:#888">2908-9899</div></div></a>');
+					for (i = 1; i <= 6; i++) $('#list').append('<a href="tel:0229089899,433' + i + '" class="item"><div class="ts very narrow container">' + intToText[i] + '宿舍監室分機<div style="float:right;color:#888">#433' + i + '</div></div></a>');
+					$('#list').append('<a href="tel:0229038713" class="item" style="border-top:10px solid #F8F8f8!important"><div class="ts very narrow container">24 小時校安中心緊急聯絡電話<div style="float:right;color:#888">2903-8713</div></div></a>');
+					break;
+			}
+			$('#data').hide();
+			$('#list').show();
+			$('.toggleroom').hide();
+			window.scrollTo(0, 0);
+		});
+		$('#list').on('click', 'a[data-room]', function() {
+			var bf = parseInt(current_building + "" + current_floor);
+			var rm = parseInt($(this).attr('data-room'));
+			rrm = parseInt($(this).attr('data-room').substr(2, 2));
+			ip = '';
+			gw = '';
+			phone = '';
+			if (current_building == 1) {
+				if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
+				else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
+				else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
+				else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
+				else ip = (rrm - 1) * 4 + 1 + 32;
+				gw = '10' + (3 + parseInt($(this).attr('data-room').substr(1, 1)));
+
+				phone = 1100 + parseInt(rrm);
+				if (current_floor != 1) phone += (24 * (current_floor - 1));
+				if (rm == 1324) phone = '無';
+			}
+			if (current_building == 2) {
+				if ($(this).attr('data-room').substr(1, 1) == 1) {
+					if (rrm <= 1) ip = (rrm - 1) * 4 + 1 + 108;
+					else if (rrm <= 6) ip = (rrm - 1) * 4 + 1 - 4;
+					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 4;
+					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 20;
+					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 28;
+					else ip = (rrm - 1) * 4 + 1 + 36;
+				}
+				if ($(this).attr('data-room').substr(1, 1) == 2 || $(this).attr('data-room').substr(1, 1) == 3) {
+					if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
+					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
+					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
+					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
+					else ip = (rrm - 1) * 4 + 1 + 32;
+				}
+				gw = '1' + pad((7 + parseInt($(this).attr('data-room').substr(1, 1))))
+
+				phone = 1200 + parseInt(rrm);
+				if (current_floor != 1) phone += (24 * (current_floor - 1)) - 4;
+			}
+			if (current_building == 3) {
+				if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
+				else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
+				else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
+				else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
+				else ip = (rrm - 1) * 4 + 1 + 32;
+				gw = '1' + pad((11 + parseInt($(this).attr('data-room').substr(1, 1))));
+
+				phone = 1300 + parseInt(rrm);
+				if (current_floor != 1) phone += (29 * (current_floor - 1)) - 3;
+			}
+			if (current_building == 4) {
+				if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
+				else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
+				else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
+				else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
+				else ip = (rrm - 1) * 4 + 1 + 32;
+				gw = '1' + pad((15 + parseInt($(this).attr('data-room').substr(1, 1))));
+
+				phone = 1400 + parseInt(rrm);
+				if (current_floor != 1) phone += (29 * (current_floor - 1)) - 1;
+			}
+			if (current_building == 5) {
+				ip = 2 * ((rrm - 1) % 16 * 4 + 4);
+				gw = '1' + pad((19 + parseInt($(this).attr('data-room').substr(1, 1)) * 2 - 1));
+				if (rrm > 16) gw = '1' + pad((19 + parseInt($(this).attr('data-room').substr(1, 1)) * 2));
+				if ($(this).attr('data-room').substr(1, 1) == 1) gw = 121;
+
+				phone = 1500 + parseInt(rrm);
+				if (current_floor != 1) phone += (32 * (current_floor - 1) - 16);
+			}
+			if (current_building == 6) {
+				ip = (rrm - 1) % 20 * 8 + 8;
+				gw = '1' + pad((25 + parseInt($(this).attr('data-room').substr(1, 1)) * 2 - 1));
+				if (rrm > 20) gw = '1' + pad((25 + parseInt($(this).attr('data-room').substr(1, 1)) * 2));
+				phone = rm;
+			}
+			if (current_building == 7) {
+				ip = (rrm - 1) * 8 + 8;
+				gw = '14' + (3 + parseInt($(this).attr('data-room').substr(1, 1)));
+				phone = 1700 + parseInt(rrm);
+				if (current_floor == 2) phone += 18;
+				if (current_floor == 3) phone += 39;
+			}
+			if (current_building == 8) {
+				ip = (rrm - 1) * 8 + 8;
+				gw = '1' + (47 + parseInt($(this).attr('data-room').substr(1, 1)));
+				phone = 1800 + parseInt(rrm);
+				if (current_floor == 2) phone += 13;
+				if (current_floor == 3) phone += 30;
+			}
+
+			$('#list').hide();
+			$('#data').show();
+			$('.toggleroom').show();
+			$('#topbar-room').text($(this).attr('data-room').substr(1, 3));
+			$('#phone').text(phone);
+			$('#data-inner').html('<div class="ts big center aligned header">\
+					<div class="sub header">IP 位置</div>\
+					192.168.' + gw + '.<span id="ip_d">' + ip + '</span>\
+					</div>\
+					<div class="ts big center aligned header">\
+					<div class="sub header">子網路遮罩</div>\
+					255.255.255.0<br>\
+					<div class="sub header">或輸入首碼長度：<b style="font-weight:bold">24</b>（如果有）</div>\
+					</div>\
+					<div class="ts big center aligned header">\
+					<div class="sub header">預設閘道 / 路由器</div>\
+					192.168.' + gw + '.254\
+					</div>\
+					<div class="ts big center aligned header">\
+					<div class="sub header">慣用 DNS 伺服器</div>\
+					210.240.232.1\
+					</div><br>\
+					<small style="font-size:87%;color:#AAA">本工具僅供參考，實際以學校最新公告為準。</small><br><br>\
+					<a class="ts tiny info basic fluid button toggle-tutorial">網路設定教學</a>\
+					<a class="ts tiny negative basic fluid button" href="https://line.me/R/ti/p/%40221oslxd" style="margin-top:10px">資料有誤？</a>\
+					<br>');
+			$('[data-bed]').removeClass('active');
+			$('[data-bed=1]').addClass('active');
+			$('[data-bulidings]').hide();
+			if (current_building == 6) {
+				$('[data-bulidings="6"]').show();
+			} else if (current_building == 7 || current_building == 8) {
+				$('[data-bulidings="78"]').show();
+			} else {
+				$('[data-bulidings="n6"]').show();
+			}
+		});
+		$('#close-data').on('click', function() {
+			$('.toggleroom').hide();
+			$('#data').hide();
+			$('#list').show();
+		});
+		$('[data-bed]').on('click', function() {
+			$('[data-bed]').removeClass('active');
+			$(this).addClass('active');
+			$('#ip_d').text(parseInt(ip) + parseInt($(this).attr('data-bed') - 1));
+			if (current_building == 5 || current_building == 7 || current_building == 8) $('#ip_d').text(parseInt(ip) + parseInt($(this).attr('data-bed') * 2 - 2));
+		});
+		$('body').on('click', '.toggle-tutorial', function() {
+			$('#tutorial').scrollTop(0);
+			$('#tutorial').toggle();
+		});
+		$('[data-tab]').on('click', function() {
+			$('[data-tab]').removeClass('active');
+			$(this).addClass('active');
+			$('#tutorial ol').hide();
+			$('#tutorial-'+$(this).attr('data-tab')).show();
+			$('#tutorial').scrollTop(0);
+		});
+		if (navigator.share) { $('#share').show(); }
+		$('#share a').on('click', function() {
+			navigator.share({
+				title: '明志科大英文段考考場、考試時間',
+				text: '',
+				url: 'https://mcut.henrywu.tw/exam',
+			}).then(() => console.log('Successful share'))
+			.catch((error) => console.log('Error sharing', error));
+		});
+	});
+</script>
+</head>
+<body style="padding-top:46px">
+	<div class="ts top fixed borderless large menu" class="welcome">
+		<div class="ts container">
+			<div class="item" style="justify-content:center;width:100%">明志科大宿舍分機 / 網路 IP 查詢</div>
+		</div>
+	</div>
+	<div class="ts top fixed borderless large menu" style="display:none">
+		<div class="ts very narrow container">
+			<div class="ts item dropdown" style="padding-left:20px!important">
+				<div class="text" id="select-building">一宿</div>
+				<i class="dropdown icon"></i>
+				<div class="menu">
+					<a class="item" data-building="1">第一宿舍</a>
+					<a class="item" data-building="2">第二宿舍</a>
+					<a class="item" data-building="3">第三宿舍（新生男宿）</a>
+					<a class="item" data-building="4">第四宿舍</a>
+					<a class="item" data-building="5">第五宿舍（新生男宿）</a>
+					<a class="item" data-building="6">第六宿舍（新生女宿）</a>
+					<a class="item" data-building="7">研究交流會館</a>
+					<a class="item" data-building="8">學人會館</a>
+					<a class="item" data-building="9">🏠 舍監室分機 & 緊急電話</a>
+					<a class="item toggle-tutorial">⚙️ 網路設定教學</a>
+				</div>
+			</div>
+			<div class="small item toggleAdmin"><i class="chevron right icon"></i></div>
+			<div class="ts item dropdown dropdown-floor toggleAdmin">
+				<div class="text" id="select-floor">1F</div>
+				<i class="dropdown icon"></i>
+				<div class="menu">
+					<a class="item" data-floor="1">一樓 1F</a>
+					<a class="item" data-floor="2">二樓 2F</a>
+					<a class="item" data-floor="3">三樓 3F</a>
+					<a class="item" data-floor="4" style="display:none">四樓 4F</a>
+					<a class="item" data-floor="5" style="display:none">五樓 5F</a>
+					<a class="item" data-floor="6" style="display:none">六樓 6F</a>
+					<a class="item" data-floor="7" style="display:none">七樓 7F</a>
+				</div>
+			</div>
+			<div class="small item toggleroom" style="display:none"><i class="chevron right icon"></i></div>
+			<div class="item toggleroom" id="topbar-room" style="display:none;padding-right:5px!important"></div>
+			<div class="item small toggleroom" id="close-data" style="display:none"><i class="x icon" style="color:#DDD"></i></div>
+		</div>
+	</div>
+	<div class="welcome ts very narrow container">
+		<div>
+			第一宿舍<br>
+			<button class="ts tiny button" data-bf="11">1F</button>
+			<button class="ts tiny button" data-bf="12">2F</button>
+			<button class="ts tiny button" data-bf="13">3F</button>
+		</div>
+		<div>
+			第二宿舍<br>
+			<button class="ts tiny button" data-bf="21">1F</button>
+			<button class="ts tiny button" data-bf="22">2F</button>
+			<button class="ts tiny button" data-bf="23">3F</button>
+		</div>
+		<div>
+			第三宿舍（新生男宿）<br>
+			<button class="ts tiny button" data-bf="31">1F</button>
+			<button class="ts tiny button" data-bf="32">2F</button>
+			<button class="ts tiny button" data-bf="33">3F</button>
+		</div>
+		<div>
+			第四宿舍<br>
+			<button class="ts tiny button" data-bf="41">1F</button>
+			<button class="ts tiny button" data-bf="42">2F</button>
+			<button class="ts tiny button" data-bf="43">3F</button>
+		</div>
+		<div>
+			第五宿舍（新生男宿）<br>
+			<button class="ts tiny button" data-bf="51">1F</button>
+			<button class="ts tiny button" data-bf="52">2F</button>
+			<button class="ts tiny button" data-bf="53">3F</button>
+			<button class="ts tiny button" data-bf="54">4F</button>
+			<button class="ts tiny button" data-bf="55">5F</button>
+		</div>
+		<div>
+			第六宿舍（新生女宿）<br>
+			<button class="ts tiny button" data-bf="64">4F</button>
+			<button class="ts tiny button" data-bf="65">5F</button>
+			<button class="ts tiny button" data-bf="66">6F</button>
+			<button class="ts tiny button" data-bf="67">7F</button>
+		</div>
+		<div>
+			研究交流會館<br>
+			<button class="ts tiny button" data-bf="71">1F</button>
+			<button class="ts tiny button" data-bf="72">2F</button>
+			<button class="ts tiny button" data-bf="73">3F</button>
+		</div>
+		<div>
+			學人會館<br>
+			<button class="ts tiny button" data-bf="81">1F</button>
+			<button class="ts tiny button" data-bf="82">2F</button>
+			<button class="ts tiny button" data-bf="83">3F</button>
+		</div>
+		<br>
+		<a class="ts tiny basic fluid button" data-building="9">舍監室分機 & 緊急電話</a>
+		<a class="ts tiny info basic fluid button toggle-tutorial" style="margin-top:10px">網路設定教學</a>
+	</div>
+	<div id="list" class="ts vertical fluid large menu" style="display:none"></div>
+	<div id="data" class="ts very narrow container" style="display:none;text-align:center">
+		<div class="ts large center aligned header">
+			<div class="sub header" style="font-size:70%">寢室分機</div>
+			<span id="phone"></span>
+		</div>
+		<br>
+		<div data-bulidings="6" style="text-align:center;margin-bottom:5px;">選擇床位</div>
+		<div data-bulidings="n6" style="text-align:center;margin-bottom:5px;">選擇床位</div>
+		<div data-bulidings="78" style="text-align:center;margin-bottom:5px;">選擇網路盒編號</div>
+		<div class="ts icon small buttons" data-bulidings="6">
+			<button class="ts button" data-bed="1">1 床</button>
+			<button class="ts button" data-bed="2">2 床</button>
+			<button class="ts button" data-bed="3">3 床</button>
+			<button class="ts button" data-bed="6">4 床</button>
+			<button class="ts button" data-bed="5">5 床</button>
+			<button class="ts button" data-bed="4">6 床</button>
+		</div>
+		<div class="ts icon small buttons" data-bulidings="n6" style="display:none">
+			<button class="ts button" data-bed="1">1 床</button>
+			<button class="ts button" data-bed="2">2 床</button>
+			<button class="ts button" data-bed="3">3 床</button>
+			<button class="ts button" data-bed="4">4 床</button>
+		</div>
+		<div class="ts icon small buttons" data-bulidings="78" style="display:none">
+			<button class="ts button" data-bed="1">1 號</button>
+			<button class="ts button" data-bed="2">2 號</button>
+			<button class="ts button" data-bed="3">3 號</button>
+			<button class="ts button" data-bed="4">4 號</button>
+		</div><br>
+		<div id="data-inner"></div>
+	</div>
+	<div id="tutorial" style="position:fixed;top:0;left:0;width:100%;height:100%;overflow-y:scroll;background:#FFF;z-index:200;display:none;">
+		<div class="ts top fixed borderless menu">
+			<div class="ts very narrow container">
+				<div class="item">　</div>
+				<div class="item" style="justify-content:center;width:100%">網路設定教學</div>
+				<a class="right item toggle-tutorial">✕</a>
+			</div>
+		</div>
+		<div class="ts top fixed pointing secondary evenly divided menu" style="background:#FFF;top:35px;">
+			<div class="ts very narrow container tab_">
+				<a class="active item" data-tab="windows">Windows</a>
+				<a class="item" data-tab="macos">MacOS</a>
+				<a class="item" data-tab="wifi">分享器/路由器</a>
+			</div>
+		</div>
+		<div class="ts very narrow container">
+			<br><br><br>
+			<ol id="tutorial-windows">
+				<li>
+					<p>
+						用網路線連接電腦與座位上的網路孔。<br />
+						若電腦本身無網路孔，請<a href="https://www.google.com/search?q=USB+%E8%BD%89+RJ45" target="_blank">購買轉換器</a>。
+					</p>
+				</li>
+				<li>
+					<p>
+						對網路圖示點擊<em>右鍵</em>，再點擊「<b>開啟網路與網際網路設定</b>」<br />
+						<img src="https://i.imgur.com/dN9H189.png" />
+					</p>
+				</li>
+				<li>
+					<p>
+						在「<b>變更您的網路設定</b>」下，點擊「<b>變更介面卡選項</b>」<br />
+						<img src="https://i.imgur.com/EgoXw0P.png" />
+					</p>
+				</li>
+				<li>
+					<p>
+						點擊「<b>乙太網路</b>」<em>兩下</em>，點擊底下的「<b>內容</b>」，再點選「
+						<b>網際網路通訊協定第 4 版</b>」<em>兩下</em><br />
+						註：乙太網路也可能顯示為「有線網路」或「區域網路」<br />
+						<img src="https://i.imgur.com/SkJ6Jgk.png" />
+						<img src="https://i.imgur.com/KfhTx8J.png" />
+					</p>
+				</li>
+				<li>
+					<p>
+						點選「<b>使用下列的 IP 位置</b>」與「<b>使用下列的 DNS 伺服器位置</b>」<br />
+						輸入剛剛查到的 <b>IP、子網路遮罩、預設閘道</b>與 <b>DNS 伺服器</b>，並點擊「<b>確定</b>」即可！<br />
+						<img src="https://i.imgur.com/EYxX6V9.png" />
+					</p>
+				</li>
+			</ol>
+			<ol id="tutorial-macos" style="display:none">
+				<li>
+					<p>
+						用網路線連接電腦與座位上的網路孔。<br />
+						若電腦本身無網路孔，請<a href="https://www.google.com/search?q=USB+%E8%BD%89+RJ45" target="_blank">購買轉換器</a>。
+					</p>
+				</li>
+				<li>
+					<p>
+						點擊右上角的蘋果圖示，點擊「<b>系統偏好設定</b>」，再點擊「<b>網路</b>」<br />
+						<img src="https://i.imgur.com/egzk1KZ.jpg" />
+					</p>
+				</li>
+				<li>
+					<p>
+						點擊「<b>乙太網路</b>」，將「<b>設定 IPv4</b>」選為「手動」<br />
+						輸入剛剛查到的 <b>IP、子網路遮罩、路由器</b>，點擊「<b>進階</b>」<br />
+						註：若使用 USB、Thunderbolt 或 Type C 網路轉接線，請選擇相對應的選項<br />
+						<img src="https://i.imgur.com/yiYPdqO.png" />
+					</p>
+				</li>
+				<li>
+					<p>
+						點擊「<b>＋</b>」，輸入 DNS 伺服器，再點擊「<b>好</b>」<br />
+						<img src="https://i.imgur.com/PIDkp6V.png" />
+					</p>
+				</li>
+				<li>
+					<p>
+						點擊「<b>套用</b>」即可！
+						<img src="https://i.imgur.com/g3Ljgq9.png" />
+					</p>
+				</li>
+			</ol>
+			<ol id="tutorial-wifi" style="display:none">
+				<li>
+					<p>
+						用網路線將座位上的網路孔接到分享器/路由器上的 <b>WAN</b> 孔。
+					</p>
+				</li>
+				<li>
+					<p>
+						依各廠牌分享器/路由器的說明書設定<b>外部網路</b>的<b>固定 IP</b>。<br>
+						電腦連接 Wi-Fi 後則不用設定外部網路 IP。
+					</p>
+				</li>
+				註：各廠牌分享器/路由器設定方式皆不同，請自行在 Google 搜尋該型號的說明書。<br>
+				範例：<a href="https://www.asus.com/tw/support/FAQ/1011715/">ASUS 路由器設定方式</a>
+			</ol>
+			<br>
+		</div>
+	</div>
+	<br><br>
+	<footer>
+		Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a><span id="share" style="display:none">・<a>分享</a></span>
+	</footer>
+	<script>
+		ts('.ts.dropdown:not(.basic)').dropdown();
+	</script>
+</body>
+</html>

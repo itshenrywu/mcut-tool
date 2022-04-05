@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Exam Convert</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.2/tocas.css">
+	<style>
+		
+	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script>
+		$(function(){
+			if(localStorage.mcut_exam_raw) {
+				$('#raw').val(localStorage.mcut_exam_raw)
+				setTimeout(function(){
+					$('#raw').trigger('input');
+				},1);
+			}
+			function toUnicode(str) {
+				return str.split('').map(function (value, index, array) {
+					var temp = value.charCodeAt(0).toString(16).toUpperCase();
+					if (temp.length > 2) {
+						return '\\u' + temp;
+					}
+					return value;
+				}).join('');
+			}
+			var result = [];
+			$('#raw').on('input',function(){
+				localStorage.mcut_exam_raw = $('#raw').val();
+				result = [];
+				$('#result').val('');
+				$('#minify').val('');
+				$('#count').text('');
+				$.each($('#raw').val().
+					replace(/綜多/g,'綜 多').
+					replace(/費安/g,'費　安').
+					replace(/語言中心 /g,'').
+					replace(/體一階/g,'體育館 階梯教室')
+				.split('\n'),function(i,e){
+					x = e.split(' ');
+					if(x[0] != '序號' && x.length > 10) result.push([
+						x[1]+' '+x[2],
+						x[3].split('(')[0],
+						x[4],
+						x[8]+'/'+x[10],
+						x[12].replace(/-/g,'~'),
+						x[13]+' '+x[14]
+					]);
+				});
+				if(result.length == 0) result = [];
+				else $('#count').text('('+result.length+')');
+				$('#result').val(JSON.stringify(result,null,'\t'));
+				$('#minify').val(toUnicode(JSON.stringify(result)));
+			});
+			$('#minify').on('click',function(){
+				$('#minify').select();
+				document.execCommand('copy');
+			});
+		});
+	</script>
+</head>
+<body>
+	<br><br>
+	<div class="ts container">
+		<div class="ts form">
+			<div class="ts grid">
+				<div class="two column row">
+					<div class="column">
+						<div class="field">
+							<label>Raw Data</label>
+							<textarea style="height:78vh" id="raw" placeholder="英文"></textarea>
+						</div>
+					</div>
+					<div class="column">
+						<div class="field">
+							<label>Result <span id="count"></span></label>
+							<textarea readonly style="height:76vh" id="result">[]</textarea>
+						</div>
+						<div class="field">
+							<label>Minify <a target="_blank" href="https://github.com/itshenrywu/mcut-exam/edit/master/exam/data.json">Edit</a></label>
+							<input readonly id="minify" value="[]">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
