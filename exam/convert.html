@@ -27,6 +27,14 @@
 				}).join('');
 			}
 			var result = [];
+			var label = [];
+			label = $('#label').val().split(',').map(str => Number(str));
+			$('#label').on('input',function(){
+				label = $('#label').val().split(',').map(str => Number(str));
+				setTimeout(function(){
+					$('#raw').trigger('input');
+				},1);
+			});
 			$('#raw').on('input',function(){
 				localStorage.mcut_exam_raw = $('#raw').val();
 				result = [];
@@ -41,12 +49,12 @@
 				.split('\n'),function(i,e){
 					x = e.split(' ');
 					if(x[0] != '序號' && x.length > 10) result.push([
-						x[1]+' '+x[2],
-						x[3].split('(')[0],
-						x[4],
-						x[8]+'/'+x[10],
-						x[12].replace(/-/g,'~'),
-						x[13]+' '+x[14]
+						x[label[0]]+' '+x[label[0]+1],
+						x[label[1]].split('(')[0],
+						x[label[2]],
+						x[label[3]]+'/'+x[label[3]+2],
+						x[label[4]].replace(/-/g,'~'),
+						x[label[5]]+' '+x[label[5]+1]
 					]);
 				});
 				if(result.length == 0) result = [];
@@ -61,7 +69,7 @@
 		});
 	</script>
 </head>
-<body>
+<body style="background:#F3F3F3;">
 	<br><br>
 	<div class="ts container">
 		<div class="ts form">
@@ -70,7 +78,11 @@
 					<div class="column">
 						<div class="field">
 							<label>Raw Data</label>
-							<textarea style="height:78vh" id="raw" placeholder="英文"></textarea>
+							<textarea style="height:76vh" id="raw" placeholder="英文"></textarea>
+						</div>
+						<div class="field">
+							<label>Label</label>
+							<input id="label" value="1,3,4,8,12,13" style="font-family:monospace;">
 						</div>
 					</div>
 					<div class="column">
