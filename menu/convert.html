@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Snack Convert</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.2/tocas.css">
+	<style>
+		
+	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script>
+		$(function(){
+			if(localStorage.mcut_snack_raw) {
+				$('#raw').val(localStorage.mcut_snack_raw)
+				setTimeout(function(){
+					$('#raw').trigger('input');
+				},1);
+			}
+			function toUnicode(str) {
+				return str.split('').map(function (value, index, array) {
+					var temp = value.charCodeAt(0).toString(16).toUpperCase();
+					if (temp.length > 2) {
+						return '\\u' + temp;
+					}
+					return value;
+				}).join('');
+			}
+			var result = [];
+			$('#raw').on('input',function(){
+				localStorage.mcut_snack_raw = $('#raw').val();
+				result = [];
+				$('#result').val('');
+				$('#minify').val('');
+				$('#count').text('');
+				_d = [];
+				_m = [];
+				_y = new Date().getFullYear();
+				$.each($('#raw').val()
+				.split('\n'),function(i,e){
+					x = e.replace('/','、').split(' ');
+					if(x[0] != '日期' && x[0] != '考試週夜點菜單') {
+						if(x[0].includes('月') && x[0].includes('日')) _d.push(_y+'-'+x[0].replace('日','').split('月').map(str => str.padStart(2, '0')).join('-'));
+						else _m.push(x);
+					}
+					
+				});
+				console.log(_d)
+				console.log(_m)
+				for(i in _d) {
+					result.push({
+						date: _d[i],
+						first: _m[i*2][0] +'、'+ _m[i*2+1][0],
+						second: _m[i*2][1] +'、'+ _m[i*2+1][1]
+					})
+				}
+				console.log(result)
+				if(result.length == 0) result = [];
+				else $('#count').text('('+result.length+')');
+				$('#result').val(JSON.stringify(result,null,'\t'));
+				$('#minify').val(toUnicode(JSON.stringify(result)));
+			});
+		});
+	</script>
+</head>
+<body style="background:#F3F3F3;">
+	<br><br>
+	<div class="ts container">
+		<div class="ts form">
+			<div class="ts grid">
+				<div class="two column row">
+					<div class="column">
+						<div class="field">
+							<label>Raw Data</label>
+							<textarea style="height:85vh" id="raw" placeholder=""></textarea>
+						</div>
+					</div>
+					<div class="column">
+						<div class="field">
+							<label>Result <span id="count"></span> <a target="_blank" href="https://github.com/itshenrywu/mcut-tool/blob/main/menu/snack.json">Edit</a></label>
+							<textarea readonly style="height:85vh" id="result">[]</textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
