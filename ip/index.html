@@ -116,7 +116,7 @@
 			$('.welcome').hide();
 			$('.fixed').show();
 			$('#select-building').text(intToText[$(this).attr('data-building')] + '宿');
-			if ($(this).attr('data-building') == 7) $('#select-building').text('研究交流會館');
+			//if ($(this).attr('data-building') == 7) $('#select-building').text('研究交流會館');
 			if ($(this).attr('data-building') == 8) $('#select-building').text('學人會館');
 			if ($(this).attr('data-building') == 9) {
 				$('#select-building').text('舍監室分機 & 緊急電話');
@@ -331,13 +331,6 @@
 			}
 			if (current_building == 7) {
 				ip = (rrm - 1) * 8 + 8;
-				gw = '14' + (3 + parseInt($(this).attr('data-room').substr(1, 1)));
-				phone = 1700 + parseInt(rrm);
-				if (current_floor == 2) phone += 18;
-				if (current_floor == 3) phone += 39;
-			}
-			if (current_building == 8) {
-				ip = (rrm - 1) * 8 + 8;
 				gw = '1' + (47 + parseInt($(this).attr('data-room').substr(1, 1)));
 				phone = 1800 + parseInt(rrm);
 				if (current_floor == 2) phone += 13;
@@ -433,8 +426,7 @@
 					<a class="item" data-building="4">第四宿舍</a>
 					<a class="item" data-building="5">第五宿舍（新生男宿）</a>
 					<a class="item" data-building="6">第六宿舍（新生女宿）</a>
-					<a class="item" data-building="7">研究交流會館</a>
-					<a class="item" data-building="8">學人會館</a>
+					<a class="item" data-building="7">第七宿舍（研究交流會館）</a>
 					<a class="item" data-building="9">🏠 舍監室分機 & 緊急電話</a>
 					<a class="item toggle-tutorial">⚙️ 網路設定教學</a>
 				</div>
@@ -499,16 +491,10 @@
 			<button class="ts tiny button" data-bf="67">7F</button>
 		</div>
 		<div>
-			研究交流會館<br>
+			第七宿舍（研究交流會館）<br>
 			<button class="ts tiny button" data-bf="71">1F</button>
 			<button class="ts tiny button" data-bf="72">2F</button>
 			<button class="ts tiny button" data-bf="73">3F</button>
-		</div>
-		<div>
-			學人會館<br>
-			<button class="ts tiny button" data-bf="81">1F</button>
-			<button class="ts tiny button" data-bf="82">2F</button>
-			<button class="ts tiny button" data-bf="83">3F</button>
 		</div>
 		<br>
 		<a class="ts tiny basic fluid button" data-building="9">舍監室分機 & 緊急電話</a>
