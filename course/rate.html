@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>課程評價｜明志科大選課小幫手</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.4/tocas.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<style>
+		#stars .ts-icon {
+			float: right;
+			margin-right: 4px;
+		}
+
+		#stars {
+			display: inline-block;
+		}
+
+		#stars .ts-icon:hover {
+			cursor: pointer;
+		}
+
+		#stars .ts-icon.active,
+		#stars .ts-icon.active ~ .ts-icon,
+		#stars .ts-icon:hover,
+		#stars .ts-icon:hover ~ .ts-icon {
+			color: #f1c40f;
+			font-family: Icons;
+		}
+
+		#rates .is-star-icon:not(.is-regular) {
+			color: #f1c40f;
+		}
+
+		.ts-conversation {
+			margin-bottom: 1.8rem;
+		}
+
+		#action .ts-input {
+			margin: 5px 0 15px;
+		}
+	</style>
+	<script>
+		$(function(){
+			star = 0;
+			const params = new Proxy(new URLSearchParams(window.location.search), {
+				get: (searchParams, prop) => searchParams.get(prop),
+			});
+			$('#stars .ts-icon').on('click',function(){
+				$('#stars .ts-icon').removeClass('active');
+				$(this).addClass('active');
+				star = $(this).attr('data-score');
+			});
+			function checkState() {
+				$.ajax({
+					url: 'https://bot.mcut.edu.tw/course/score/check_state.php?id='+params['id']+'&token='+(localStorage.getItem('course_token') || ''),
+					dataType: 'json',
+					type: 'POST',
+					success: function(res){
+						$('#loading').hide();
+						if(res.action == 'login') {
+							$('#login').show();
+						} else if(res.action == 'ok') {
+							$('#rate').show();
+							$('#action').parent().show();
+							$('#action>a').show();
+							$('#action>div').hide();
+						} else if(res.action == 'no') {
+							$('#rate').show();
+							$('#action').html('<div class="ts-center">您尚未修過本課程，無法留言。</div>');
+						}
+
+						if(res.rates.length > 0) {
+							$('#rates').html('');
+							$.each(res.rates, function( k, v ) {
+								_star = '<span class="ts-icon is-star-icon"></span>';
+								for (var i = 2; i <= 5; i++) {
+									if(i>v[1]) _star += '<span class="ts-icon is-star-icon is-regular"></span>';
+									else _star += '<span class="ts-icon is-star-icon"></span>';
+								}
+								if(v[3] == 'is-self') {
+									$('#action').parent().hide();
+									$('#comment_0').val(v[0][0]);
+									$('#comment_1').val(v[0][1]);
+									$('#comment_2').val(v[0][2]);
+									$('#comment_3').val(v[0][3]);
+									$('#comment_4').val(v[0][4]);
+									$('[data-score="'+v[1]+'"]').click();
+									$('#send').text('更新');
+								}
+
+								$('#rates').append('\
+									<div class="ts-conversation '+v[3]+'">\
+										<div class="content">\
+											<div class="bubble">\
+												<div class="author">授課老師</div>\
+												<div class="text">'+v[0][0]+'</div>\
+												<div class="author">點名、上課內容、方式、規定</div>\
+												<div class="text">'+v[0][1].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
+												<div class="author">考試方式</div>\
+												<div class="text">'+v[0][2].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
+												<div class="author">報告、作業</div>\
+												<div class="text">'+v[0][3].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
+												<div class="author">其他補充</div>\
+												<div class="text">'+v[0][4].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
+											</div>\
+											<div class="ts-meta is-small is-secondary">\
+												<span class="item">'+_star+'</span>\
+												<span class="item">'+v[2]+'</span>'+
+												( (v[3] == 'is-self') ? '<a href="#edit" id="edit" class="item">編輯</a><a href="#del" id="del" class="item">刪除</a>':'' )
+												+'\
+											</div>\
+										</div>\
+									</div>\
+								');
+							});
+						} else {
+							$('#rates').html('<div class="ts-center">\
+								<div class="ts-header is-icon">\
+									<span class="ts-icon is-circle-exclamation-icon"></span>\
+									暫時還沒有評價！\
+								</div>\
+							</div>');
+							$('#action').parent().show();
+						}
+					},
+					error: function(res) {
+						alert('發生錯誤，請稍後再試。');
+						$('*').hide();
+					}
+				});
+			}
+			$('body').on('click','#edit',function(){
+				$('#action').parent().show();
+				$('#action>a').hide();
+				$('#action>div').show();
+			});
+			$('body').on('click','#new',function(){
+				$(this).hide();
+				$('#action>div').show();
+			});
+			checkState();
+			$('button#login').on('click',function(){
+				if($('#username').val() == '' || $('#password').val() == '') {
+					alert('請輸入帳號及密碼。');
+					return;
+				}
+				$('button#login').addClass('is-loading').attr('disabled', 'disabled');
+				$.ajax({
+					url: 'https://bot.mcut.edu.tw/course/score/login.php',
+					dataType: 'json',
+					type: 'POST',
+					data: {
+						username: $('#username').val(),
+						password: $('#password').val()
+					},
+					success: function(res){
+						$('button#login').removeClass('is-loading').removeAttr('disabled');
+						if(res.success) {
+							localStorage.setItem('course_token',res.token)
+							$('#login').hide();
+							checkState();
+						}
+						else {
+							if(res.error == '1') alert('帳密有誤，請再試一次。請注意：登入失敗太多次帳號將會被停權。');
+							else if(res.error == '4') alert('帳密輸入錯誤太多次，帳號已被封鎖，請詢問電算中心。');
+							else if(res.error == '5') alert('您的密碼已被電算中心重設，請先更改密碼。');
+							else if(res.error == '9') alert('請先修改密碼再回來使用。');
+							else if(res.error == '10') alert('目前無修課紀錄。');
+							else alert('登入失敗，請再試一次。');
+							$('#username').val('');
+							$('#password').val('');
+						}
+					},
+					error: function(res) {
+						alert('登入失敗，請再試一次。');
+						$('#username').val('');
+						$('#password').val('');
+					}
+				});
+			});
+			$('#send').on('click',function(){
+				if($('#comment').val() == '' || $('#comment_1').val() == '' || $('#comment_2').val() == '' || $('#comment_3').val() == '' || $('#comment_4').val() == '') alert('請填寫每個欄位！');
+				else if(star == 0) alert('請給予總評 (1~5 顆星)。');
+				else {
+					$.ajax({
+						url: 'https://bot.mcut.edu.tw/course/score/update.php',
+						dataType: 'json',
+						type: 'POST',
+						data: {
+							'token': localStorage.getItem('course_token'),
+							'comment': $('#comment_0').val(),
+							'comment1': $('#comment_1').val(),
+							'comment2': $('#comment_2').val(),
+							'comment3': $('#comment_3').val(),
+							'comment4': $('#comment_4').val(),
+							'score': star,
+							'id': params['id']
+						},
+						success: function(res){
+							if(res.error) alert('發生錯誤，請稍後再試。')
+							else checkState();
+						}
+					});
+				}
+			});
+			$('body').on('click','#del',function(){
+				if(window.confirm('確定要刪除嗎？')) {
+					$.ajax({
+						url: 'https://bot.mcut.edu.tw/course/score/update.php?del',
+						dataType: 'json',
+						type: 'POST',
+						data: {
+							'token': localStorage.getItem('course_token'),
+							'id': params['id']
+						},
+						success: function(res){
+							if(res.error) alert('發生錯誤，請稍後再試。')
+							else {
+								checkState();
+								$('#action').find('input').val('');
+								$('#action').find('textarea').val('');
+								$('#stars .ts-icon').removeClass('active');
+								star = 0;
+								$('#send').text('送出');
+							}
+						}
+					});
+				}
+			});
+		});
+	</script>
+</head>
+<body>
+	<div class="ts-center" id="login" style="display: none;">
+		<div class="ts-segment is-dense" style="width: 300px">
+			<div class="content" style="font-size:90%"><div class="ts-header">請先登入以查看或留言</div>登入僅供驗證用途，留言皆為匿名！</div>
+		</div>
+		<br>
+		<div class="ts-segment is-secondary" method="post" style="width: 300px">
+			<div class="ts-wrap is-vertical">
+				<div class="ts-text is-label">校園入口網帳號</div>
+				<div class="ts-input is-fluid">
+					<input type="text" id="username" />
+				</div>
+				<div class="ts-text is-label">校園入口網密碼</div>
+				<div class="ts-input is-fluid" style="margin-bottom:10px;">
+					<input type="password" id="password" />
+				</div>
+				<button class="ts-button is-fluid is-disabled_" disabled_ id="login">登入</button>
+			</div>
+		</div>
+		<br><br>
+	</div>
+		<div id="loading" style="height:100%">
+			<div class="ts-center">
+				<div class="ts-header is-icon"><span class="ts-icon is-spinning is-spinner-icon"></span>請稍候...</div>
+			</div>
+		</div>
+		<div id="rate" class="ts-app-layout is-vertical" style="height:100%;display:none">
+			<div class="cell is-fluid is-scrollable">
+				<div class="ts-content" id="rates" style="height: 100%;">
+					<div class="ts-center">
+						<br><br>
+						<div class="ts-header is-icon">
+							<span class="ts-icon is-circle-exclamation-icon"></span>
+							暫時還沒有評價！
+						</div>
+						<br><br>
+					</div>
+				</div>
+			</div>
+			<div class="cell">
+				<div id="action" class="ts-content" style="padding-bottom:.8rem">
+					<a href="#new" id="new" style="display:none;text-decoration: none; display: block;">填寫評論...</a>
+					<div style="display:none">
+						<span class="ts-close" style="float:right" onclick="$(this).parent().hide();$('#new').show()"></span>
+						<br>
+						<div class="ts-box is-top-indicated">
+							<div class="ts-content">留言皆為匿名，請放心填寫。<br>
+							請客觀描述，勿使用人身攻擊或辱罵字眼。管理員有權視情況移除留言。<br></div>
+						</div>
+						<br>
+						<label>修課時的授課老師</label>
+						<div class="ts-input is-fluid">
+							<input rows="2" id="comment_0"></input>
+						</div>
+						<label>點名、上課內容、方式、規定</label>
+						<div class="ts-input is-fluid">
+							<textarea rows="2" id="comment_1"></textarea>
+						</div>
+						<label>考試方式</label>
+						<div class="ts-input is-fluid">
+							<textarea rows="2" id="comment_2"></textarea>
+						</div>
+						<label>報告、作業</label>
+						<div class="ts-input is-fluid">
+							<textarea rows="2" id="comment_3"></textarea>
+						</div>
+						<label>其他補充</label>
+						<div class="ts-input is-fluid">
+							<textarea rows="2" id="comment_4"></textarea>
+						</div>
+						<div class="ts-row" style="margin-top:15px">
+							<div class="column">
+								<div class="ts-text is-large">總評：</div>
+							</div>
+							<div class="column is-fluid">
+								<div class="ts-text is-large">
+									<div id="stars">
+										<span class="ts-icon is-star-icon is-regular" data-score="5"></span>
+										<span class="ts-icon is-star-icon is-regular" data-score="4"></span>
+										<span class="ts-icon is-star-icon is-regular" data-score="3"></span>
+										<span class="ts-icon is-star-icon is-regular" data-score="2"></span>
+										<span class="ts-icon is-star-icon is-regular" data-score="1"></span>
+										<div style="float:none;clear:both;content:'';display:block;"></div>
+									</div>
+								</div>
+							</div>
+							<div class="column">
+								<button class="ts-button" id="send">送出</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

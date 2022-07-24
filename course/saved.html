@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>儲存的課程｜明志科大選課小幫手</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.4/tocas.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<style>
+		.ts-table .ts-badge {
+			margin-top: -0.25rem!important;
+		}
+
+		.ts-table .ts-button {
+			display: block;
+			padding: 0.1rem !important
+		}
+
+		td .time {
+			display: block;
+		}
+
+		.ts-modal td .time {
+			display: inline-block;
+		}
+
+		.ts-modal td .time:after {
+			content: '、';
+		}
+
+		td .time:last-child:after {
+			content: '';
+		}
+
+		#main tbody tr:hover {
+			background: var(--ts-gray-75);
+			cursor: pointer;
+		}
+
+		.ts-table tr.is-indicated {
+			box-shadow: 2px 0 0 var(--ts-primary-600) inset !important;
+		}
+
+		div.loading {
+			display: none;
+		}
+
+		.loader {
+			margin: 35vh 0;
+		}
+
+		#main_timetable th,
+		#main_timetable td {
+			text-align: center;
+			vertical-align: middle;
+			width: 20%;
+		}
+
+		#main_timetable th:nth-child(7),
+		#main_timetable td:nth-child(7) {
+			display: none !important;
+		}
+
+		#main_timetable th:first-child,
+		#main_timetable td:first-child {
+			width: 2rem;
+		}
+
+		#main_timetable td {
+			font-size: 12px !important;
+			line-height: 1.1rem;
+			padding: 0;
+			height: 2.8rem!important;
+		}
+
+		#main_timetable td>div {
+			position: absolute;
+			top: 0;
+			width: 94%;
+			background: var(--ts-gray-200);
+			border-radius: 5px;
+			//border: 2px solid var(--ts-gray-200);
+			margin: 0.3rem 3%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 1;
+		}
+
+		#main_timetable td>div:hover {
+			cursor: pointer;
+		}
+
+		.ts-accordion .title:before {
+			display: none;
+		}
+
+		@media (max-width: 767px) {
+			#main thead {
+				display: none;
+			}
+
+			#main table, .detail-content table,
+			#main tbody, .detail-content tbody,
+			#main tfoot, .detail-content tfoot,
+			#main th, .detail-content th,
+			#main td, .detail-content td,
+			#main tr,  .detail-content tr{
+				display: block;
+			}
+
+			#main tbody td:nth-child(1),
+			#main tbody td:nth-child(2),
+			#main tbody td:nth-child(4),
+			#main tbody td:nth-child(5) {
+				width: 50%;
+				display: inline-block;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				height: 1.4rem;
+			}
+
+			#main td:nth-child(6) {
+				display: none;
+			}
+
+			#main td {
+				line-height: 1.2rem !important;
+			}
+
+			.detail-content td {
+				padding: .2rem 0 !important;
+			}
+
+			td .time {
+				display: inline-block;
+			}
+
+			td .time:after {
+				content: '、';
+			}
+
+			#main td:nth-child(2) {
+				font-weight: bold;
+			}
+
+			#main td:nth-child(4):after {
+				content: " 學分";
+			}
+
+			#main td:nth-child(5):after {
+				content: " 老師";
+			}
+		}
+	</style>
+	<script>
+		$(function(){
+			const params = new Proxy(new URLSearchParams(window.location.search), {
+				get: (searchParams, prop) => searchParams.get(prop),
+			});
+			let savedCourse = JSON.parse(localStorage.getItem('savedCourse') || '[]');
+			if(savedCourse.length > 0) {
+				$('.navbar .savedCourse_count').text(savedCourse.length).show();
+				$('tfoot').hide();
+			} else {
+				$('.navbar .savedCourse_count').hide();
+				$('tfoot').show();
+			}
+			let viewing = '';
+			let weekText = ['','(一) ','(二) ','(三) ','(四) ','(五) ','(六) ',''];
+			let ctimes = ["0.5","1","2","3","4","4.5","5","6","7","8","8.5","9","10","11","12"];
+			let courseData = {};
+			let savedCourseTime = [];
+			if(savedCourse.length == 0) _term = '';
+			else _term = savedCourse[0].substring(0,3)+'-'+savedCourse[0].substring(3,4);
+			$.ajax({
+				url: 'https://bot.mcut.edu.tw/course/list.php?term='+_term,
+				dataType: 'json',
+				success: function(res){
+					$.each( res.course, function( k, v ) {
+						courseData[v['id']] = v;
+						if(savedCourse.includes(v['id'])) {
+							// 表格檢視
+							tr = '<tr data-detail="'+v['id']+'" class=" ">';
+							tr += '<td>'+v['dept']+v['year']+v['class']+'</td>';
+							tr += '<td>'+v['name']+'</td>';
+							tr += '<td>';
+							$.each( v['time'], function( k2, t ) {
+								tr += '<span class="time">'+weekText[t[0]];
+								if(t[1].split('~')[0] == t[1].split('~')[1]) tr += t[1].split('~')[0]+' 節</span>';
+								else tr += t[1]+' 節</span>';
+							});
+							tr += '</td>';
+							if(v['type'] == '必修') _type_class = '';
+							else if(v['type'] == '選修') _type_class = 'is-secondary';
+							else _type_class = 'is-outlined';
+							tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+'</span>'+v['credit']+'</td>';
+							tr += '<td>'+v['teacher']+'</td>';
+							tr += '<td>';
+							tr += '<span>' + v['comment'] + '</span>';
+							tr += '</td>';
+							tr += '</tr>';
+							$('#main tbody').append(tr);
+
+							// 課表檢視
+							$.each( v['time'], function( k2, t ) {
+								_t = t[1].split('~');
+								_cl = [...ctimes].splice(ctimes.indexOf(_t[0]) , ctimes.indexOf(_t[1])-ctimes.indexOf(_t[0])+1).length;
+								$('#main_timetable tr:nth-child('+(ctimes.indexOf(_t[0])+1)+') td:nth-child('+(parseInt(t[0])+1)+')').append('<div data-detail-v="'+v['id']+'" style="height:'+(_cl*2.8-0.6)+'rem;'+( (v['type'] == '必修')?'background:var(--ts-gray-700);color:var(--ts-gray-50)':'' )+'">'+v['name']+'</div>');
+							});
+							
+						}
+					});
+					$('div.loading').removeClass('loading');
+					$('.loader').remove();
+					updateCount();
+				}
+			});
+			$('body').on('click','.ts-close',function(){
+				$('.ts-modal').removeClass('is-visible');
+			})
+			$('body').on('click','[data-detail-v]',function(){
+				$('[data-detail="'+$(this).attr('data-detail-v')+'"]').click()
+			});
+			$('body').on('click','[data-detail]',function(){
+				id = $(this).attr('data-detail');
+				$('#score').attr('src','rate.html?v7&id='+id);
+				$('[data-show="detail-content"]').click();
+				$('.ts-modal').addClass('is-visible');
+				basic_data = $('[data-detail="'+id+'"]').find('td');
+				$('.ts-modal .ts-header').html(basic_data[1].innerHTML + '　<label class="ts-chip is-dense is-small is-input is-secondary"><input type="checkbox" data-save="'+id+'" /><div class="content">儲存課程</div></label>');
+				if(savedCourse.includes(id)) {
+					$('[data-save]').prop("checked", true)
+					$('[data-save]+.content').text('已儲存課程');
+				}
+
+				detail = '';
+				detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
+				<tr><td style="width: 7rem"><b>開課序號</b></td><td>'+id+'</td></tr>\
+				<tr><td><b>開課單位/班級</b></td><td>'+basic_data[0].innerHTML+'</td></tr>\
+				<tr><td><b>上課時間</b></td><td>'+basic_data[2].innerHTML+'</td></tr>\
+				<tr><td><b>修別/學分</b></td><td>'+basic_data[3].innerHTML+' 學分</td></tr>\
+				<tr><td><b>授課老師</b></td><td>'+basic_data[4].innerHTML+'</td></tr>';
+				if(basic_data[5].innerHTML != '') detail += '<tr><td><b>備註</b></td><td>'+basic_data[5].innerHTML+'</td></tr>';
+				detail += '<tr class="loading"><td class="is-center-aligned" colspan="2"><br><div class="ts-header is-icon"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入更多資訊...</div><br></td></tr></tbody></table>';
+				$('.ts-modal .detail-content').html(detail);
+				viewing = id;
+				$.ajax({
+					url: 'https://bot.mcut.edu.tw/course/detail.php?id='+id,
+					dataType: 'json',
+					success: function(res){
+						if(res.length == 3) {
+							$('tr.loading').remove();
+							$.each( res[0], function( k, v ) {
+								$('#detail-table').append('<tr><td><b>'+v[0]+'</b></td><td>'+v[1]+'</td></tr>');
+							})
+							$('#detail-table').append('<tr><td><b>Office Time</b></td><td>'+res[1].join('<br>')+'</td></tr>');
+
+							timetable = '<div class="ts-accordion" style="border-top: 1px solid var(--ts-gray-300);padding-top: 5px"><div class="title" onclick="$(this).parent().toggleClass(\'is-active\')"><b>教學進度表 (點擊展開)</b></div><div class="content"><div class="ts-box"><div class="ts-content"><table class="ts-table is-sticked is-basic is-dense" id="detail-table"><tbody>';
+							$.each( res[2], function( k, v ) {
+								timetable += '<tr><td style="width:6rem">'+v[0]+' '+v[1]+'<br>'+v[2]+'</td>\
+								<td>'+v[3]+'<small>';
+								if(v[5]) timetable += '<br>'+v[5];
+								if(v[4]) timetable += '<br>作業：'+v[4];
+								if(v[6]) timetable += '<br>備註：'+v[6];
+								timetable += '</small></td></tr>';
+							})
+							timetable += '</tbody></table></div></div>';
+
+							$('.ts-modal .detail-content').append(timetable);
+
+						} else $('tr.loading td').html('<br><div class="ts-header is-icon"><span class="ts-icon is-circle-exclamation-icon"></span>授課老師未填寫課程資料！</div><br>');
+					}
+				});
+				$(this).attr('data-detail');
+			})
+
+			$('body').on('change','[data-save]',function(){
+				thisid = $(this).attr('data-save');
+				if(!savedCourse.includes(thisid)) {
+					savedCourse.push(thisid);
+					$('[data-detail="'+thisid+'"]').show();
+					$('[data-detail-v="'+thisid+'"]').show();
+					$(this).parent().find('.content').text('已儲存課程')
+				}
+				else {
+					const index = savedCourse.indexOf(thisid);
+					if (index > -1) savedCourse.splice(index, 1);
+					$('[data-detail="'+thisid+'"]').hide();
+					$('[data-detail-v="'+thisid+'"]').hide();
+					$(this).parent().find('.content').text('儲存課程')
+				}
+				updateCount();
+				localStorage.setItem('savedCourse', JSON.stringify(savedCourse))
+			})
+
+			$('body').on('click','[data-switch]',function(){
+				if($(this).attr('data-switch') == '1') {
+					$('#main').show();
+					$('#main_timetable').hide();
+				} else {
+					$('#main_timetable').show();
+					$('#main').hide();
+				}
+			});
+
+			function updateCount() {
+				_c = 0; _h = 0;
+				$.each( savedCourse, function( k, v ) {
+					_c += parseInt(courseData[v]['credit'])
+					_h += parseInt(courseData[v]['hour'])
+				})
+				$('.savedCourse_credit').text(_c);
+				$('.savedCourse_hour').text(_h);
+				$('.savedCourse_count').text(savedCourse.length);
+
+				if(savedCourse.length > 0) {
+					$('.navbar .savedCourse_count , #clear').show();
+					$('tfoot').hide();
+				} else {
+					$('.navbar .savedCourse_count , #clear').hide();
+					$('tfoot').show();
+				}
+			}
+
+			//$('[data-switch="2"]').click();
+
+			for (var i = 0; i < ctimes.length; i++) {
+				$('#main_timetable tbody').append('<tr><td>'+ctimes[i]+'</td>'+'<td></td>'.repeat(6)+'</tr>') 
+			}
+
+			$('body').on('click','#clear',function(){
+				if(window.confirm('確定要清除所有儲存的課程嗎？')) {
+					localStorage.setItem('savedCourse', '[]');
+					location.reload()
+				}
+			});
+
+			$('[data-show]').on('click',function(){
+				$('[data-content]').hide();
+				$('[data-content="'+$(this).attr('data-show')+'"]').show();
+				$('[data-show]').removeClass('is-active');
+				$(this).addClass('is-active');
+			})
+		});
+	</script>
+</head>
+<body>
+	<div class="ts-app-layout is-full is-vertical">
+		<div class="cell">
+			<div class="ts-container">
+				<div class="navbar">
+					<div class="row">
+						<div class="column">
+							<div class="ts-tab is-center-aligned">
+								<a href="./" class="item">
+									<span class="ts-icon is-magnifying-glass-icon"></span>
+									<div class="label">搜尋課程</div>
+								</a>
+								<a href="" class="item is-active">
+									<span class="ts-icon is-star-icon"></span>
+									<div class="label">儲存的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="cell is-secondary is-fluid is-scrollable">
+			<br>
+			<div class="ts-container">
+				<div class="ts-box is-negative is-top-indicated">
+					<div class="ts-content">
+						<div class="ts header"><b>這不是選課！這不是選課！這不是選課！</b></div>
+						本系統僅供預先排課，與實際選課無關。<br>
+						資料擷取自<a href="https://info.mcut.edu.tw/web1/std_datasearch/stda_course_search.aspx" target="_blank">明志科技大學年度開課資料查詢系統</a>，正式資料以教務處公佈為主。
+					</div>
+					<div class="symbol"><span class="ts-icon is-circle-exclamation-icon"></span></div>
+				</div><br>
+				<div class="ts-row is-middle-aligned" style="margin-block-end: 1.6em;">
+					<div class="column is-fluid">
+						<h1>儲存的課程</h1>
+					</div>
+					<div class="column">
+						<button class="ts-button is-small is-negative is-outlined" id="clear" style="display:none"><span class="ts-icon is-end-spaced is-trash-icon"></span> 全部清除</button>
+					</div>
+				</div>
+				<div class="ts-grid is-3-columns">
+					<div class="column">
+						<div class="ts-box">
+							<div class="ts-content">
+								<div class="ts-statistic">
+									<div class="value savedCourse_count">-</div>
+									<div class="comparison">門課</div>
+								</div>
+							</div>
+							<div class="symbol">
+								<span class="ts-icon is-table-cells-icon"></span>
+							</div>
+						</div>
+					</div>
+					<div class="column">
+						<div class="ts-box">
+							<div class="ts-content">
+								<div class="ts-statistic">
+									<div class="value savedCourse_credit">-</div>
+									<div class="comparison">學分</div>
+								</div>
+							</div>
+							<div class="symbol">
+								<span class="ts-icon is-list-check-icon"></span>
+							</div>
+						</div>
+					</div>
+					<div class="column">
+						<div class="ts-box">
+							<div class="ts-content">
+								<div class="ts-statistic">
+									<div class="value savedCourse_hour">-</div>
+									<div class="comparison">小時</div>
+								</div>
+							</div>
+							<div class="symbol">
+								<span class="ts-icon is-clock-icon"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br>
+				<div style="text-align:center;margin-bottom: 10px;">
+					<div class="ts-selection" id="displayType">
+						<label class="item" data-switch="2">
+							<input type="radio" name="displayType" checked />
+							<div class="text">課表檢視</div>
+						</label>
+						<label class="item" data-switch="1">
+							<input type="radio" name="displayType" />
+							<div class="text">表格檢視</div>
+						</label>
+					</div>
+				</div>
+				<div class="ts-header is-icon loader"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入課表...</div>
+				<div class="ts-box loading">
+					<table class="ts-table is-dense" id="main" style="display:none">
+						<thead>
+							<tr>
+								<th>開課單位/班級</th>
+								<th>課程名稱</th>
+								<th>上課時間</th>
+								<th>修別/學分</th>
+								<th>授課老師</th>
+								<th>備註</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+						<tfoot style="display: none;">
+							<tr>
+								<td class="is-center-aligned" colspan="6">
+									<br><br><br><br><br><br>
+									<div class="ts-header is-icon">
+										<span class="ts-icon is-circle-exclamation-icon"></span>
+										目前沒有已儲存的課程
+									</div>
+									<br><br><br><br><br><br>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+					<table class="ts-table is-dense is-celled is-definition" id="main_timetable">
+						<thead>
+							<tr>
+								<th>/</th>
+								<th>一</th>
+								<th>二</th>
+								<th>三</th>
+								<th>四</th>
+								<th>五</th>
+								<th>六</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+			<br>
+			<div style="text-align:center;font-size:80%;">Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a></div>
+			<br>
+		</div>
+	</div>
+	<div class="ts-modal is-big">
+		<div class="content">
+			<div class="ts-content is-dense">
+				<div class="ts-row">
+					<div class="column is-fluid">
+						<div class="ts-header"></div>
+					</div>
+					<div class="column">
+						<button class="ts-close"></button>
+					</div>
+				</div>
+			</div>
+			<div class="ts-divider"></div>
+			<div class="ts-tab is-fluid" id="switch-detail">
+				<a class="item is-active" data-show="detail-content">課程資訊</a>
+				<a class="item" data-show="course-comment">課程評價</a>
+			</div>
+			<div class="ts-content detail-content" data-content="detail-content" style="height:75vh;overflow-y:scroll;"></div>
+			<div class="" data-content="course-comment" style="height:75vh;overflow:hidden;display:none">
+				<iframe id="score" style="width:100%;height:100%;border:none"></iframe>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
