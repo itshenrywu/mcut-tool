@@ -5,6 +5,15 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.4/tocas.min.css">
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZHZ6VYR7M"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-DZHZ6VYR7M');
+	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<style>
 		#stars .ts-icon {
@@ -95,12 +104,12 @@
 											<div class="bubble">\
 												<div class="author">授課老師</div>\
 												<div class="text">'+v[0][0]+'</div>\
-												<div class="author">點名、上課內容、方式、規定</div>\
+												<div class="author">點名/上課規定</div>\
 												<div class="text">'+v[0][1].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
-												<div class="author">考試方式</div>\
-												<div class="text">'+v[0][2].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
-												<div class="author">報告、作業</div>\
+												<div class="author">作業報告</div>\
 												<div class="text">'+v[0][3].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
+												<div class="author">測驗方式</div>\
+												<div class="text">'+v[0][2].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
 												<div class="author">其他補充</div>\
 												<div class="text">'+v[0][4].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
 											</div>\
@@ -164,8 +173,8 @@
 						else {
 							if(res.error == '1') alert('帳密有誤，請再試一次。請注意：登入失敗太多次帳號將會被停權。');
 							else if(res.error == '4') alert('帳密輸入錯誤太多次，帳號已被封鎖，請詢問電算中心。');
-							else if(res.error == '5') alert('您的密碼已被電算中心重設，請先更改密碼。');
-							else if(res.error == '9') alert('請先修改密碼再回來使用。');
+							else if(res.error == '5') alert('您的密碼已被電算中心重設，請先至明志 App 更改密碼。');
+							else if(res.error == '9') alert('請先至明志 App 修改密碼再回來使用。');
 							else if(res.error == '10') alert('目前無修課紀錄。');
 							else alert('登入失敗，請再試一次。');
 							$('#username').val('');
@@ -285,17 +294,17 @@
 						<div class="ts-input is-fluid">
 							<input rows="2" id="comment_0"></input>
 						</div>
-						<label>點名、上課內容、方式、規定</label>
+						<label>點名/上課規定</label>
 						<div class="ts-input is-fluid">
 							<textarea rows="2" id="comment_1"></textarea>
 						</div>
-						<label>考試方式</label>
-						<div class="ts-input is-fluid">
-							<textarea rows="2" id="comment_2"></textarea>
-						</div>
-						<label>報告、作業</label>
+						<label>作業報告</label>
 						<div class="ts-input is-fluid">
 							<textarea rows="2" id="comment_3"></textarea>
+						</div>
+						<label>測驗方式</label>
+						<div class="ts-input is-fluid">
+							<textarea rows="2" id="comment_2"></textarea>
 						</div>
 						<label>其他補充</label>
 						<div class="ts-input is-fluid">
