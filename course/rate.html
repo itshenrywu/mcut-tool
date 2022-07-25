@@ -15,6 +15,7 @@
 		gtag('config', 'G-DZHZ6VYR7M');
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 	<style>
 		#stars .ts-icon {
 			float: right;
@@ -51,6 +52,12 @@
 	</style>
 	<script>
 		$(function(){
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) link.href = 'https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.min.css';
+			else link.href = 'https://cdn.jsdelivr.net/npm/@sweetalert2/themes@5.0.11/default/default.min.css';
+			document.head.appendChild(link);
+
 			star = 0;
 			const params = new Proxy(new URLSearchParams(window.location.search), {
 				get: (searchParams, prop) => searchParams.get(prop),
@@ -74,9 +81,11 @@
 							$('#action').parent().show();
 							$('#action>a').show();
 							$('#action>div').hide();
+							$('#rates').show();
 						} else if(res.action == 'no') {
 							$('#rate').show();
 							$('#action').html('<div class="ts-center">您尚未修過本課程，無法留言。</div>');
+							$('#rates').show();
 						}
 
 						if(res.rates.length > 0) {
@@ -134,7 +143,7 @@
 						}
 					},
 					error: function(res) {
-						alert('發生錯誤，請稍後再試。');
+						Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '發生錯誤，請稍後再試。', icon: 'error', confirmButtonText: 'OK'})
 						$('*').hide();
 					}
 				});
@@ -142,16 +151,18 @@
 			$('body').on('click','#edit',function(){
 				$('#action').parent().show();
 				$('#action>a').hide();
+				$('#rates').hide();
 				$('#action>div').show();
 			});
 			$('body').on('click','#new',function(){
 				$(this).hide();
 				$('#action>div').show();
+				$('#rates').hide();
 			});
 			checkState();
 			$('button#login').on('click',function(){
 				if($('#username').val() == '' || $('#password').val() == '') {
-					alert('請輸入帳號及密碼。');
+					Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '請輸入帳號及密碼。', icon: 'error', confirmButtonText: 'OK'});
 					return;
 				}
 				$('button#login').addClass('is-loading').attr('disabled', 'disabled');
@@ -171,26 +182,26 @@
 							checkState();
 						}
 						else {
-							if(res.error == '1') alert('帳密有誤，請再試一次。請注意：登入失敗太多次帳號將會被停權。');
-							else if(res.error == '4') alert('帳密輸入錯誤太多次，帳號已被封鎖，請詢問電算中心。');
-							else if(res.error == '5') alert('您的密碼已被電算中心重設，請先至明志 App 更改密碼。');
-							else if(res.error == '9') alert('請先至明志 App 修改密碼再回來使用。');
-							else if(res.error == '10') alert('目前無修課紀錄。');
-							else alert('登入失敗，請再試一次。');
+							if(res.error == '1') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '帳密有誤，請再試一次。請注意：登入失敗太多次帳號將會被停權。', icon: 'error', confirmButtonText: 'OK'});
+							else if(res.error == '4') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '帳密輸入錯誤太多次，帳號已被封鎖，請詢問電算中心。', icon: 'error', confirmButtonText: 'OK'});
+							else if(res.error == '5') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '您的密碼已被電算中心重設，請先至明志 App 更改密碼。', icon: 'error', confirmButtonText: 'OK'});
+							else if(res.error == '9') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '請先至明志 App 修改密碼再回來使用。', icon: 'error', confirmButtonText: 'OK'});
+							else if(res.error == '10') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '目前無修課紀錄。', icon: 'error', confirmButtonText: 'OK'});
+							else Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '登入失敗，請再試一次。', icon: 'error', confirmButtonText: 'OK'});
 							$('#username').val('');
 							$('#password').val('');
 						}
 					},
 					error: function(res) {
-						alert('登入失敗，請再試一次。');
+						Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '登入失敗，請再試一次。', icon: 'error', confirmButtonText: 'OK'});
 						$('#username').val('');
 						$('#password').val('');
 					}
 				});
 			});
 			$('#send').on('click',function(){
-				if($('#comment').val() == '' || $('#comment_1').val() == '' || $('#comment_2').val() == '' || $('#comment_3').val() == '' || $('#comment_4').val() == '') alert('請填寫每個欄位！');
-				else if(star == 0) alert('請給予總評 (1~5 顆星)。');
+				if($('#comment').val() == '' || $('#comment_1').val() == '' || $('#comment_2').val() == '' || $('#comment_3').val() == '' || $('#comment_4').val() == '') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '請填寫每個欄位！', icon: 'error', confirmButtonText: 'OK'});
+				else if(star == 0) Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '請給予總評 (1~5 顆星)。', icon: 'error', confirmButtonText: 'OK'});
 				else {
 					$.ajax({
 						url: 'https://bot.mcut.edu.tw/course/score/update.php',
@@ -207,35 +218,45 @@
 							'id': params['id']
 						},
 						success: function(res){
-							if(res.error) alert('發生錯誤，請稍後再試。')
+							if(res.error) Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '發生錯誤，請稍後再試。', icon: 'error', confirmButtonText: 'OK'});
 							else checkState();
 						}
 					});
 				}
 			});
 			$('body').on('click','#del',function(){
-				if(window.confirm('確定要刪除嗎？')) {
-					$.ajax({
-						url: 'https://bot.mcut.edu.tw/course/score/update.php?del',
-						dataType: 'json',
-						type: 'POST',
-						data: {
-							'token': localStorage.getItem('course_token'),
-							'id': params['id']
-						},
-						success: function(res){
-							if(res.error) alert('發生錯誤，請稍後再試。')
-							else {
-								checkState();
-								$('#action').find('input').val('');
-								$('#action').find('textarea').val('');
-								$('#stars .ts-icon').removeClass('active');
-								star = 0;
-								$('#send').text('送出');
+				Swal.fire({
+					title: '確定要刪除嗎？',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: 'var(--ts-primary-600)',
+					cancelButtonColor: 'var(--ts-gray-500)',
+					confirmButtonText: '確定',
+					cancelButtonText: '取消'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$.ajax({
+							url: 'https://bot.mcut.edu.tw/course/score/update.php?del',
+							dataType: 'json',
+							type: 'POST',
+							data: {
+								'token': localStorage.getItem('course_token'),
+								'id': params['id']
+							},
+							success: function(res){
+								if(res.error) Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '發生錯誤，請稍後再試。', icon: 'error', confirmButtonText: 'OK'});
+								else {
+									checkState();
+									$('#action').find('input').val('');
+									$('#action').find('textarea').val('');
+									$('#stars .ts-icon').removeClass('active');
+									star = 0;
+									$('#send').text('送出');
+								}
 							}
-						}
-					});
-				}
+						});
+					}
+				});
 			});
 		});
 	</script>
@@ -283,7 +304,7 @@
 				<div id="action" class="ts-content" style="padding-bottom:.8rem">
 					<a href="#new" id="new" style="display:none;text-decoration: none; display: block;">填寫評論...</a>
 					<div style="display:none">
-						<span class="ts-close" style="float:right" onclick="$(this).parent().hide();$('#new').show()"></span>
+						<span class="ts-close" style="float:right" onclick="$(this).parent().hide();$('#new').show();$('#rates').show();"></span>
 						<br>
 						<div class="ts-box is-top-indicated">
 							<div class="ts-content">留言皆為匿名，請放心填寫。<br>

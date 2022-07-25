@@ -15,6 +15,7 @@
 		gtag('config', 'G-DZHZ6VYR7M');
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 	<style>
 		.ts-table .ts-badge {
 			margin-top: -0.25rem!important;
@@ -132,6 +133,12 @@
 	</style>
 	<script>
 		$(function(){
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) link.href = 'https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.min.css';
+			else link.href = 'https://cdn.jsdelivr.net/npm/@sweetalert2/themes@5.0.11/default/default.min.css';
+			document.head.appendChild(link);
+
 			if(localStorage.getItem('searchQuery') != '' && window.location.search == '') {
 				window.history.replaceState('','',localStorage.getItem('searchQuery'));
 			}
@@ -219,7 +226,7 @@
 			})
 			$('body').on('click','[data-detail]',function(){
 				id = $(this).attr('data-detail');
-				$('#score').attr('src','rate.html?v7&id='+id);
+				$('#score').attr('src','rate.html?v8&id='+id);
 				$('[data-show="detail-content"]').click();
 				$('.ts-modal').addClass('is-visible');
 				basic_data = $('[data-detail="'+id+'"]').find('td');
@@ -343,21 +350,37 @@
 			})
 
 			$('.save_require').on('click',function(){
-				if(window.confirm('是否要儲存「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課？\n先前儲存過的課程將會清空！')) {
-					savedCourse = [];
-					$('[data-detail]').removeClass('is-indicated is-primary is-negative');
-					$('#main tbody tr:visible').each(function( index ) {
-						if($(this).find('td')[3].innerText.includes('必') && !savedCourse.includes($(this).attr('data-detail'))) {
-							savedCourse.push($(this).attr('data-detail'));
-							localStorage.setItem('savedCourse', JSON.stringify(savedCourse));
-							$('[data-detail="'+$(this).attr('data-detail')+'"]').addClass('is-indicated is-primary');
-						}
-					});
-					if(savedCourse.length > 0) $('.savedCourse_count').text(savedCourse.length).show();
-					else $('.savedCourse_count').hide();
-					updateTimeList();
-					alert('已將「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課加入您儲存的課程。');
-				}
+
+
+				Swal.fire({
+					title: '是否要儲存「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課程？',
+					text: "先前儲存的課程將會清空！",
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: 'var(--ts-primary-600)',
+					cancelButtonColor: 'var(--ts-gray-500)',
+					confirmButtonText: '確定',
+					cancelButtonText: '取消'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						savedCourse = [];
+						$('[data-detail]').removeClass('is-indicated is-primary is-negative');
+						$('#main tbody tr:visible').each(function( index ) {
+							if($(this).find('td')[3].innerText.includes('必') && !savedCourse.includes($(this).attr('data-detail'))) {
+								savedCourse.push($(this).attr('data-detail'));
+								localStorage.setItem('savedCourse', JSON.stringify(savedCourse));
+								$('[data-detail="'+$(this).attr('data-detail')+'"]').addClass('is-indicated is-primary');
+							}
+						});
+						if(savedCourse.length > 0) $('.savedCourse_count').text(savedCourse.length).show();
+						else $('.savedCourse_count').hide();
+						updateTimeList();
+						Swal.fire({
+							title: '儲存成功', icon: 'success', confirmButtonText: 'OK', confirmButtonColor: 'var(--ts-primary-600)',
+							text: '已將「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課加入您儲存的課程。'
+						})
+					}
+				});
 			})
 
 			function updateTimeList() {
@@ -386,13 +409,24 @@
 			}
 
 			$('#search-term').on('change',function() {
-				if(window.confirm('確定要更換學期嗎？\n先前儲存的課程將會清空！')) {
-					localStorage.setItem('savedCourse', '[]');
-					localStorage.setItem('term', $('#search-term option:selected').val());
-					localStorage.setItem('filterOpen', 'true');
-					location.reload();
-				}
-			})
+				Swal.fire({
+					title: '確定要更換學期嗎？',
+					text: "先前儲存的課程將會清空！",
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: 'var(--ts-primary-600)',
+					cancelButtonColor: 'var(--ts-gray-500)',
+					confirmButtonText: '確定',
+					cancelButtonText: '取消'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						localStorage.setItem('savedCourse', '[]');
+						localStorage.setItem('term', $('#search-term option:selected').val());
+						localStorage.setItem('filterOpen', 'true');
+						location.reload();
+					} else $('#search-term').val(Object.keys(courseData)[0].substring(0,3)+'-'+Object.keys(courseData)[0].substring(3,4));
+				});
+			});
 
 			$('[data-show]').on('click',function(){
 				$('[data-content]').hide();
