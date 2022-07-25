@@ -154,6 +154,7 @@
 			let ctimes = ["0.5","1","2","3","4","4.5","5","6","7","8","8.5","9","10","11","12"];
 			let courseData = {};
 			let savedCourseTime = [];
+			let schoolCourse = {};
 			$.ajax({
 				url: 'https://bot.mcut.edu.tw/course/list.php?term='+getTerm,
 				dataType: 'json',
@@ -189,7 +190,17 @@
 						tr += '</td>';
 						tr += '</tr>';
 						$('#main tbody').append(tr);
+
+						if(v['dept'] == '外文組-四技(日)' && v['type'] == '必修') {
+							if(v['name'].includes('英文(') && v['year'] == 1) schoolCourse['英語_'+v['comment'].substring(0,2)] = v['id'];
+							else if(v['name'].includes('英語聽講(') && v['year'] == 2) schoolCourse['英語聽講_'+v['comment'].substring(0,2)] = v['id'];
+							else if(v['name'].includes('英文實務(') && v['year'] == 2) schoolCourse['英文實務2_'+v['comment']] = v['id'];
+							else if(v['name'].includes('英文實務(') && v['year'] == 4) schoolCourse['英文實務4_'+v['comment']] = v['id'];
+							//else if(v['name'] == '經典教育與社會實踐' && v['year'] == 1) schoolCourse['經典教育與社會實踐_'+v['comment']] = v['time'];
+							else console.log(v);
+						}
 					});
+					console.log(schoolCourse)
 					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士班/碩專班/博士班"></optgroup><optgroup label="進修部"></optgroup>');
 					$.each(select_list, function( k, v ) {
 						if(k.includes('進修部')) _s = '進修部';
@@ -297,7 +308,11 @@
 					$('[data-detail="'+v['id']+'"]').show();
 				})
 
-				if( (!$('#search-dept option:selected').val().includes('系')&&!$('#search-dept option:selected').val().includes('環實務')&&!$('#search-dept option:selected').val().includes('行設專班')) || $('#search-class').val() == '' || $('#main tbody tr:visible').length == 0) $('.save_require').hide();
+				if( (!$('#search-dept option:selected').val().includes('系')&&!$('#search-dept option:selected').val().includes('環實務')&&!$('#search-dept option:selected').val().includes('行設專班')) ||
+					$('#search-class').val() == '' ||
+					$('#main tbody tr:visible').length == 0 ||
+					(($('#search-type option:selected').val() != '必修' && $('#search-type option:selected').val() != ''))
+				) $('.save_require').hide();
 				else $('.save_require').show();
 
 				if($('#main tbody tr:visible').length == 0) $('tfoot').show();
@@ -350,8 +365,6 @@
 			})
 
 			$('.save_require').on('click',function(){
-
-
 				Swal.fire({
 					title: '是否要儲存「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課程？',
 					text: "先前儲存的課程將會清空！",
@@ -368,16 +381,39 @@
 						$('#main tbody tr:visible').each(function( index ) {
 							if($(this).find('td')[3].innerText.includes('必') && !savedCourse.includes($(this).attr('data-detail'))) {
 								savedCourse.push($(this).attr('data-detail'));
-								localStorage.setItem('savedCourse', JSON.stringify(savedCourse));
 								$('[data-detail="'+$(this).attr('data-detail')+'"]').addClass('is-indicated is-primary');
 							}
 						});
+						_sc = '';
+						_t = $('#search-dept option:selected').val();
+						_g = $('#search-class option:selected').val().substring(0,1);
+						_t2 = _t.replace('四技','').replace('系','')
+								.replace('工管','管設').replace('經管','管設').replace('行設專班','管設').replace('工設','管設').replace('視傳','管設')
+								.replace('電機','電機').replace('電子','電機')
+								.replace('化工','環資').replace('環安衛','環資').replace('材工','環資').replace('環實務','環資')
+						_t3 = _t.replace('四技','').replace('系','')
+								.replace('環安衛','環安').replace('行設專班','行設').replace('材工','材料')
+						if(_g == 1) {
+							savedCourse.push(schoolCourse['英語_'+_t2])
+							_sc = '<br>及「英語」';
+						}
+						if(_g == 2) {
+							savedCourse.push(schoolCourse['英語聽講_'+_t2])
+							savedCourse.push(schoolCourse[Object.keys(schoolCourse).filter(x => x.includes('英文實務2') && x.includes(_t3))])
+							_sc = '<br>及「英語聽講、英文實務」';
+						}
+						if(_g == 4) {
+							savedCourse.push(schoolCourse[Object.keys(schoolCourse).filter(x => x.includes('英文實務4') && x.includes(_t3))])
+							_sc = '<br>及「英文實務」';
+						}
+						localStorage.setItem('savedCourse', JSON.stringify(savedCourse));
+
 						if(savedCourse.length > 0) $('.savedCourse_count').text(savedCourse.length).show();
 						else $('.savedCourse_count').hide();
 						updateTimeList();
 						Swal.fire({
 							title: '儲存成功', icon: 'success', confirmButtonText: 'OK', confirmButtonColor: 'var(--ts-primary-600)',
-							text: '已將「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課加入您儲存的課程。'
+							html: '已將「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課'+_sc+'加入儲存的課程。'+( (_g==1 || _g==2) ? '<br><small>由於無法取得分班資料，英語/英語聽講僅能確定時間，分班由選課系統為準。</small>':'' )
 						})
 					}
 				});
