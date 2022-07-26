@@ -195,7 +195,7 @@
 							tr += '<td>';
 							$.each( v['time'], function( k2, t ) {
 								tr += '<span class="time">'+weekText[t[0]];
-								if(t[1].split('~')[0] == t[1].split('~')[1]) tr += t[1].split('~')[0]+' 節</span>';
+								if(t[1].split('~')[0] == t[1].split('~')[1]) tr += '第 '+t[1].split('~')[0]+' 節</span>';
 								else tr += t[1]+' 節</span>';
 							});
 							tr += '</td>';
@@ -360,6 +360,12 @@
 				$('[data-show]').removeClass('is-active');
 				$(this).addClass('is-active');
 			})
+
+			$(document).keyup(function(e) {
+				if(e.key === "Escape") {
+					$('.ts-close').click();
+				}
+			});
 		});
 	</script>
 </head>

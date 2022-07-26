@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>搜尋課程｜明志科大選課小幫手</title>
+	<title>明志科大選課小幫手</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.4/tocas.min.css">
@@ -176,7 +176,7 @@
 						tr += '<td>';
 						$.each( v['time'], function( k2, t ) {
 							tr += '<span class="time">'+weekText[t[0]];
-							if(t[1].split('~')[0] == t[1].split('~')[1]) tr += t[1].split('~')[0]+' 節</span>';
+							if(t[1].split('~')[0] == t[1].split('~')[1]) tr += '第 '+t[1].split('~')[0]+' 節</span>';
 							else tr += t[1]+' 節</span>';
 						});
 						tr += '</td>';
@@ -200,7 +200,7 @@
 							else console.log(v);
 						}
 					});
-					console.log(schoolCourse)
+					//console.log(schoolCourse)
 					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士班/碩專班/博士班"></optgroup><optgroup label="進修部"></optgroup>');
 					$.each(select_list, function( k, v ) {
 						if(k.includes('進修部')) _s = '進修部';
@@ -453,7 +453,7 @@
 
 			$('#search-term').on('change',function() {
 				Swal.fire({
-					title: '確定要更換學期嗎？',
+					title: '確定要更換為「'+$('#search-term option:selected').val()+'」學期嗎？',
 					text: "先前儲存的課程將會清空！",
 					icon: 'warning',
 					showCancelButton: true,
@@ -477,6 +477,12 @@
 				$('[data-show]').removeClass('is-active');
 				$(this).addClass('is-active');
 			})
+
+			$(document).keyup(function(e) {
+				if(e.key === "Escape") {
+					$('.ts-close').click();
+				}
+			});
 		});
 	</script>
 </head>
