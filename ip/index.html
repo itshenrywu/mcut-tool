@@ -11,402 +11,403 @@
 	<link rel="icon" type="image/png" href="../res/logo.png">
 	<link rel="stylesheet" href="tocas.css">
 	<style>
-	body {
-		background: #F8F8F8
-	}
-
-	.ts.top.menu .item {
-		padding-left: 10px !important;
-		padding-right: 10px !important
-	}
-
-	.ts.menu .small.item {
-		padding-left: 0 !important;
-		padding-right: 0 !important
-	}
-
-	.chevron.right.icon,
-	.phone.icon {
-		color: #CCC !important
-	}
-
-	.welcome i,
-	[data-room] i {
-		float: right
-	}
-
-	.ts.center.aligned.header {
-		margin-top: 25px !important;
-		margin-bottom: 5px !important
-	}
-
-	.ts.dropdown > .text + .icon {
-		margin-left: 0.25rem!important
-	}
-
-	.welcome > div {
-		margin: 15px 0
-	}
-
-	#tutorial img {
-		max-width: 100%
-	}
-
-	@media (max-width: 767px) {
-		#tutorial .menu .tab_ {
-			margin-left: 0 !important;
-			margin-right: 0 !important;
+		body {
+			background: #F8F8F8
 		}
-	}
 
-	#tutorial ol {
-		padding-left: 20px;
-	}
-
-	#tutorial em,
-	#tutorial b {
-		color: #000;
-	}
-
-	#tutorial b {
-		font-weight: bold;
-	}
-
-	#tutorial .borderless .item {
-		padding-top: 5px;
-		padding-bottom: 5px;
-	}
-
-	footer {
-		padding: 5px 0;
-		text-align: center;
-		font-size: 90%;
-		color: #666;
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		background: #FFF;
-		z-index: 1000;
-	}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.2/tocas.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-128644546-1"></script>
-<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'UA-128644546-1');
-</script>
-<script>
-	$(function() {
-		var intToText = ["", "一", "二", "三", "四", "五", "六", "七", "八"];
-		var current_building = 1;
-		var current_floor = 1;
-		var ip;
-		var gw;
-		var phone;
-
-		function pad(i) {
-			if (i < 10) return "0" + i;
-			return "" + i;
+		.ts.top.menu .item {
+			padding-left: 10px !important;
+			padding-right: 10px !important
 		}
-		$('[data-building]').on('click', function() {
-			$('.welcome').hide();
-			$('.fixed').show();
-			$('#select-building').text(intToText[$(this).attr('data-building')] + '宿');
-			//if ($(this).attr('data-building') == 7) $('#select-building').text('研究交流會館');
-			if ($(this).attr('data-building') == 8) $('#select-building').text('學人會館');
-			if ($(this).attr('data-building') == 9) {
-				$('#select-building').text('舍監室分機 & 緊急電話');
-				$('.toggleAdmin').hide();
-			} else $('.toggleAdmin').show();
-			current_floor = 1;
-			if ($(this).attr('data-building') >= 1 && $(this).attr('data-building') <= 4 || $(this).attr('data-building') == 7 || $(this).attr('data-building') == 8) {
-				$('[data-floor=1]').show();
-				$('[data-floor=2]').show();
-				$('[data-floor=3]').show();
-				$('[data-floor=4]').hide();
-				$('[data-floor=5]').hide();
-				$('[data-floor=6]').hide();
-				$('[data-floor=7]').hide();
-			} else if ($(this).attr('data-building') == 5) {
-				$('[data-floor=1]').show();
-				$('[data-floor=2]').show();
-				$('[data-floor=3]').show();
-				$('[data-floor=4]').show();
-				$('[data-floor=5]').show();
-				$('[data-floor=6]').hide();
-				$('[data-floor=7]').hide();
-			} else if ($(this).attr('data-building') == 6) {
-				$('[data-floor=1]').hide();
-				$('[data-floor=2]').hide();
-				$('[data-floor=3]').hide();
-				$('[data-floor=4]').show();
-				$('[data-floor=5]').show();
-				$('[data-floor=6]').show();
-				$('[data-floor=7]').show();
-				current_floor = 4;
-			}
-			$('#select-floor').text(current_floor + 'F');
-			current_building = $(this).attr('data-building');
-			$('[data-floor=' + current_floor + ']').click();
-			$('#data').hide();
-			$('#list').show();
-			$('.toggleroom').hide();
-		});
 
-		function appendToList(a, b) {
-			$('#list').append('<a class="item" data-room="' + a + '"><div class="ts very narrow container">' + b + '<i class="chevron right icon"></i></div></a>');
+		.ts.menu .small.item {
+			padding-left: 0 !important;
+			padding-right: 0 !important
 		}
-		$('[data-bf]').on('click', function() {
-			$('[data-building=' + $(this).attr('data-bf').substr(0, 1) + ']').click();
-			$('[data-floor=' + $(this).attr('data-bf').substr(1, 1) + ']').click();
-		});
-		$('[data-floor]').on('click', function() {
-			current_floor = $(this).attr('data-floor');
-			$('#select-floor').text($(this).attr('data-floor') + 'F');
-			$('#list').html('');
-			var bf = parseInt(current_building + "" + current_floor);
-			switch (bf) {
-				case 11:
-					for (i = 1; i <= 13; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					for (i = 15; i <= 17; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					for (i = 20; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 12:
-					for (i = 1; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 13:
-					for (i = 1; i <= 23; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 21:
-					for (i = 1; i <= 19; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 22:
-				case 23:
-					for (i = 1; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 31:
-					for (i = 1; i <= 14; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					appendToList(3116, 116);
-					for (i = 21; i <= 26; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 32:
-				case 33:
-					for (i = 1; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 41:
-					for (i = 1; i <= 7; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					for (i = 9; i <= 20; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					for (i = 22; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 42:
-				case 43:
-					for (i = 1; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 51:
-					for (i = 1; i <= 16; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 52:
-				case 53:
-				case 54:
-				case 55:
-					for (i = 1; i <= 32; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 64:
-				case 65:
-				case 66:
-					for (i = 1; i <= 39; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 67:
-					for (i = 1; i <= 35; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					for (i = 38; i <= 40; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 71:
-					for (i = 1; i <= 18; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 72:
-				case 73:
-					for (i = 1; i <= 21; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 81:
-					for (i = 1; i <= 13; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 82:
-					for (i = 1; i <= 17; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
-				case 83:
-					for (i = 1; i <= 18; i++) appendToList(bf + pad(i), current_floor + pad(i));
-					break;
 
-				case 91:
-					$('#list').append('<div class="item" style="border-bottom:10px solid #F8F8f8!important;padding:.6em 1.14286em"><div class="ts very narrow container" style="text-align:center;font-size:90%">點選以下電話即可直接撥打</div></div><a href="tel:0229089899" class="item"><div class="ts very narrow container">學校總機<div style="float:right;color:#888">2908-9899</div></div></a>');
-					for (i = 1; i <= 6; i++) $('#list').append('<a href="tel:0229089899,433' + i + '" class="item"><div class="ts very narrow container">' + intToText[i] + '宿舍監室分機<div style="float:right;color:#888">#433' + i + '</div></div></a>');
-					$('#list').append('<a href="tel:0229038713" class="item" style="border-top:10px solid #F8F8f8!important"><div class="ts very narrow container">24 小時校安中心緊急聯絡電話<div style="float:right;color:#888">2903-8713</div></div></a>');
-					break;
-			}
-			$('#data').hide();
-			$('#list').show();
-			$('.toggleroom').hide();
-			window.scrollTo(0, 0);
-		});
-		$('#list').on('click', 'a[data-room]', function() {
-			var bf = parseInt(current_building + "" + current_floor);
-			var rm = parseInt($(this).attr('data-room'));
-			rrm = parseInt($(this).attr('data-room').substr(2, 2));
-			ip = '';
-			gw = '';
-			phone = '';
-			if (current_building == 1) {
-				if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
-				else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
-				else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
-				else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
-				else ip = (rrm - 1) * 4 + 1 + 32;
-				gw = '10' + (3 + parseInt($(this).attr('data-room').substr(1, 1)));
+		.chevron.right.icon,
+		.phone.icon {
+			color: #CCC !important
+		}
 
-				phone = 1100 + parseInt(rrm);
-				if (current_floor != 1) phone += (24 * (current_floor - 1));
-				if (rm == 1324) phone = '無';
+		.welcome i,
+		[data-room] i {
+			float: right
+		}
+
+		.ts.center.aligned.header {
+			margin-top: 25px !important;
+			margin-bottom: 5px !important
+		}
+
+		.ts.dropdown > .text + .icon {
+			margin-left: 0.25rem!important
+		}
+
+		.welcome > div {
+			margin: 15px 0
+		}
+
+		#tutorial img {
+			max-width: 100%
+		}
+
+		@media (max-width: 767px) {
+			#tutorial .menu .tab_ {
+				margin-left: 0 !important;
+				margin-right: 0 !important;
 			}
-			if (current_building == 2) {
-				if ($(this).attr('data-room').substr(1, 1) == 1) {
-					if (rrm <= 1) ip = (rrm - 1) * 4 + 1 + 108;
-					else if (rrm <= 6) ip = (rrm - 1) * 4 + 1 - 4;
-					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 4;
-					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 20;
-					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 28;
-					else ip = (rrm - 1) * 4 + 1 + 36;
+		}
+
+		#tutorial ol {
+			padding-left: 20px;
+		}
+
+		#tutorial em,
+		#tutorial b {
+			color: #000;
+		}
+
+		#tutorial b {
+			font-weight: bold;
+		}
+
+		#tutorial .borderless .item {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+
+		footer {
+			padding: 5px 0;
+			text-align: center;
+			font-size: 90%;
+			color: #666;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			background: #FFF;
+			z-index: 1000;
+		}
+	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.2/tocas.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZHZ6VYR7M"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-DZHZ6VYR7M');
+	</script>
+	<script>
+		$(function() {
+			var intToText = ["", "一", "二", "三", "四", "五", "六", "七", "八"];
+			var current_building = 1;
+			var current_floor = 1;
+			var ip;
+			var gw;
+			var phone;
+
+			function pad(i) {
+				if (i < 10) return "0" + i;
+				return "" + i;
+			}
+			$('[data-building]').on('click', function() {
+				$('.welcome').hide();
+				$('.fixed').show();
+				$('#select-building').text(intToText[$(this).attr('data-building')] + '宿');
+				//if ($(this).attr('data-building') == 7) $('#select-building').text('研究交流會館');
+				if ($(this).attr('data-building') == 8) $('#select-building').text('學人會館');
+				if ($(this).attr('data-building') == 9) {
+					$('#select-building').text('舍監室分機 & 緊急電話');
+					$('.toggleAdmin').hide();
+				} else $('.toggleAdmin').show();
+				current_floor = 1;
+				if ($(this).attr('data-building') >= 1 && $(this).attr('data-building') <= 4 || $(this).attr('data-building') == 7 || $(this).attr('data-building') == 8) {
+					$('[data-floor=1]').show();
+					$('[data-floor=2]').show();
+					$('[data-floor=3]').show();
+					$('[data-floor=4]').hide();
+					$('[data-floor=5]').hide();
+					$('[data-floor=6]').hide();
+					$('[data-floor=7]').hide();
+				} else if ($(this).attr('data-building') == 5) {
+					$('[data-floor=1]').show();
+					$('[data-floor=2]').show();
+					$('[data-floor=3]').show();
+					$('[data-floor=4]').show();
+					$('[data-floor=5]').show();
+					$('[data-floor=6]').hide();
+					$('[data-floor=7]').hide();
+				} else if ($(this).attr('data-building') == 6) {
+					$('[data-floor=1]').hide();
+					$('[data-floor=2]').hide();
+					$('[data-floor=3]').hide();
+					$('[data-floor=4]').show();
+					$('[data-floor=5]').show();
+					$('[data-floor=6]').show();
+					$('[data-floor=7]').show();
+					current_floor = 4;
 				}
-				if ($(this).attr('data-room').substr(1, 1) == 2 || $(this).attr('data-room').substr(1, 1) == 3) {
+				$('#select-floor').text(current_floor + 'F');
+				current_building = $(this).attr('data-building');
+				$('[data-floor=' + current_floor + ']').click();
+				$('#data').hide();
+				$('#list').show();
+				$('.toggleroom').hide();
+			});
+
+			function appendToList(a, b) {
+				$('#list').append('<a class="item" data-room="' + a + '"><div class="ts very narrow container">' + b + '<i class="chevron right icon"></i></div></a>');
+			}
+			$('[data-bf]').on('click', function() {
+				$('[data-building=' + $(this).attr('data-bf').substr(0, 1) + ']').click();
+				$('[data-floor=' + $(this).attr('data-bf').substr(1, 1) + ']').click();
+			});
+			$('[data-floor]').on('click', function() {
+				current_floor = $(this).attr('data-floor');
+				$('#select-floor').text($(this).attr('data-floor') + 'F');
+				$('#list').html('');
+				var bf = parseInt(current_building + "" + current_floor);
+				switch (bf) {
+					case 11:
+						for (i = 1; i <= 13; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						for (i = 15; i <= 17; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						for (i = 20; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 12:
+						for (i = 1; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 13:
+						for (i = 1; i <= 23; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 21:
+						for (i = 1; i <= 19; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 22:
+					case 23:
+						for (i = 1; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 31:
+						for (i = 1; i <= 14; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						appendToList(3116, 116);
+						for (i = 21; i <= 26; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 32:
+					case 33:
+						for (i = 1; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 41:
+						for (i = 1; i <= 7; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						for (i = 9; i <= 20; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						for (i = 22; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 42:
+					case 43:
+						for (i = 1; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 51:
+						for (i = 1; i <= 16; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 52:
+					case 53:
+					case 54:
+					case 55:
+						for (i = 1; i <= 32; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 64:
+					case 65:
+					case 66:
+						for (i = 1; i <= 39; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 67:
+						for (i = 1; i <= 35; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						for (i = 38; i <= 40; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 71:
+						for (i = 1; i <= 18; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 72:
+					case 73:
+						for (i = 1; i <= 21; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 81:
+						for (i = 1; i <= 13; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 82:
+						for (i = 1; i <= 17; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+					case 83:
+						for (i = 1; i <= 18; i++) appendToList(bf + pad(i), current_floor + pad(i));
+						break;
+
+					case 91:
+						$('#list').append('<div class="item" style="border-bottom:10px solid #F8F8f8!important;padding:.6em 1.14286em"><div class="ts very narrow container" style="text-align:center;font-size:90%">點選以下電話即可直接撥打</div></div><a href="tel:0229089899" class="item"><div class="ts very narrow container">學校總機<div style="float:right;color:#888">2908-9899</div></div></a>');
+						for (i = 1; i <= 6; i++) $('#list').append('<a href="tel:0229089899,433' + i + '" class="item"><div class="ts very narrow container">' + intToText[i] + '宿舍監室分機<div style="float:right;color:#888">#433' + i + '</div></div></a>');
+						$('#list').append('<a href="tel:0229038713" class="item" style="border-top:10px solid #F8F8f8!important"><div class="ts very narrow container">24 小時校安中心緊急聯絡電話<div style="float:right;color:#888">2903-8713</div></div></a>');
+						break;
+				}
+				$('#data').hide();
+				$('#list').show();
+				$('.toggleroom').hide();
+				window.scrollTo(0, 0);
+			});
+			$('#list').on('click', 'a[data-room]', function() {
+				var bf = parseInt(current_building + "" + current_floor);
+				var rm = parseInt($(this).attr('data-room'));
+				rrm = parseInt($(this).attr('data-room').substr(2, 2));
+				ip = '';
+				gw = '';
+				phone = '';
+				if (current_building == 1) {
 					if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
 					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
 					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
 					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
 					else ip = (rrm - 1) * 4 + 1 + 32;
+					gw = '10' + (3 + parseInt($(this).attr('data-room').substr(1, 1)));
+
+					phone = 1100 + parseInt(rrm);
+					if (current_floor != 1) phone += (24 * (current_floor - 1));
+					if (rm == 1324) phone = '無';
 				}
-				gw = '1' + pad((7 + parseInt($(this).attr('data-room').substr(1, 1))))
+				if (current_building == 2) {
+					if ($(this).attr('data-room').substr(1, 1) == 1) {
+						if (rrm <= 1) ip = (rrm - 1) * 4 + 1 + 108;
+						else if (rrm <= 6) ip = (rrm - 1) * 4 + 1 - 4;
+						else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 4;
+						else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 20;
+						else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 28;
+						else ip = (rrm - 1) * 4 + 1 + 36;
+					}
+					if ($(this).attr('data-room').substr(1, 1) == 2 || $(this).attr('data-room').substr(1, 1) == 3) {
+						if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
+						else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
+						else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
+						else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
+						else ip = (rrm - 1) * 4 + 1 + 32;
+					}
+					gw = '1' + pad((7 + parseInt($(this).attr('data-room').substr(1, 1))))
 
-				phone = 1200 + parseInt(rrm);
-				if (current_floor != 1) phone += (24 * (current_floor - 1)) - 4;
-			}
-			if (current_building == 3) {
-				if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
-				else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
-				else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
-				else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
-				else ip = (rrm - 1) * 4 + 1 + 32;
-				gw = '1' + pad((11 + parseInt($(this).attr('data-room').substr(1, 1))));
+					phone = 1200 + parseInt(rrm);
+					if (current_floor != 1) phone += (24 * (current_floor - 1)) - 4;
+				}
+				if (current_building == 3) {
+					if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
+					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
+					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
+					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
+					else ip = (rrm - 1) * 4 + 1 + 32;
+					gw = '1' + pad((11 + parseInt($(this).attr('data-room').substr(1, 1))));
 
-				phone = 1300 + parseInt(rrm);
-				if (current_floor != 1) phone += (29 * (current_floor - 1)) - 3;
-			}
-			if (current_building == 4) {
-				if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
-				else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
-				else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
-				else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
-				else ip = (rrm - 1) * 4 + 1 + 32;
-				gw = '1' + pad((15 + parseInt($(this).attr('data-room').substr(1, 1))));
+					phone = 1300 + parseInt(rrm);
+					if (current_floor != 1) phone += (29 * (current_floor - 1)) - 3;
+				}
+				if (current_building == 4) {
+					if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
+					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
+					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
+					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
+					else ip = (rrm - 1) * 4 + 1 + 32;
+					gw = '1' + pad((15 + parseInt($(this).attr('data-room').substr(1, 1))));
 
-				phone = 1400 + parseInt(rrm);
-				if (current_floor != 1) phone += (29 * (current_floor - 1)) - 1;
-			}
-			if (current_building == 5) {
-				ip = 2 * ((rrm - 1) % 16 * 4 + 4);
-				gw = '1' + pad((19 + parseInt($(this).attr('data-room').substr(1, 1)) * 2 - 1));
-				if (rrm > 16) gw = '1' + pad((19 + parseInt($(this).attr('data-room').substr(1, 1)) * 2));
-				if ($(this).attr('data-room').substr(1, 1) == 1) gw = 121;
+					phone = 1400 + parseInt(rrm);
+					if (current_floor != 1) phone += (29 * (current_floor - 1)) - 1;
+				}
+				if (current_building == 5) {
+					ip = 2 * ((rrm - 1) % 16 * 4 + 4);
+					gw = '1' + pad((19 + parseInt($(this).attr('data-room').substr(1, 1)) * 2 - 1));
+					if (rrm > 16) gw = '1' + pad((19 + parseInt($(this).attr('data-room').substr(1, 1)) * 2));
+					if ($(this).attr('data-room').substr(1, 1) == 1) gw = 121;
 
-				phone = 1500 + parseInt(rrm);
-				if (current_floor != 1) phone += (32 * (current_floor - 1) - 16);
-			}
-			if (current_building == 6) {
-				ip = (rrm - 1) % 20 * 8 + 8;
-				gw = '1' + pad((25 + parseInt($(this).attr('data-room').substr(1, 1)) * 2 - 1));
-				if (rrm > 20) gw = '1' + pad((25 + parseInt($(this).attr('data-room').substr(1, 1)) * 2));
-				phone = rm;
-			}
-			if (current_building == 7) {
-				ip = (rrm - 1) * 8 + 8;
-				gw = '1' + (47 + parseInt($(this).attr('data-room').substr(1, 1)));
-				phone = 1800 + parseInt(rrm);
-				if (current_floor == 2) phone += 13;
-				if (current_floor == 3) phone += 30;
-			}
+					phone = 1500 + parseInt(rrm);
+					if (current_floor != 1) phone += (32 * (current_floor - 1) - 16);
+				}
+				if (current_building == 6) {
+					ip = (rrm - 1) % 20 * 8 + 8;
+					gw = '1' + pad((25 + parseInt($(this).attr('data-room').substr(1, 1)) * 2 - 1));
+					if (rrm > 20) gw = '1' + pad((25 + parseInt($(this).attr('data-room').substr(1, 1)) * 2));
+					phone = rm;
+				}
+				if (current_building == 7) {
+					ip = (rrm - 1) * 8 + 8;
+					gw = '1' + (47 + parseInt($(this).attr('data-room').substr(1, 1)));
+					phone = 1800 + parseInt(rrm);
+					if (current_floor == 2) phone += 13;
+					if (current_floor == 3) phone += 30;
+				}
 
-			$('#list').hide();
-			$('#data').show();
-			$('.toggleroom').show();
-			$('#topbar-room').text($(this).attr('data-room').substr(1, 3));
-			$('#phone').text(phone);
-			$('#data-inner').html('<div class="ts big center aligned header">\
-					<div class="sub header">IP 位置</div>\
-					192.168.' + gw + '.<span id="ip_d">' + ip + '</span>\
-					</div>\
-					<div class="ts big center aligned header">\
-					<div class="sub header">子網路遮罩</div>\
-					255.255.255.0<br>\
-					<div class="sub header">或輸入首碼長度：<b style="font-weight:bold">24</b>（如果有）</div>\
-					</div>\
-					<div class="ts big center aligned header">\
-					<div class="sub header">預設閘道 / 路由器</div>\
-					192.168.' + gw + '.254\
-					</div>\
-					<div class="ts big center aligned header">\
-					<div class="sub header">慣用 DNS 伺服器</div>\
-					210.240.232.1\
-					</div><br>\
-					<small style="font-size:87%;color:#AAA">本工具僅供參考，實際以學校最新公告為準。</small><br><br>\
-					<a class="ts tiny info basic fluid button toggle-tutorial">網路設定教學</a>\
-					<a class="ts tiny negative basic fluid button" href="https://line.me/R/ti/p/%40221oslxd" style="margin-top:10px">資料有誤？</a>\
-					<br>');
-			$('[data-bed]').removeClass('active');
-			$('[data-bed=1]').addClass('active');
-			$('[data-bulidings]').hide();
-			if (current_building == 6) {
-				$('[data-bulidings="6"]').show();
-			} else if (current_building == 7 || current_building == 8) {
-				$('[data-bulidings="78"]').show();
-			} else {
-				$('[data-bulidings="n6"]').show();
-			}
+				$('#list').hide();
+				$('#data').show();
+				$('.toggleroom').show();
+				$('#topbar-room').text($(this).attr('data-room').substr(1, 3));
+				$('#phone').text(phone);
+				$('#data-inner').html('<div class="ts big center aligned header">\
+						<div class="sub header">IP 位置</div>\
+						192.168.' + gw + '.<span id="ip_d">' + ip + '</span>\
+						</div>\
+						<div class="ts big center aligned header">\
+						<div class="sub header">子網路遮罩</div>\
+						255.255.255.0<br>\
+						<div class="sub header">或輸入首碼長度：<b style="font-weight:bold">24</b>（如果有）</div>\
+						</div>\
+						<div class="ts big center aligned header">\
+						<div class="sub header">預設閘道 / 路由器</div>\
+						192.168.' + gw + '.254\
+						</div>\
+						<div class="ts big center aligned header">\
+						<div class="sub header">慣用 DNS 伺服器</div>\
+						210.240.232.1\
+						</div><br>\
+						<small style="font-size:87%;color:#AAA">本工具僅供參考，實際以學校最新公告為準。</small><br><br>\
+						<a class="ts tiny info basic fluid button toggle-tutorial">網路設定教學</a>\
+						<a class="ts tiny negative basic fluid button" href="https://line.me/R/ti/p/%40221oslxd" style="margin-top:10px">資料有誤？</a>\
+						<br>');
+				$('[data-bed]').removeClass('active');
+				$('[data-bed=1]').addClass('active');
+				$('[data-bulidings]').hide();
+				if (current_building == 6) {
+					$('[data-bulidings="6"]').show();
+				} else if (current_building == 7 || current_building == 8) {
+					$('[data-bulidings="78"]').show();
+				} else {
+					$('[data-bulidings="n6"]').show();
+				}
+			});
+			$('#close-data').on('click', function() {
+				$('.toggleroom').hide();
+				$('#data').hide();
+				$('#list').show();
+			});
+			$('[data-bed]').on('click', function() {
+				$('[data-bed]').removeClass('active');
+				$(this).addClass('active');
+				$('#ip_d').text(parseInt(ip) + parseInt($(this).attr('data-bed') - 1));
+				if (current_building == 5 || current_building == 7 || current_building == 8) $('#ip_d').text(parseInt(ip) + parseInt($(this).attr('data-bed') * 2 - 2));
+			});
+			$('body').on('click', '.toggle-tutorial', function() {
+				$('#tutorial').scrollTop(0);
+				$('#tutorial').toggle();
+			});
+			$('[data-tab]').on('click', function() {
+				$('[data-tab]').removeClass('active');
+				$(this).addClass('active');
+				$('#tutorial ol').hide();
+				$('#tutorial-'+$(this).attr('data-tab')).show();
+				$('#tutorial').scrollTop(0);
+			});
+			if (navigator.share) { $('#share').show(); }
+			$('#share a').on('click', function() {
+				navigator.share({
+					title: '明志科大宿舍分機 / 網路 IP 查詢',
+					text: '',
+					url: 'https://mcut.henrywu.tw/ip',
+				}).then(() => console.log('Successful share'))
+				.catch((error) => console.log('Error sharing', error));
+			});
 		});
-		$('#close-data').on('click', function() {
-			$('.toggleroom').hide();
-			$('#data').hide();
-			$('#list').show();
-		});
-		$('[data-bed]').on('click', function() {
-			$('[data-bed]').removeClass('active');
-			$(this).addClass('active');
-			$('#ip_d').text(parseInt(ip) + parseInt($(this).attr('data-bed') - 1));
-			if (current_building == 5 || current_building == 7 || current_building == 8) $('#ip_d').text(parseInt(ip) + parseInt($(this).attr('data-bed') * 2 - 2));
-		});
-		$('body').on('click', '.toggle-tutorial', function() {
-			$('#tutorial').scrollTop(0);
-			$('#tutorial').toggle();
-		});
-		$('[data-tab]').on('click', function() {
-			$('[data-tab]').removeClass('active');
-			$(this).addClass('active');
-			$('#tutorial ol').hide();
-			$('#tutorial-'+$(this).attr('data-tab')).show();
-			$('#tutorial').scrollTop(0);
-		});
-		if (navigator.share) { $('#share').show(); }
-		$('#share a').on('click', function() {
-			navigator.share({
-				title: '明志科大宿舍分機 / 網路 IP 查詢',
-				text: '',
-				url: 'https://mcut.henrywu.tw/ip',
-			}).then(() => console.log('Successful share'))
-			.catch((error) => console.log('Error sharing', error));
-		});
-	});
-</script>
+	</script>
 </head>
 <body style="padding-top:46px">
 	<div class="ts top fixed borderless large menu" class="welcome">
