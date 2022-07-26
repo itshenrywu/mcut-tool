@@ -231,8 +231,9 @@
 				}
 			});
 			$('body').on('click','.ts-close',function(){
+				viewing = '';
 				$('.ts-modal').removeClass('is-visible');
-				window.history.replaceState('','','?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
+				window.history.replaceState('','','?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val()+'&i='+viewing);
 				localStorage.setItem('searchQuery', '?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
 			})
 			$('body').on('click','[data-detail]',function(){
@@ -318,7 +319,7 @@
 				if($('#main tbody tr:visible').length == 0) $('tfoot').show();
 				else $('tfoot').hide();
 
-				window.history.replaceState('','','?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
+				window.history.replaceState('','','?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val()+'&i='+viewing);
 				localStorage.setItem('searchQuery', '?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
 			}
 			
@@ -599,13 +600,11 @@
 						<tbody></tbody>
 						<tfoot style="display: none;">
 							<tr>
-								<td class="is-center-aligned" colspan="6">
-									<br><br><br><br><br><br>
+								<td class="is-center-aligned is-middle-aligned" colspan="6" style="height:50vh">
 									<div class="ts-header is-icon">
 										<span class="ts-icon is-circle-exclamation-icon"></span>
 										無符合條件的課程
 									</div>
-									<br><br><br><br><br><br>
 								</td>
 							</tr>
 						</tfoot>
@@ -613,8 +612,11 @@
 				</div>
 			</div>
 			<br>
-			<div style="text-align:center;font-size:80%;">Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a></div>
-			<br>
+		</div>
+		<div class="cell">
+			<div style="text-align:center;font-size:80%;padding:5px">
+				Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a>
+			</div>
 		</div>
 	</div>
 	<div class="ts-modal is-big">
