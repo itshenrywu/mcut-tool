@@ -315,6 +315,11 @@
 					$('[data-detail="'+thisid+'"]').show();
 					$('[data-detail-v="'+thisid+'"]').show();
 					$(this).parent().find('.content').text('已儲存課程')
+					Swal.fire({
+						title: '「'+courseData[thisid]['name']+'」已儲存', icon: 'success', toast: true,
+						timer: 3000, timerProgressBar: true,
+						position: 'bottom-start', showConfirmButton: false,
+					})
 				}
 				else {
 					const index = savedCourse.indexOf(thisid);
@@ -322,6 +327,11 @@
 					$('[data-detail="'+thisid+'"]').hide();
 					$('[data-detail-v="'+thisid+'"]').hide();
 					$(this).parent().find('.content').text('儲存課程')
+					Swal.fire({
+						title: '「'+courseData[thisid]['name']+'」已移除', icon: 'success', toast: true,
+						timer: 3000, timerProgressBar: true,
+						position: 'bottom-start', showConfirmButton: false,
+					})
 				}
 				updateCount();
 				localStorage.setItem('savedCourse', JSON.stringify(savedCourse))
@@ -363,7 +373,7 @@
 			$('body').on('click','#clear',function(){
 				Swal.fire({
 					title: '確定要清除所有儲存的課程嗎？',
-					icon: 'warning',
+					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: 'var(--ts-primary-600)',
 					cancelButtonColor: 'var(--ts-gray-500)',

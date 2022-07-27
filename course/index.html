@@ -211,12 +211,12 @@
 						}
 					});
 					//console.log(schoolCourse)
-					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士班/碩專班/博士班"></optgroup><optgroup label="進修部"></optgroup>');
+					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士/碩專/博士/在職專班"></optgroup><optgroup label="進修部"></optgroup>');
 					$.each(select_list, function( k, v ) {
 						if(k.includes('進修部')) _s = '進修部';
 						else if(k.includes('學院')) _s = '學院';
+						else if(k.includes('碩') || k.includes('博') || k.includes('在職專班')) _s = '碩士/碩專/博士/在職專班';
 						else if((k.includes('四技') && k.includes('系')) || k == '環實務' || k == '四技行設專班') _s = '四技日間部';
-						else if(k.includes('碩') || k.includes('博')) _s = '碩士班/碩專班/博士班';
 						else _s = '全校';
 						$('#search-dept optgroup[label="'+_s+'"]').append('<option>'+k+'</option>');
 						select_list[k] = [...select_list[k]].sort(function(a, b) {
@@ -359,11 +359,20 @@
 					savedCourse.push(thisid);
 					$('[data-detail="'+thisid+'"]').addClass('is-indicated is-primary');
 					$(this).parent().find('.content').text('已儲存課程');
+					Swal.fire({
+						title: '「'+courseData[thisid]['name']+'」已儲存', icon: 'success', toast: true,
+						timer: 3000, timerProgressBar: true,
+						position: 'bottom-start', showConfirmButton: false,
+					})
 				} else {
 					const index = savedCourse.indexOf(thisid);
 					if (index > -1) savedCourse.splice(index, 1);
 					$('[data-detail="'+thisid+'"]').removeClass('is-indicated is-primary');
-					$(this).parent().find('.content').text('儲存課程');
+					Swal.fire({
+						title: '「'+courseData[thisid]['name']+'」已移除', icon: 'success', toast: true,
+						timer: 3000, timerProgressBar: true,
+						position: 'bottom-start', showConfirmButton: false,
+					})
 				}
 				if(savedCourse.length > 0) $('.savedCourse_count').text(savedCourse.length).show();
 				else $('.savedCourse_count').hide();
@@ -379,7 +388,7 @@
 				Swal.fire({
 					title: '是否要儲存「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課程？',
 					text: "先前儲存的課程將會清空！",
-					icon: 'warning',
+					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: 'var(--ts-primary-600)',
 					cancelButtonColor: 'var(--ts-gray-500)',
@@ -466,7 +475,7 @@
 				Swal.fire({
 					title: '確定要更換為「'+$('#search-term option:selected').val()+'」學期嗎？',
 					text: "先前儲存的課程將會清空！",
-					icon: 'warning',
+					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: 'var(--ts-primary-600)',
 					cancelButtonColor: 'var(--ts-gray-500)',

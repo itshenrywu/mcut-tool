@@ -184,7 +184,7 @@
 						else {
 							if(res.error == '1') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '帳密有誤，請再試一次', text: '請注意：登入失敗太多次帳號將會被停權。', icon: 'error', confirmButtonText: 'OK'});
 							else if(res.error == '4') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '帳號已被封鎖', text: '帳密輸入錯誤太多次，帳號已被封鎖，請詢問電算中心。', icon: 'error', confirmButtonText: 'OK'});
-							else if(res.error == '5') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '您的密碼已被電算中心重設', text: '請先至明志 App 更改密碼再回來使用。', icon: 'error', confirmButtonText: 'OK'});
+							else if(res.error == '5') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '更改密碼', text: '請先至明志 App 更改密碼再回來使用。', icon: 'error', confirmButtonText: 'OK'});
 							else if(res.error == '9') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '更改密碼', text: '請先至明志 App 更改密碼再回來使用。', icon: 'error', confirmButtonText: 'OK'});
 							else if(res.error == '10') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '目前無修課紀錄。', icon: 'error', confirmButtonText: 'OK'});
 							else Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '登入失敗，請再試一次。', icon: 'error', confirmButtonText: 'OK'});
@@ -227,7 +227,7 @@
 			$('body').on('click','#del',function(){
 				Swal.fire({
 					title: '確定要刪除嗎？',
-					icon: 'warning',
+					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: 'var(--ts-primary-600)',
 					cancelButtonColor: 'var(--ts-gray-500)',
