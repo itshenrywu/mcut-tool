@@ -74,7 +74,7 @@
 			height: 100%!important;
 		}
 
-		@media (max-width: 767px) {
+		@media (max-width: 768px) {
 			thead {
 				display: none;
 			}
@@ -138,6 +138,10 @@
 
 			#search-box {
 				display: none;
+			}
+
+			.ts-grid.is-stackable .column {
+				grid-column: auto/span 8;
 			}
 		}
 	</style>
@@ -541,7 +545,7 @@
 				</div>
 				<div class="ts-header is-icon loader"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入課表...</div>
 				<div class="ts-segment is-secondary loading" id="search-box" style="margin-block-end: 1.6em;">
-					<div class="ts-grid is-doubling is-stackable">
+					<div class="ts-grid is-stackable">
 						<div class="column is-2-wide">
 							<label>學年/學期</label>
 							<div class="ts-select is-fluid">
