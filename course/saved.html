@@ -4,6 +4,13 @@
 	<title>儲存的課程｜明志科大選課小幫手</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+	<meta name="title" content="儲存的課程｜明志科大選課小幫手">
+	<meta name="description" content="全校課表 | 預先排課 | 衝堂檢查 | 課程評價">
+	<meta name="keywords" content="明志科技大學,全校課表,預先排課,衝堂檢查,課程評價">
+	<meta name="language" content="zh-tw">
+	<meta property="og:url" content="https://mcut.henrywu.tw/course/saved">
+	<meta property="og:image" content="https://mcut.henrywu.tw/res/logo.png">
+	<link rel="shortcut icon" type="image/png" href="https://mcut.henrywu.tw/res/logo.png" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.4/tocas.min.css">
 	<style>
 		.ts-table .ts-badge {
@@ -55,9 +62,19 @@
 			width: 20%;
 		}
 
+		#main_timetable.showSat th,
+		#main_timetable.showSat td {
+			width: 16.666%;
+		}
+
 		#main_timetable th:nth-child(7),
 		#main_timetable td:nth-child(7) {
 			display: none !important;
+		}
+
+		#main_timetable.showSat th:nth-child(7),
+		#main_timetable.showSat td:nth-child(7) {
+			display: table-cell !important;
 		}
 
 		#main_timetable th:first-child,
@@ -78,7 +95,6 @@
 			width: 94%;
 			background: var(--ts-gray-200);
 			border-radius: 5px;
-			//border: 2px solid var(--ts-gray-200);
 			margin: 0.3rem 3%;
 			display: flex;
 			justify-content: center;
@@ -90,8 +106,17 @@
 			cursor: pointer;
 		}
 
+		#main_timetable td>div>div {
+			max-height: 95%;
+			overflow: hidden;
+		}
+
 		.ts-accordion .title:before {
 			display: none;
+		}
+
+		body.swal2-height-auto.swal2-height-auto {
+			height: 100%!important;
 		}
 
 		@media (max-width: 767px) {
@@ -202,7 +227,7 @@
 							if(v['type'] == '必修') _type_class = '';
 							else if(v['type'] == '選修') _type_class = 'is-secondary';
 							else _type_class = 'is-outlined';
-							tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+'</span>'+v['credit']+'</td>';
+							tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+( (v['otherinfo'] != null)?'['+v['otherinfo'].substring(0,2)+']':'' )+'</span>'+v['credit']+'</td>';
 							tr += '<td>'+v['teacher']+'</td>';
 							tr += '<td>';
 							tr += '<span>' + v['comment'] + '</span>';
@@ -214,9 +239,9 @@
 							$.each( v['time'], function( k2, t ) {
 								_t = t[1].split('~');
 								_cl = [...ctimes].splice(ctimes.indexOf(_t[0]) , ctimes.indexOf(_t[1])-ctimes.indexOf(_t[0])+1).length;
-								$('#main_timetable tr:nth-child('+(ctimes.indexOf(_t[0])+1)+') td:nth-child('+(parseInt(t[0])+1)+')').append('<div data-detail-v="'+v['id']+'" style="height:'+(_cl*2.8-0.6)+'rem;'+( (v['type'] == '必修')?'background:var(--ts-gray-700);color:var(--ts-gray-50)':'' )+'">'+v['name']+'</div>');
-							});
-							
+								$('#main_timetable tr:nth-child('+(ctimes.indexOf(_t[0])+1)+') td:nth-child('+(parseInt(t[0])+1)+')').append('<div data-detail-v="'+v['id']+'" style="height:'+(_cl*2.8-0.6)+'rem;'+( (v['type'] == '必修')?'background:var(--ts-gray-700);color:var(--ts-gray-50)':'' )+'"><div>'+v['name']+'</div></div>');
+								if(t[0] == 6) $('#main_timetable').addClass('showSat');
+							});	
 						}
 					});
 					$('div.loading').removeClass('loading');
@@ -331,8 +356,6 @@
 				}
 			}
 
-			//$('[data-switch="2"]').click();
-
 			for (var i = 0; i < ctimes.length; i++) {
 				$('#main_timetable tbody').append('<tr><td>'+ctimes[i]+'</td>'+'<td></td>'.repeat(6)+'</tr>') 
 			}
@@ -348,6 +371,7 @@
 					cancelButtonText: '取消'
 				}).then((result) => {
 					if (result.isConfirmed) {
+						$('[data-switch="2"]').click();
 						localStorage.setItem('savedCourse', '[]');
 						location.reload()
 					}
@@ -480,11 +504,13 @@
 						<tbody></tbody>
 						<tfoot style="display: none;">
 							<tr>
-								<td class="is-center-aligned is-middle-aligned" colspan="6" style="height:45vh">
+								<td class="is-center-aligned is-middle-aligned" colspan="6">
+									<br><br>
 									<div class="ts-header is-icon">
 										<span class="ts-icon is-circle-exclamation-icon"></span>
 										目前沒有已儲存的課程
 									</div>
+									<br><br>
 								</td>
 							</tr>
 						</tfoot>
