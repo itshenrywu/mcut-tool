@@ -231,10 +231,7 @@
 					if(params['t']) $('#search-teacher').val(params['t']);
 					$('div.loading').removeClass('loading');
 					$('.loader').remove();
-					if(localStorage.getItem('filterOpen') == 'true') {
-						localStorage.setItem('filterOpen', '');
-						$('#search-box').show();
-					}
+					if(localStorage.getItem('filterOpen') == 'true') $('#search-box').show();
 					updateSearch();
 					updateTimeList();
 				}
@@ -246,7 +243,7 @@
 
 			$('body').on('click','[data-detail]',function(){
 				id = $(this).attr('data-detail');
-				$('#score').attr('src','rate.html?v8&id='+id);
+				$('#score').attr('src','rate.html?v9&id='+id);
 				$('[data-show="detail-content"]').click();
 				$('.ts-modal').addClass('is-visible');
 				basic_data = $('[data-detail="'+id+'"]').find('td');
@@ -389,6 +386,7 @@
 
 			$('.toggle-search').on('click',function(){
 				$('#search-box').toggle();
+				localStorage.setItem('filterOpen', $('#search-box').css("display") != 'none');
 			})
 
 			$('.save_require').on('click',function(){

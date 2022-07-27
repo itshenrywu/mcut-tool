@@ -201,7 +201,7 @@
 			});
 			$('#send').on('click',function(){
 				if($('#comment').val() == '' || $('#comment_1').val() == '' || $('#comment_2').val() == '' || $('#comment_3').val() == '' || $('#comment_4').val() == '') Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '請填寫每個欄位！', icon: 'error', confirmButtonText: 'OK'});
-				else if(star == 0) Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '請給予總評 (1~5 顆星)。', icon: 'error', confirmButtonText: 'OK'});
+				else if(star == 0) Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '請給予推薦指數（1~5 顆星）！', icon: 'error', confirmButtonText: 'OK'});
 				else {
 					$.ajax({
 						url: 'https://bot.mcut.edu.tw/course/score/update.php',
@@ -294,7 +294,7 @@
 						<br><br>
 						<div class="ts-header is-icon">
 							<span class="ts-icon is-circle-exclamation-icon"></span>
-							暫時還沒有評價！
+							暫時還沒有評價
 						</div>
 						<br><br>
 					</div>
@@ -302,38 +302,39 @@
 			</div>
 			<div class="cell">
 				<div id="action" class="ts-content" style="padding-bottom:.8rem">
-					<a href="#new" id="new" style="display:none;text-decoration: none; display: block;">填寫評論...</a>
+					<a href="#new" id="new" style="display:none;text-decoration: none; display: block;">填寫評價...</a>
 					<div style="display:none">
 						<span class="ts-close" style="float:right" onclick="$(this).parent().hide();$('#new').show();$('#rates').show();"></span>
 						<br>
-						<div class="ts-box is-top-indicated">
+						<div class="ts-box">
 							<div class="ts-content">留言皆為匿名，請放心填寫。<br>
-							請客觀描述，勿使用人身攻擊或辱罵字眼。管理員有權視情況移除留言。<br></div>
+							評價內容請客觀描述，請勿使用人身攻擊或辱罵字眼。管理員有權視情況移除留言。<br></div>
+							<div class="symbol"><span class="ts-icon is-circle-info-icon"></span></div>
 						</div>
 						<br>
-						<label>修課時的授課老師</label>
+						<label class="ts-text is-label is-required">修課時的授課老師</label>
 						<div class="ts-input is-fluid">
 							<input rows="2" id="comment_0"></input>
 						</div>
-						<label>點名/上課規定</label>
+						<label class="ts-text is-label is-required">點名/上課規定</label>
 						<div class="ts-input is-fluid">
 							<textarea rows="2" id="comment_1"></textarea>
 						</div>
-						<label>作業報告</label>
+						<label class="ts-text is-label is-required">作業報告</label>
 						<div class="ts-input is-fluid">
 							<textarea rows="2" id="comment_3"></textarea>
 						</div>
-						<label>測驗方式</label>
+						<label class="ts-text is-label is-required">測驗方式</label>
 						<div class="ts-input is-fluid">
 							<textarea rows="2" id="comment_2"></textarea>
 						</div>
-						<label>其他補充</label>
+						<label class="ts-text is-label is-required">其他補充</label>
 						<div class="ts-input is-fluid">
 							<textarea rows="2" id="comment_4"></textarea>
 						</div>
 						<div class="ts-row" style="margin-top:15px">
 							<div class="column">
-								<div class="ts-text is-large">總評：</div>
+								<div class="ts-text is-label is-required" style="line-height: 2;">推薦指數</div>
 							</div>
 							<div class="column is-fluid">
 								<div class="ts-text is-large">
