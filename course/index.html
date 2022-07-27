@@ -153,10 +153,7 @@
 			else link.href = 'https://cdn.jsdelivr.net/npm/@sweetalert2/themes@5.0.11/default/default.min.css';
 			document.head.appendChild(link);
 
-			if(localStorage.getItem('searchQuery') != '' && window.location.search == '') {
-				window.history.replaceState('','',localStorage.getItem('searchQuery'));
-			}
-			const params = new Proxy(new URLSearchParams(window.location.search), {
+			const params = new Proxy(new URLSearchParams(localStorage.getItem('searchQuery') || ''), {
 				get: (searchParams, prop) => searchParams.get(prop),
 			});
 			let savedCourse = JSON.parse(localStorage.getItem('savedCourse') || '[]');
@@ -210,11 +207,8 @@
 							else if(v['name'].includes('英語聽講(') && v['year'] == 2) schoolCourse['英語聽講_'+v['comment'].substring(0,2)] = v['id'];
 							else if(v['name'].includes('英文實務(') && v['year'] == 2) schoolCourse['英文實務2_'+v['comment']] = v['id'];
 							else if(v['name'].includes('英文實務(') && v['year'] == 4) schoolCourse['英文實務4_'+v['comment']] = v['id'];
-							//else if(v['name'] == '經典教育與社會實踐' && v['year'] == 1) schoolCourse['經典教育與社會實踐_'+v['comment']] = v['time'];
-							else console.log(v);
 						}
 					});
-					//console.log(schoolCourse)
 					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士/碩專/博士/在職專班"></optgroup><optgroup label="進修部"></optgroup>');
 					$.each(select_list, function( k, v ) {
 						if(k.includes('進修部')) _s = '進修部';
@@ -230,8 +224,9 @@
 					if(params['i']) $('[data-detail='+params['i']+']').click();
 					if(params['d'] && Object.keys(select_list).includes(params['d'])) $('#search-dept').val(params['d']).trigger('change');
 					if(params['c']) $('#search-class').val(params['c']);
-					if($('#search-class option:selected').val() === undefined) $('#search-class').val('');
+					if($('#search-class').val() === undefined|| $('#search-class').val() === null) $('#search-class').val('');
 					if(params['y']) $('#search-type').val(params['y']);
+					if($('#search-type').val() === undefined || $('#search-type').val() === null) $('#search-type').val('');
 					if(params['n']) $('#search-course').val(params['n']);
 					if(params['t']) $('#search-teacher').val(params['t']);
 					$('div.loading').removeClass('loading');
@@ -247,9 +242,8 @@
 			$('body').on('click','.ts-close',function(){
 				viewing = '';
 				$('.ts-modal').removeClass('is-visible');
-				window.history.replaceState('','','?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val()+'&i='+viewing);
-				localStorage.setItem('searchQuery', '?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
 			})
+
 			$('body').on('click','[data-detail]',function(){
 				id = $(this).attr('data-detail');
 				$('#score').attr('src','rate.html?v8&id='+id);
@@ -274,7 +268,6 @@
 				if(basic_data[5].innerHTML != '') detail += '<tr><td><b>備註</b></td><td>'+basic_data[5].innerHTML+'</td></tr>';
 				detail += '<tr class="loading"><td class="is-center-aligned" colspan="2"><br><div class="ts-header is-icon"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入更多資訊...</div><br></td></tr></tbody></table>';
 				$('.ts-modal .detail-content').html(detail);
-				window.history.replaceState('','','?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val()+'&i='+id);
 
 				viewing = id;
 				$.ajax({
@@ -312,9 +305,12 @@
 				Object.filter = (obj, predicate) =>  Object.fromEntries(Object.entries(obj).filter(predicate));
 				$.each( Object.filter(courseData,function(c,i){
 					if(
-						c[1]['dept'].includes($('#search-dept option:selected').val()) &&
-						(c[1]['year']+c[1]['class']).includes($('#search-class option:selected').val()) && 
-						c[1]['type'].includes($('#search-type option:selected').val()) &&
+						c[1]['dept'].includes($('#search-dept').val()) &&
+						(c[1]['year']+c[1]['class']).includes($('#search-class').val()) && 
+						(
+							c[1]['type'].includes($('#search-type').val()) ||
+							(c[1]['otherinfo'] || '').includes($('#search-type').val())
+						) &&
 						c[1]['name'].includes($('#search-course').val()) &&
 						c[1]['teacher'].includes($('#search-teacher').val()) 
 					) return true;
@@ -323,22 +319,21 @@
 					$('[data-detail="'+v['id']+'"]').show();
 				})
 
-				if( (!$('#search-dept option:selected').val().includes('系')&&!$('#search-dept option:selected').val().includes('環實務')&&!$('#search-dept option:selected').val().includes('行設專班')) ||
+				if( (!$('#search-dept').val().includes('系')&&!$('#search-dept').val().includes('環實務')&&!$('#search-dept').val().includes('行設專班')) ||
 					$('#search-class').val() == '' ||
 					$('#main tbody tr:visible').length == 0 ||
-					(($('#search-type option:selected').val() != '必修' && $('#search-type option:selected').val() != ''))
+					(($('#search-type').val() != '必修' && $('#search-type').val() != ''))
 				) $('.save_require').hide();
 				else $('.save_require').show();
 
 				if($('#main tbody tr:visible').length == 0) $('tfoot').show();
 				else $('tfoot').hide();
-
-				window.history.replaceState('','','?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val()+'&i='+viewing);
-				localStorage.setItem('searchQuery', '?d='+$('#search-dept option:selected').val()+'&c='+$('#search-class option:selected').val()+'&y='+$('#search-type option:selected').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
+				localStorage.setItem('searchQuery', '?d='+$('#search-dept').val()+'&c='+$('#search-class').val()+'&y='+$('#search-type').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
 			}
 			
 			$('body').on('change','#search-dept',function(){
-				_o = $('#search-class').val();
+				_oc = $('#search-class').val();
+				_ot = $('#search-type').val();
 				if(!select_list[$('#search-dept').val()]) {
 					$('#search-class').val('');
 					return;
@@ -347,7 +342,15 @@
 				$.each(select_list[$('#search-dept').val()], function( k, v ) {
 					$('#search-class').append('<option>'+v+'</option>');
 				});
-				if(select_list[$('#search-dept').val()].includes(_o)) $('#search-class').val(_o);
+				if(select_list[$('#search-dept').val()].includes(_oc)) $('#search-class').val(_oc);
+				if($('#search-dept').val() == '通識中心四技') {
+					$('#search-type').parent().parent().find('label').text('修別 / 通識類別');
+					$('#search-type').html('<option value="" selected="selected">不限</option><option>必修</option><option>選修</option><option>重修</option><option>社會科學</option><option>自然科學</option><option>人文藝術</option><option>語言與全球化</option><option>自主學習</option>');
+				} else {
+					$('#search-type').parent().parent().find('label').text('修別');
+					$('#search-type').html('<option value="" selected="selected">不限</option><option>必修</option><option>選修</option><option>重修</option>');
+				}
+				localStorage.setItem('searchQuery', '?d='+$('#search-dept').val()+'&c='+$('#search-class').val()+'&y='+$('#search-type').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
 			});
 
 			$('body').on('change','#search-dept, #search-class, #search-type, #search-course, #search-teacher',function(){
@@ -390,7 +393,7 @@
 
 			$('.save_require').on('click',function(){
 				Swal.fire({
-					title: '是否要儲存「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課程？',
+					title: '是否要儲存「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課程？',
 					text: "先前儲存的課程將會清空！",
 					icon: 'question',
 					showCancelButton: true,
@@ -408,12 +411,11 @@
 								$('[data-detail="'+$(this).attr('data-detail')+'"]').addClass('is-indicated is-primary');
 							}
 						});
-
 						_sc = '';
 						_g = '';
-						if($('#search-term option:selected').val().substring(0,3) >= 110) {
-							_t = $('#search-dept option:selected').val();
-							_g = $('#search-class option:selected').val().substring(0,1);
+						if($('#search-term').val().substring(0,3) >= 110) {
+							_t = $('#search-dept').val();
+							_g = $('#search-class').val().substring(0,1);
 							_t2 = _t.replace('四技','').replace('系','')
 									.replace('工管','管設').replace('經管','管設').replace('行設專班','管設').replace('工設','管設').replace('視傳','管設')
 									.replace('電機','電機').replace('電子','電機')
@@ -435,16 +437,13 @@
 							}
 							savedCourse = $.grep(savedCourse, n => n == 0 || n);
 						}
-
-
 						localStorage.setItem('savedCourse', JSON.stringify(savedCourse));
-
 						if(savedCourse.length > 0) $('.savedCourse_count').text(savedCourse.length).show();
 						else $('.savedCourse_count').hide();
 						updateTimeList();
 						Swal.fire({
 							title: '儲存成功', icon: 'success', confirmButtonText: 'OK', confirmButtonColor: 'var(--ts-primary-600)',
-							html: '已將「'+$('#search-dept option:selected').val()+$('#search-class option:selected').val()+'」的必修課'+_sc+'加入儲存的課程。'+( (_g==1 || _g==2) ? '<br><small>因無「'+['英語','英語聽講'][_g-1]+'」分班資料，目前儲存一堂相同時間的「'+['英語','英語聽講'][_g-1]+'」，分班則以選課系統為準。</small>':'' )
+							html: '已將「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課'+_sc+'加入儲存的課程。'+( (_g==1 || _g==2) ? '<br><small>因無「'+['英語','英語聽講'][_g-1]+'」分班資料，目前儲存一堂相同時間的「'+['英語','英語聽講'][_g-1]+'」，分班則以選課系統為準。</small>':'' )
 						})
 					}
 				});
@@ -461,14 +460,15 @@
 					});
 				});
 				// 檢查衝堂
+				_test = new Date().getTime();
 				$('#main tr').removeClass('is-negative is-indicated');
-				$('#main tbody tr').each(function( index ) {
-					_i = $(this).attr('data-detail');
-					$.each( courseData[$(this).attr('data-detail')]['time'], function( k2, t2 ) {
+				$.each(courseData , function(k,t){
+					$.each( t['time'], function( k2, t2 ) {
 						_t = t2[1].split('~');
 						$.each([...ctimes].splice(ctimes.indexOf(_t[0]) , ctimes.indexOf(_t[1])-ctimes.indexOf(_t[0])+1 ) , function( k3, t3 ) {
 							if(savedCourseTime.includes(parseInt(t2[0]) +','+ t3)) {
-								$('tr[data-detail="'+_i+'"]').addClass('is-negative is-indicated');
+								$('tr[data-detail="'+k+'"]').addClass('is-negative is-indicated');
+								return false;
 							}
 						});
 					});
@@ -477,7 +477,7 @@
 
 			$('#search-term').on('change',function() {
 				Swal.fire({
-					title: '確定要更換為「'+$('#search-term option:selected').val()+'」學期嗎？',
+					title: '確定要更換為「'+$('#search-term').val()+'」學期嗎？',
 					text: "先前儲存的課程將會清空！",
 					icon: 'question',
 					showCancelButton: true,
@@ -488,7 +488,7 @@
 				}).then((result) => {
 					if (result.isConfirmed) {
 						localStorage.setItem('savedCourse', '[]');
-						localStorage.setItem('term', $('#search-term option:selected').val());
+						localStorage.setItem('term', $('#search-term').val());
 						localStorage.setItem('filterOpen', 'true');
 						location.reload();
 					} else $('#search-term').val(Object.keys(courseData)[0].substring(0,3)+'-'+Object.keys(courseData)[0].substring(3,4));
