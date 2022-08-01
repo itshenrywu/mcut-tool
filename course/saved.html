@@ -191,6 +191,13 @@
 			const params = new Proxy(new URLSearchParams(window.location.search), {
 				get: (searchParams, prop) => searchParams.get(prop),
 			});
+			if(window.location.hash) {
+				_import = atob(window.location.hash.replace('#','')).split(',');
+				if(_import.length > 0) {
+					localStorage.setItem('savedCourse',JSON.stringify(_import));
+					window.history.replaceState('','','#');
+				}
+			}
 			let savedCourse = JSON.parse(localStorage.getItem('savedCourse') || '[]');
 			if(savedCourse.length > 0) {
 				$('.navbar .savedCourse_count').text(savedCourse.length).show();
@@ -289,9 +296,9 @@
 							})
 							$('#detail-table').append('<tr><td><b>Office Time</b></td><td>'+res[1].join('<br>')+'</td></tr>');
 
-							timetable = '<div class="ts-accordion" style="border-top: 1px solid var(--ts-gray-300);padding-top: 5px"><div class="title" onclick="$(this).parent().toggleClass(\'is-active\')"><b>教學進度表 (點擊展開)</b></div><div class="content"><div class="ts-box"><div class="ts-content"><table class="ts-table is-sticked is-basic is-dense" id="detail-table"><tbody>';
+							timetable = '<div class="ts-accordion" style="border-top: 1px solid var(--ts-gray-300);padding-top: 5px"><div class="title" onclick="$(this).parent().toggleClass(\'is-active\')"><b>教學進度表 (點擊展開)</b></div><div class="content"><div class="ts-box" style="padding-top:.5rem;padding-bottom:.5rem"><div class="ts-content"><table class="ts-table is-sticked is-basic is-dense" id="detail-table"><tbody>';
 							$.each( res[2], function( k, v ) {
-								timetable += '<tr><td style="width:6rem">'+v[0]+' '+v[1]+'<br>'+v[2]+'</td>\
+								timetable += '<tr><td style="width:7.5rem">'+v[0]+' '+v[1]+' 節<br>'+v[2]+'</td>\
 								<td>'+v[3]+'<small>';
 								if(v[5]) timetable += '<br>'+v[5];
 								if(v[4]) timetable += '<br>作業：'+v[4];
@@ -358,10 +365,10 @@
 				$('.savedCourse_count').text(savedCourse.length);
 
 				if(savedCourse.length > 0) {
-					$('.navbar .savedCourse_count , #clear').show();
+					$('.navbar .savedCourse_count , #clear, #share').show();
 					$('tfoot').hide();
 				} else {
-					$('.navbar .savedCourse_count , #clear').hide();
+					$('.navbar .savedCourse_count , #clear, #share').hide();
 					$('tfoot').show();
 				}
 			}
@@ -372,7 +379,7 @@
 
 			$('body').on('click','#clear',function(){
 				Swal.fire({
-					title: '確定要清除所有儲存的課程嗎？',
+					title: '清除所有儲存的課程？',
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: 'var(--ts-primary-600)',
