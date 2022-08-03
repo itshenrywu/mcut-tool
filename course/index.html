@@ -235,6 +235,7 @@
 					if($('#search-type').val() === undefined || $('#search-type').val() === null) $('#search-type').val('');
 					if(params['n']) $('#search-course').val(params['n']);
 					if(params['t']) $('#search-teacher').val(params['t']);
+					if(params['h'] == 'true') $('#hide_cant_save').prop('checked','checked');
 					$('div.loading').removeClass('loading');
 					$('.loader').remove();
 					if(localStorage.getItem('filterOpen') == 'true') $('#search-box').show();
@@ -335,7 +336,7 @@
 
 				if($('#main tbody tr:visible').length == 0) $('tfoot').show();
 				else $('tfoot').hide();
-				localStorage.setItem('searchQuery', '?d='+$('#search-dept').val()+'&c='+$('#search-class').val()+'&y='+$('#search-type').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
+				localStorage.setItem('searchQuery', '?d='+$('#search-dept').val()+'&c='+$('#search-class').val()+'&y='+$('#search-type').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val()+'&h='+$('#hide_cant_save').prop('checked'));
 			}
 			
 			$('body').on('change','#search-dept',function(){
@@ -357,7 +358,7 @@
 					$('#search-type').parent().parent().find('label').text('修別');
 					$('#search-type').html('<option value="" selected="selected">不限</option><option>必修</option><option>選修</option><option>重修</option>');
 				}
-				localStorage.setItem('searchQuery', '?d='+$('#search-dept').val()+'&c='+$('#search-class').val()+'&y='+$('#search-type').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val());
+				localStorage.setItem('searchQuery', '?d='+$('#search-dept').val()+'&c='+$('#search-class').val()+'&y='+$('#search-type').val()+'&n='+$('#search-course').val()+'&t='+$('#search-teacher').val()+'&h='+$('#hide_cant_save').prop('checked'));
 			});
 
 			$('body').on('change','#search-dept, #search-class, #search-type, #search-course, #search-teacher',function(){
@@ -365,6 +366,10 @@
 			});
 			$('body').on('input','#search-course, #search-teacher',function(){
 				updateSearch();
+			});
+			$('body').on('change','#hide_cant_save',function(){
+				updateSearch();
+				updateTimeList();
 			});
 
 			$('body').on('change','[data-save]',function(){
@@ -477,7 +482,8 @@
 						_t = t2[1].split('~');
 						$.each([...ctimes].splice(ctimes.indexOf(_t[0]) , ctimes.indexOf(_t[1])-ctimes.indexOf(_t[0])+1 ) , function( k3, t3 ) {
 							if(savedCourseTime.includes(parseInt(t2[0]) +','+ t3)) {
-								$('tr[data-detail="'+k+'"]').addClass('is-negative is-indicated');
+								if($('#hide_cant_save').prop('checked')) $('tr[data-detail="'+k+'"]').hide();
+								else $('tr[data-detail="'+k+'"]').addClass('is-negative is-indicated');
 								return false;
 							}
 						});
@@ -602,9 +608,10 @@
 							</div>
 						</div>
 					</div>
+					<label class="ts-checkbox" style="margin-top:20px"><input type="checkbox" id="hide_cant_save" />隱藏衝堂的課程</label>
 					<div class="ts-row">
 						<div class="column is-fluid">
-							<button class="ts-button is-small save_require" style="margin-top:20px">儲存本班必修課</button>
+							<button class="ts-button is-small save_require" style="margin-top:20px;margin-right:20px">儲存本班必修課</button>
 						</div>
 						<div class="column is-fluid is-minimal-only" style="text-align:right">
 							<button class="ts-button is-small is-outlined toggle-search" style="margin-top:20px">完成</button>
