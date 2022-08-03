@@ -482,8 +482,8 @@
 						_t = t2[1].split('~');
 						$.each([...ctimes].splice(ctimes.indexOf(_t[0]) , ctimes.indexOf(_t[1])-ctimes.indexOf(_t[0])+1 ) , function( k3, t3 ) {
 							if(savedCourseTime.includes(parseInt(t2[0]) +','+ t3)) {
-								if($('#hide_cant_save').prop('checked')) $('tr[data-detail="'+k+'"]').hide();
-								else $('tr[data-detail="'+k+'"]').addClass('is-negative is-indicated');
+								$('tr[data-detail="'+k+'"]').addClass('is-negative is-indicated');
+								if($('#hide_cant_save').prop('checked') && ! $('tr[data-detail="'+k+'"]').hasClass('is-primary')) $('tr[data-detail="'+k+'"]').hide();
 								return false;
 							}
 						});
