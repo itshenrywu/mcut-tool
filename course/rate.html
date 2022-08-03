@@ -106,8 +106,19 @@
 									$('[data-score="'+v[1]+'"]').click();
 									$('#send').text('更新');
 								}
-
-								$('#rates').append('\
+								if(v[0][0] == 'Dcard') $('#rates').append('\
+									<div class="ts-conversation '+v[3]+'">\
+										<div class="content">\
+											<div class="bubble">\
+												<div class="text">'+v[0][4]+'</div>\
+											</div>\
+											<div class="ts-meta is-small is-secondary">\
+												<span class="item">此評論擷取自 Dcard</span>\
+											</div>\
+										</div>\
+									</div>\
+								');
+								else $('#rates').append('\
 									<div class="ts-conversation '+v[3]+'">\
 										<div class="content">\
 											<div class="bubble">\
