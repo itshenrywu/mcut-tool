@@ -49,6 +49,33 @@
 		#action .ts-input {
 			margin: 5px 0 15px;
 		}
+
+		.ts-conversation .avatar img {
+			border-radius: 50%;
+		}
+
+		.ts-conversation .bubble {
+			overflow: visible;
+		}
+
+		.ts-conversation .bubble:after {
+			position: absolute;
+			top: 0.5rem;
+			left: -0.6rem;
+			width: 0;
+			height: 0;
+			border-style: solid;
+			border-width: 0.8rem 0.8rem 0.8rem 0;
+			border-color: transparent var(--ts-gray-100) transparent transparent;
+		}
+
+		.ts-conversation.is-self .bubble:after {
+			top: 0.5rem;
+			left: unset;
+			right: -0.6rem;
+			border-width: 0.8rem 0 0.8rem 0.8rem;
+			border-color: transparent transparent transparent #e8fbd1;
+		}
 	</style>
 	<script>
 		$(function(){
@@ -108,12 +135,13 @@
 								}
 								if(v[0][0] == 'Dcard') $('#rates').append('\
 									<div class="ts-conversation '+v[3]+'">\
+										<div class="avatar"><img src="res/'+v[4]+'.png"></div>\
 										<div class="content">\
 											<div class="bubble">\
 												<div class="text">'+v[0][4].replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>\
 											</div>\
 											<div class="ts-meta is-small is-secondary">\
-												<span class="item">擷取自 Dcard</span>\
+												<span class="item">取自 Dcard '+v[0][1]+['','男','女'][v[4]]+'同學留言</span>\
 												<span class="item">'+v[2]+'</span>\
 											</div>\
 										</div>\
@@ -121,6 +149,7 @@
 								');
 								else $('#rates').append('\
 									<div class="ts-conversation '+v[3]+'">\
+									<div class="avatar"><img src="res/0.png"></div>\
 										<div class="content">\
 											<div class="bubble">\
 												<div class="author">授課老師</div>\
