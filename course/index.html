@@ -223,7 +223,7 @@
 					$.each(select_list, function( k, v ) {
 						if(k.includes('進修部')) _s = '進修部';
 						else if(k.includes('學院')) _s = '學院';
-						else if(k.includes('碩') || k.includes('博') || k.includes('在職專班') || k == '人工智慧學程') _s = '碩士/碩專/博士/在職專班/其他';
+						else if(k.includes('碩') || k.includes('博') || k.includes('在職專班') || k.includes('學程')) _s = '碩士/碩專/博士/在職專班/其他';
 						else if((k.includes('四技') && k.includes('系')) || k == '環實務' || k == '四技行設專班') _s = '四技日間部';
 						else _s = '全校';
 						$('#search-dept optgroup[label="'+_s+'"]').append('<option>'+k+'</option>');
