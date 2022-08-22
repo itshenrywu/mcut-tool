@@ -219,12 +219,12 @@
 							else if(v['name'].includes('英文實務(') && v['year'] == 4) schoolCourse['英文實務4_'+v['comment']] = v['id'];
 						}
 					});
-					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士/碩專/博士/在職專班/其他"></optgroup><optgroup label="進修部"></optgroup>');
+					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士/碩專/博士/在職專班"></optgroup><optgroup label="進修部"></optgroup>');
 					$.each(select_list, function( k, v ) {
 						if(k.includes('進修部')) _s = '進修部';
 						else if(k.includes('學院')) _s = '學院';
-						else if(k.includes('碩') || k.includes('博') || k.includes('在職專班') || k.includes('學程')) _s = '碩士/碩專/博士/在職專班/其他';
-						else if((k.includes('四技') && k.includes('系')) || k == '環實務' || k == '四技行設專班') _s = '四技日間部';
+						else if(k.includes('碩') || k.includes('博') || k.includes('在職專班')) _s = '碩士/碩專/博士/在職專班';
+						else if((k.includes('四技') && k.includes('系')) || ['環實務','四技行設專班','人工智慧學程','行銷設計學程','半導體學程'].includes(k)) _s = '四技日間部';
 						else _s = '全校';
 						$('#search-dept optgroup[label="'+_s+'"]').append('<option>'+k+'</option>');
 						select_list[k] = [...select_list[k]].sort(function(a, b) {
@@ -433,28 +433,28 @@
 						_sc = '';
 						_g = '';
 						if($('#search-term').val().substring(0,3) == 111) {
-							_t = $('#search-dept').val().replace('四技','').replace('系','').replace('行設專班','行設');
+							_t = $('#search-dept').val().replace('四技','').replace('系','').replace('行設專班','行設').replace('行銷設計學程','行設');
 							_g = $('#search-class').val().substring(0,1);
 							_t2 = _t.replace('化工','環資').replace('環安衛','環資').replace('材工','環資')
 									.replace('工管','管設').replace('經管','管設').replace('行設','管設').replace('工設','管設').replace('視傳','管設')
-									.replace('電子','電機').replace('化工','環資').replace('環安衛','環資').replace('材工','環資').replace('環實務','環資'); // 大一英文
+									.replace('人工智慧學程','電機').replace('半導體學程','環資').replace('電子','電機').replace('化工','環資').replace('環安衛','環資').replace('材工','環資').replace('環實務','環資'); // 大一英文
 							_t3 = _t.replace('經管','工管').replace('行設','工管').replace('視傳','工管').replace('工設','機械').replace('電子','電機')
 									.replace('化工','環資').replace('環安衛','環資').replace('材工','環資').replace('環實務','環資'); // 大二英文聽講
 							_t4 = _t.replace('化工','環資').replace('環安衛','環資').replace('材工','環資').replace('環實務','環資').replace('行設','電子'); // 大二英文實務
 							_t5 = _t.replace('行設','電子').replace('材工','材料').replace('環安衛','環安')
 							if(_g == 1) {
 								savedCourse.push(schoolCourse['生活與職場英文_'+_t2]);
-								_sc = '<br>及「生活與職場英文」';
-								console.log('s'+schoolCourse['生活與職場英文_'+_t2])
+								_sc = '及「生活與職場英文」';
+								console.log(_t2,schoolCourse['生活與職場英文_'+_t2])
 							}
 							if(_g == 2) {
 								savedCourse.push(schoolCourse['英語聽講_'+_t3])
 								savedCourse.push(schoolCourse[Object.keys(schoolCourse).filter(x => x.includes('英文實務2') && x.includes(_t4))]);
-								_sc = '、<br>「英語聽講」及「英文實務」';
+								_sc = '、「英語聽講」及「英文實務」';
 							}
 							if(_g == 4) {
 								savedCourse.push(schoolCourse[Object.keys(schoolCourse).filter(x => x.includes('英文實務4') && x.includes(_t5))]);
-								_sc = '<br>及「英文實務」';
+								_sc = '及「英文實務」';
 							}
 							savedCourse = $.grep(savedCourse, n => n == 0 || n);
 						}
