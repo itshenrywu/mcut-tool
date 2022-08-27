@@ -188,7 +188,7 @@
 						if(!select_list[v['dept']].includes(v['year']+v['class'])) select_list[v['dept']].push(v['year']+v['class']);
 						courseData[v['id']] = v;
 						courseData[v['id']]['rates'] = res.rates[v['id'].substring(4,10)] || '';
-						if(!v['id'].includes('ALT')) {
+						if(!v['id'].includes('ALT_')) {
 							tr = '<tr data-detail="'+v['id']+'" class="';
 							if(savedCourse.includes(v['id'])) tr += ' is-indicated is-primary';
 							tr += '">';
@@ -466,7 +466,7 @@
 						updateTimeList();
 						Swal.fire({
 							title: '儲存成功', icon: 'success', confirmButtonText: 'OK', confirmButtonColor: 'var(--ts-primary-600)',
-							html: '已將「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課'+_sc+'加入儲存的課程'+( (_g==1 || _g==2) ? '，「'+['生活與職場英文','英語聽講'][_g-1]+'」分班以選課系統為準！':'。' ) + (_g == 2 ? '<br><br>大二體育可自選，請在「開課單位：體育室」查看':'')
+							html: '已將「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課'+_sc+'加入儲存的課程'+( (_g==1 || _g==2) ? '，「'+['生活與職場英文','英語聽講'][_g-1]+'」分班以選課系統為準！':'。' ) + (_g == 2 ? '<br><br>1. 大二體育須自選，請在「開課單位：體育室」查看<br>2. 歷史思辨 或 憲政與法治需自選，請在「開課單位：社會組」查看':'')
 						})
 					}
 				});
@@ -475,6 +475,7 @@
 			function updateTimeList() {
 				savedCourseTime = [];
 				$.each( savedCourse, function( k, t ) {
+					console.log(courseData)
 					$.each( courseData[t]['time'], function( k2, t2 ) {
 						_t = t2[1].split('~');
 						$.each([...ctimes].splice(ctimes.indexOf(_t[0]) , ctimes.indexOf(_t[1])-ctimes.indexOf(_t[0])+1 ) , function( k3, t3 ) {
