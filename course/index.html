@@ -188,35 +188,37 @@
 						if(!select_list[v['dept']].includes(v['year']+v['class'])) select_list[v['dept']].push(v['year']+v['class']);
 						courseData[v['id']] = v;
 						courseData[v['id']]['rates'] = res.rates[v['id'].substring(4,10)] || '';
-						tr = '<tr data-detail="'+v['id']+'" class="';
-						if(savedCourse.includes(v['id'])) tr += ' is-indicated is-primary';
-						tr += '">';
-						tr += '<td>'+v['dept']+v['year']+v['class']+'</td>';
-						tr += '<td>'+v['name']+'</td>';
-						tr += '<td>';
-						$.each( v['time'], function( k2, t ) {
-							tr += '<span class="time">'+weekText[t[0]];
-							if(t[1].split('~')[0] == t[1].split('~')[1]) tr += '第 '+t[1].split('~')[0]+' 節</span>';
-							else tr += t[1]+' 節</span>';
-						});
-						tr += '</td>';
-						if(v['type'] == '必修') _type_class = '';
-						else if(v['type'] == '選修') _type_class = 'is-secondary';
-						else _type_class = 'is-outlined';
-						tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+( (v['otherinfo'] != null)?' | '+v['otherinfo'].substring(0,2):'' )+'</span>'+v['credit']+'</td>';
-						tr += '<td>'+v['teacher']+'</td>';
-						tr += '<td>';
-						if(v['rates'] != '') tr += '<span class="ts-badge is-end-spaced is-small is-dense is-outlined"><span class="ts-icon is-comment-icon"></span> '+v['rates']+' 評價</span> ';
-						tr += '<span class="comment">' + v['comment'] + '</span>';
-						tr += '</td>';
-						tr += '</tr>';
-						$('#main tbody').append(tr);
+						if(!v['id'].includes('ALT')) {
+							tr = '<tr data-detail="'+v['id']+'" class="';
+							if(savedCourse.includes(v['id'])) tr += ' is-indicated is-primary';
+							tr += '">';
+							tr += '<td>'+v['dept']+v['year']+v['class']+'</td>';
+							tr += '<td>'+v['name']+'</td>';
+							tr += '<td>';
+							$.each( v['time'], function( k2, t ) {
+								tr += '<span class="time">'+weekText[t[0]];
+								if(t[1].split('~')[0] == t[1].split('~')[1]) tr += '第 '+t[1].split('~')[0]+' 節</span>';
+								else tr += t[1]+' 節</span>';
+							});
+							tr += '</td>';
+							if(v['type'] == '必修') _type_class = '';
+							else if(v['type'] == '選修') _type_class = 'is-secondary';
+							else _type_class = 'is-outlined';
+							tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+( (v['otherinfo'] != null)?' | '+v['otherinfo'].substring(0,2):'' )+'</span>'+v['credit']+'</td>';
+							tr += '<td>'+v['teacher']+'</td>';
+							tr += '<td>';
+							if(v['rates'] != '') tr += '<span class="ts-badge is-end-spaced is-small is-dense is-outlined"><span class="ts-icon is-comment-icon"></span> '+v['rates']+' 評價</span> ';
+							tr += '<span class="comment">' + v['comment'] + '</span>';
+							tr += '</td>';
+							tr += '</tr>';
+							$('#main tbody').append(tr);
 
-						if(v['dept'] == '外文組-四技(日)' && v['type'] == '必修') {
-							if(v['name'].includes('生活與職場英文(') && v['year'] == 1) schoolCourse['生活與職場英文_'+v['comment'].substring(0,2)] = v['id'];
-							else if(v['name'].includes('英語聽講(') && v['year'] == 2) schoolCourse['英語聽講_'+v['comment'].substring(0,2)] = v['id'];
-							else if(v['name'].includes('英文實務(') && v['year'] == 2) schoolCourse['英文實務2_'+v['comment']] = v['id'];
-							else if(v['name'].includes('英文實務(') && v['year'] == 4) schoolCourse['英文實務4_'+v['comment']] = v['id'];
+							if(v['dept'] == '外文組-四技(日)' && v['type'] == '必修') {
+								if(v['name'].includes('生活與職場英文(') && v['year'] == 1) schoolCourse['生活與職場英文_'+v['comment'].substring(0,2)] = v['id'];
+								else if(v['name'].includes('英語聽講(') && v['year'] == 2) schoolCourse['英語聽講_'+v['comment'].substring(0,2)] = v['id'];
+								else if(v['name'].includes('英文實務(') && v['year'] == 2) schoolCourse['英文實務2_'+v['comment']] = v['id'];
+								else if(v['name'].includes('英文實務(') && v['year'] == 4) schoolCourse['英文實務4_'+v['comment']] = v['id'];
+							}
 						}
 					});
 					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士/碩專/博士/在職專班"></optgroup><optgroup label="進修部"></optgroup>');
