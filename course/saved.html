@@ -180,6 +180,10 @@
 			#main td:nth-child(5):after {
 				content: " 老師";
 			}
+
+			#main tr[data-detail*="ALT"] td:nth-child(5):after {
+				content: "" !important;
+			}
 		}
 	</style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -281,48 +285,54 @@
 				}
 
 				detail = '';
-				detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
+				if(!id.includes('ALT_')) detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
 				<tr><td style="width: 7rem"><b>開課序號</b></td><td>'+id+'</td></tr>\
 				<tr><td><b>開課單位/班級</b></td><td>'+basic_data[0].innerHTML+'</td></tr>\
 				<tr><td><b>上課時間</b></td><td>'+basic_data[2].innerHTML+'</td></tr>\
 				<tr><td><b>修別/學分</b></td><td>'+basic_data[3].innerHTML+' 學分</td></tr>\
 				<tr><td><b>授課老師</b></td><td>'+basic_data[4].innerHTML+'</td></tr>';
+				else detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
+				<tr><td><b>上課時間</b></td><td>'+basic_data[2].innerHTML+'</td></tr>\
+				<tr><td><b>修別/學分</b></td><td>'+basic_data[3].innerHTML+' 學分</td></tr>\
+				<tr><td><b>授課老師</b></td><td>'+basic_data[4].innerHTML+'</td></tr>';
 				if(courseData[id]['comment'] != '') detail += '<tr><td><b>備註</b></td><td>'+courseData[id]['comment']+'</td></tr>';
-				detail += '<tr class="loading"><td class="is-center-aligned" colspan="2"><br><div class="ts-header is-icon"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入更多資訊...</div><br></td></tr></tbody></table>';
+				if(!id.includes('ALT_')) detail += '<tr class="loading"><td class="is-center-aligned" colspan="2"><br><div class="ts-header is-icon"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入更多資訊...</div><br></td></tr>';
+				detail += '</tbody></table>';
 				$('.ts-modal .detail-content').html(detail);
 				viewing = id;
 				$('[data-show="course-comment"]').html('課程評價 <span class="ts-badge is-small is-dense">'+courseData[id]['rates']+'</span>');
-				$.ajax({
-					url: 'https://bot.mcut.edu.tw/course/detail.php?id='+id,
-					dataType: 'json',
-					success: function(res){
-						if(res.length == 3) {
-							$('tr.loading').remove();
-							$.each( res[0], function( k, v ) {
-								$('#detail-table').append('<tr><td><b>'+v[0]+'</b></td><td>'+v[1]+'</td></tr>');
-							})
-							$('#detail-table').append('<tr><td><b>Office Time</b></td><td><div class="ts-list is-unordered"><div class="item">'+res[1].join('</div><div class="item">')+'</div></div></td></tr>');
+				if(!id.includes('ALT_')) {
+					$.ajax({
+						url: 'https://bot.mcut.edu.tw/course/detail.php?id='+id,
+						dataType: 'json',
+						success: function(res){
+							if(res.length == 3) {
+								$('tr.loading').remove();
+								$.each( res[0], function( k, v ) {
+									$('#detail-table').append('<tr><td><b>'+v[0]+'</b></td><td>'+v[1]+'</td></tr>');
+								})
+								$('#detail-table').append('<tr><td><b>Office Time</b></td><td><div class="ts-list is-unordered"><div class="item">'+res[1].join('</div><div class="item">')+'</div></div></td></tr>');
 
-							timetable = '<div class="ts-accordion" style="border-top: 1px solid var(--ts-gray-300);padding-top: 5px"><div class="title" onclick="$(this).parent().toggleClass(\'is-active\')"><b>教學進度表 (點擊展開)</b></div><div class="content"><div class="ts-box"><div class="ts-content" style="padding-top:.5rem;padding-bottom:.5rem"><table class="ts-table is-sticked is-basic is-dense" id="detail-table"><tbody>';
-							$.each( res[2], function( k, v ) {
-								timetable += '<tr><td style="width:7.5rem">'+v[0]+' ';
-								if(v[1].split('~')[0] == v[1].split('~')[1]) timetable += '第 '+v[1].split('~')[0];
-								else timetable += v[1];
-								timetable += ' 節<br>'+v[2]+'</td>\
-								<td>'+v[3]+'<small>';
-								if(v[5]) timetable += '<br>'+v[5];
-								if(v[4]) timetable += '<br>作業：'+v[4];
-								if(v[6]) timetable += '<br>備註：'+v[6];
-								timetable += '</small></td></tr>';
-							})
-							timetable += '</tbody></table></div></div>';
+								timetable = '<div class="ts-accordion" style="border-top: 1px solid var(--ts-gray-300);padding-top: 5px"><div class="title" onclick="$(this).parent().toggleClass(\'is-active\')"><b>教學進度表 (點擊展開)</b></div><div class="content"><div class="ts-box"><div class="ts-content" style="padding-top:.5rem;padding-bottom:.5rem"><table class="ts-table is-sticked is-basic is-dense" id="detail-table"><tbody>';
+								$.each( res[2], function( k, v ) {
+									timetable += '<tr><td style="width:7.5rem">'+v[0]+' ';
+									if(v[1].split('~')[0] == v[1].split('~')[1]) timetable += '第 '+v[1].split('~')[0];
+									else timetable += v[1];
+									timetable += ' 節<br>'+v[2]+'</td>\
+									<td>'+v[3]+'<small>';
+									if(v[5]) timetable += '<br>'+v[5];
+									if(v[4]) timetable += '<br>作業：'+v[4];
+									if(v[6]) timetable += '<br>備註：'+v[6];
+									timetable += '</small></td></tr>';
+								})
+								timetable += '</tbody></table></div></div>';
 
-							$('.ts-modal .detail-content').append(timetable);
+								$('.ts-modal .detail-content').append(timetable);
 
-						} else $('tr.loading td').html('<br><div class="ts-header is-icon"><span class="ts-icon is-circle-exclamation-icon"></span>授課老師未填寫課程資料！</div><br>');
-					}
-				});
-				$(this).attr('data-detail');
+							} else $('tr.loading td').html('<br><div class="ts-header is-icon"><span class="ts-icon is-circle-exclamation-icon"></span>授課老師未填寫課程資料！</div><br>');
+						}
+					});
+				}
 			})
 
 			$('body').on('change','[data-save]',function(){

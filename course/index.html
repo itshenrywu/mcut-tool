@@ -144,6 +144,11 @@
 				content: " 老師";
 			}
 
+			#main tr[data-detail*="ALT"] td:nth-child(5):after {
+				content: "" !important;
+			}
+
+
 			#search-box {
 				display: none;
 			}
@@ -188,7 +193,7 @@
 						if(!select_list[v['dept']].includes(v['year']+v['class'])) select_list[v['dept']].push(v['year']+v['class']);
 						courseData[v['id']] = v;
 						courseData[v['id']]['rates'] = res.rates[v['id'].substring(4,10)] || '';
-						if(!v['id'].includes('ALT_')) {
+						//if(!v['id'].includes('ALT_')) {
 							tr = '<tr data-detail="'+v['id']+'" class="';
 							if(savedCourse.includes(v['id'])) tr += ' is-indicated is-primary';
 							tr += '">';
@@ -219,7 +224,7 @@
 								else if(v['name'].includes('英文實務(') && v['year'] == 2) schoolCourse['英文實務2_'+v['comment']] = v['id'];
 								else if(v['name'].includes('英文實務(') && v['year'] == 4) schoolCourse['英文實務4_'+v['comment']] = v['id'];
 							}
-						}
+						//}
 					});
 					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士/碩專/博士/在職專班"></optgroup><optgroup label="進修部"></optgroup>');
 					$.each(select_list, function( k, v ) {
@@ -269,49 +274,54 @@
 				}
 
 				detail = '';
-				detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
+				if(!id.includes('ALT_')) detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
 				<tr><td style="width: 7rem"><b>開課序號</b></td><td>'+id+'</td></tr>\
 				<tr><td><b>開課單位/班級</b></td><td>'+basic_data[0].innerHTML+'</td></tr>\
 				<tr><td><b>上課時間</b></td><td>'+basic_data[2].innerHTML+'</td></tr>\
 				<tr><td><b>修別/學分</b></td><td>'+basic_data[3].innerHTML+' 學分</td></tr>\
 				<tr><td><b>授課老師</b></td><td>'+basic_data[4].innerHTML+'</td></tr>';
+				else detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
+				<tr><td><b>上課時間</b></td><td>'+basic_data[2].innerHTML+'</td></tr>\
+				<tr><td><b>修別/學分</b></td><td>'+basic_data[3].innerHTML+' 學分</td></tr>\
+				<tr><td><b>授課老師</b></td><td>'+basic_data[4].innerHTML+'</td></tr>';
 				if(courseData[id]['comment'] != '') detail += '<tr><td><b>備註</b></td><td>'+courseData[id]['comment']+'</td></tr>';
-				detail += '<tr class="loading"><td class="is-center-aligned" colspan="2"><br><div class="ts-header is-icon"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入更多資訊...</div><br></td></tr></tbody></table>';
+				if(!id.includes('ALT_')) detail += '<tr class="loading"><td class="is-center-aligned" colspan="2"><br><div class="ts-header is-icon"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入更多資訊...</div><br></td></tr></tbody></table>';
 				$('.ts-modal .detail-content').html(detail);
 
 				viewing = id;
 				$('[data-show="course-comment"]').html('課程評價 <span class="ts-badge is-small is-dense">'+courseData[id]['rates']+'</span>');
-				$.ajax({
-					url: 'https://bot.mcut.edu.tw/course/detail.php?id='+id,
-					dataType: 'json',
-					success: function(res){
-						if(res.length == 3) {
-							$('tr.loading').remove();
-							$.each( res[0], function( k, v ) {
-								$('#detail-table').append('<tr><td><b>'+v[0]+'</b></td><td>'+v[1]+'</td></tr>');
-							})
-							$('#detail-table').append('<tr><td><b>Office Time</b></td><td><div class="ts-list is-unordered"><div class="item">'+res[1].join('</div><div class="item">')+'</div></div></td></tr>');
+				if(!id.includes('ALT_')) {
+					$.ajax({
+						url: 'https://bot.mcut.edu.tw/course/detail.php?id='+id,
+						dataType: 'json',
+						success: function(res){
+							if(res.length == 3) {
+								$('tr.loading').remove();
+								$.each( res[0], function( k, v ) {
+									$('#detail-table').append('<tr><td><b>'+v[0]+'</b></td><td>'+v[1]+'</td></tr>');
+								})
+								$('#detail-table').append('<tr><td><b>Office Time</b></td><td><div class="ts-list is-unordered"><div class="item">'+res[1].join('</div><div class="item">')+'</div></div></td></tr>');
 
-							timetable = '<div class="ts-accordion" style="border-top: 1px solid var(--ts-gray-300);padding-top: 5px"><div class="title" onclick="$(this).parent().toggleClass(\'is-active\')"><b>教學進度表 (點擊展開)</b></div><div class="content"><div class="ts-box"><div class="ts-content" style="padding-top:.5rem;padding-bottom:.5rem"><table class="ts-table is-sticked is-basic is-dense" id="detail-table"><tbody>';
-							$.each( res[2], function( k, v ) {
-								timetable += '<tr><td style="width:7.5rem">'+v[0]+' ';
-								if(v[1].split('~')[0] == v[1].split('~')[1]) timetable += '第 '+v[1].split('~')[0];
-								else timetable += v[1];
-								timetable += ' 節<br>'+v[2]+'</td>\
-								<td>'+v[3]+'<small>';
-								if(v[5]) timetable += '<br>'+v[5];
-								if(v[4]) timetable += '<br>作業：'+v[4];
-								if(v[6]) timetable += '<br>備註：'+v[6];
-								timetable += '</small></td></tr></div></div>';
-							})
-							timetable += '</tbody></table></div></div>';
+								timetable = '<div class="ts-accordion" style="border-top: 1px solid var(--ts-gray-300);padding-top: 5px"><div class="title" onclick="$(this).parent().toggleClass(\'is-active\')"><b>教學進度表 (點擊展開)</b></div><div class="content"><div class="ts-box"><div class="ts-content" style="padding-top:.5rem;padding-bottom:.5rem"><table class="ts-table is-sticked is-basic is-dense" id="detail-table"><tbody>';
+								$.each( res[2], function( k, v ) {
+									timetable += '<tr><td style="width:7.5rem">'+v[0]+' ';
+									if(v[1].split('~')[0] == v[1].split('~')[1]) timetable += '第 '+v[1].split('~')[0];
+									else timetable += v[1];
+									timetable += ' 節<br>'+v[2]+'</td>\
+									<td>'+v[3]+'<small>';
+									if(v[5]) timetable += '<br>'+v[5];
+									if(v[4]) timetable += '<br>作業：'+v[4];
+									if(v[6]) timetable += '<br>備註：'+v[6];
+									timetable += '</small></td></tr></div></div>';
+								})
+								timetable += '</tbody></table></div></div>';
 
-							$('.ts-modal .detail-content').append(timetable);
+								$('.ts-modal .detail-content').append(timetable);
 
-						} else $('tr.loading td').html('<br><div class="ts-header is-icon"><span class="ts-icon is-circle-exclamation-icon"></span>授課老師未填寫課程資料！</div><br>');
-					}
-				});
-				$(this).attr('data-detail');
+							} else $('tr.loading td').html('<br><div class="ts-header is-icon"><span class="ts-icon is-circle-exclamation-icon"></span>授課老師未填寫課程資料！</div><br>');
+						}
+					});
+				}
 			})
 
 			function updateSearch() {
@@ -322,14 +332,20 @@
 				Object.filter = (obj, predicate) =>  Object.fromEntries(Object.entries(obj).filter(predicate));
 				$.each( Object.filter(courseData,function(c,i){
 					if(
-						c[1]['dept'].includes($('#search-dept').val()) &&
-						(c[1]['year']+c[1]['class']).includes($('#search-class').val()) && 
 						(
 							c[1]['type'].includes($('#search-type').val()) ||
 							(c[1]['otherinfo'] || '').includes($('#search-type').val())
 						) &&
 						c[1]['name'].includes($('#search-course').val()) &&
-						c[1]['teacher'].includes($('#search-teacher').val()) 
+						c[1]['teacher'].includes($('#search-teacher').val()) &&
+						(
+							( c[1]['alt_for'] && c[1]['alt_for'].includes($('#search-dept').val()+$('#search-class').val()) ) ||
+							(!
+								c[1]['alt_for'] &&
+								c[1]['dept'].includes($('#search-dept').val()) &&
+								(c[1]['year']+c[1]['class']).includes($('#search-class').val())
+							)
+						)
 					) return true;
 					return false;
 				}), function( k, v ) {
@@ -424,6 +440,8 @@
 					cancelButtonText: '取消'
 				}).then((result) => {
 					if (result.isConfirmed) {
+						$('#search-course').val('');
+						$('#search-teacher').val('').trigger('change');
 						savedCourse = [];
 						$('[data-detail]').removeClass('is-indicated is-primary is-negative');
 						$('#main tbody tr:visible').each(function( index ) {
@@ -432,41 +450,22 @@
 								$('[data-detail="'+$(this).attr('data-detail')+'"]').addClass('is-indicated is-primary');
 							}
 						});
-						_sc = '';
-						_g = '';
-						if($('#search-term').val().substring(0,3) == 111) {
-							_t = $('#search-dept').val().replace('四技','').replace('系','').replace('行設專班','行設').replace('行銷設計學程','行設');
-							_g = $('#search-class').val().substring(0,1);
-							_t2 = _t.replace('化工','環資').replace('環安衛','環資').replace('材工','環資')
-									.replace('工管','管設').replace('經管','管設').replace('行設','管設').replace('工設','管設').replace('視傳','管設')
-									.replace('人工智慧學程','電機').replace('半導體學程','環資').replace('電子','電機').replace('化工','環資').replace('環安衛','環資').replace('材工','環資').replace('環實務','環資'); // 大一英文
-							_t3 = _t.replace('經管','工管').replace('行設','工管').replace('視傳','工管').replace('工設','機械').replace('電子','電機')
-									.replace('化工','環資').replace('環安衛','環資').replace('材工','環資').replace('環實務','環資'); // 大二英文聽講
-							_t4 = _t.replace('化工','環資').replace('環安衛','環資').replace('材工','環資').replace('環實務','環資').replace('行設','電子'); // 大二英文實務
-							_t5 = _t.replace('行設','電子').replace('材工','材料').replace('環安衛','環安')
-							if(_g == 1) {
-								savedCourse.push(schoolCourse['生活與職場英文_'+_t2]);
-								_sc = '及「生活與職場英文」';
-								console.log(_t2,schoolCourse['生活與職場英文_'+_t2])
-							}
-							if(_g == 2) {
-								savedCourse.push(schoolCourse['英語聽講_'+_t3])
-								savedCourse.push(schoolCourse[Object.keys(schoolCourse).filter(x => x.includes('英文實務2') && x.includes(_t4))]);
-								_sc = '、「英語聽講」及「英文實務」';
-							}
-							if(_g == 4) {
-								savedCourse.push(schoolCourse[Object.keys(schoolCourse).filter(x => x.includes('英文實務4') && x.includes(_t5))]);
-								_sc = '及「英文實務」';
-							}
-							savedCourse = $.grep(savedCourse, n => n == 0 || n);
-						}
 						localStorage.setItem('savedCourse', JSON.stringify(savedCourse));
 						if(savedCourse.length > 0) $('.savedCourse_count').text(savedCourse.length).show();
 						else $('.savedCourse_count').hide();
 						updateTimeList();
 						Swal.fire({
 							title: '儲存成功', icon: 'success', confirmButtonText: 'OK', confirmButtonColor: 'var(--ts-primary-600)',
-							html: '已將「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課'+_sc+'加入儲存的課程'+( (_g==1 || _g==2) ? '，「'+['生活與職場英文','英語聽講'][_g-1]+'」分班以選課系統為準！':'。' ) + (_g == 2 ? '<br><br>1. 大二體育須自選，請在「開課單位：體育室」查看<br>2. 歷史思辨 或 憲政與法治需自選，請在「開課單位：社會組」查看':'')
+							html: '已儲存「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課'+ ( ($('#search-class').val().substring(0,1) == 2 && $('#search-term').val().substring(0,3) == 111) ? '<br>大二體育課須自選，請自行查看':''),
+							showCancelButton: ($('#search-class').val().substring(0,1) == 2 && $('#search-term').val().substring(0,3) == 111),
+							cancelButtonText: '查看體育課可選課程'
+						}).then((result) => {
+							if (!result.isConfirmed) {
+								$('#search-dept').val('體育室-四技(日)');
+								$('#search-course').val('');
+								$('#search-teacher').val('');
+								$('#search-class').val('2甲').trigger('change');
+							}
 						})
 					}
 				});
@@ -475,7 +474,6 @@
 			function updateTimeList() {
 				savedCourseTime = [];
 				$.each( savedCourse, function( k, t ) {
-					console.log(courseData)
 					$.each( courseData[t]['time'], function( k2, t2 ) {
 						_t = t2[1].split('~');
 						$.each([...ctimes].splice(ctimes.indexOf(_t[0]) , ctimes.indexOf(_t[1])-ctimes.indexOf(_t[0])+1 ) , function( k3, t3 ) {
