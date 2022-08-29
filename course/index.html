@@ -186,7 +186,7 @@
 					$.each( res.term, function( k, v ) {
 						$('#search-term').append('<option value="'+v+'">'+v+( (v.includes('-3') || v.includes('-4')) ? ' (暑修)':'' )+'</option>');
 					});
-					if(getTerm) $('#search-term').val(getTerm);
+					$('#search-term').val(res.course[0].id.substring(0,3)+'-'+res.course[0].id.substring(3,4));
 					select_list = {};
 					$.each( res.course, function( k, v ) {
 						if(!select_list[v['dept']]) select_list[v['dept']] = [];
