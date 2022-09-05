@@ -208,6 +208,11 @@
 				background: #AAA;
 				padding: 0.1rem 0.3rem;
 			}
+
+			.ts-notice {
+				flex-direction: column;
+				gap: .25rem;
+			}
 		}
 	</style>
 	<script>
@@ -245,9 +250,9 @@
 						$('main').html('').show();
 
 						$.each( res.data, function( k, v ) { // 第一大項
-							$('main').append('<div class="ts-box"><div class="ts-content is-tertiary is-dense" data-open="'+k+'">'+v.name+'<span class="ts-icon is-angle-down-icon"></span></div><div data-drawer="'+k+'"></div></div><br>');
+							$('main').append('<div class="ts-box"><div class="ts-content is-tertiary is-dense" data-open_="'+k+'">'+v.name+'</div><div data-drawer="'+k+'"></div></div><br>');
 							$.each( v.data, function( k2, v2 ) {  // 第二大項
-								$('[data-drawer="'+k+'"]').append('<div class="ts-content is-secondary is-dense" data-open="'+k+'-'+k2+'">・ '+v2.name+'<span class="ts-icon is-angle-down-icon"></span></div><div data-drawer="'+k+'-'+k2+'"><table class="ts-table is-dense"><tbody></tbody></table></div>');
+								$('[data-drawer="'+k+'"]').append('<div class="ts-content is-secondary is-dense" data-open="'+k+'-'+k2+'">・ '+v2.name+'<span class="ts-icon is-angle-down-icon"></span></div><div data-drawer="'+k+'-'+k2+'"><table class="ts-table is-dense"><tbody></tbody></table></div>').show();
 								$.each( v2.data, function( k3, d ) {
 									_open = '';
 									if(d.id.startsWith('AA')) _open = '<td>'+d.credit+' 學分</td><td><span class="ts-text is-description">外校開課</span></td>';
@@ -268,13 +273,13 @@
 							})
 						});
 						if(res.remark.length > 0) {
-							$('main').append('<div class="ts-box" id="remark"><div class="ts-content is-tertiary is-dense">說明</div></div><br>');
+							$('main').append('<div class="ts-notice is-outlined" id="remark"><div class="title">說明</div></div><br>');
 							$.each( res.remark, function( k, v ) {
-								$('#remark').append('<div class="ts-content is-dense">'+v+'</div>');
+								$('#remark').append('<div class="content">'+v+'</div>');
 							})
 						}
 						if(res.contact) {
-							$('main').append('<div class="ts-box" id="remark"><div class="ts-content is-tertiary is-dense">學分學程承辦人</div><div class="ts-content is-dense">'+res.contact[0]+' '+res.contact[1]+'<br>(02) 2908-9899 #'+res.contact[2]+'</div></div><br>');
+							$('main').append('<div class="ts-notice is-outlined"><div class="title">承辦人</div><div class="content">'+res.contact[0]+' '+res.contact[1]+'<br>(02) 2908-9899 #'+res.contact[2]+'</div></div>');
 						}
 					}
 				});
