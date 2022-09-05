@@ -5,8 +5,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
 	<meta name="title" content="儲存的課程｜明志科大選課小幫手">
-	<meta name="description" content="全校課表 | 預先排課 | 衝堂檢查 | 課程評價">
-	<meta name="keywords" content="明志科技大學,全校課表,預先排課,衝堂檢查,課程評價">
+	<meta name="description" content="全校課表 | 預先排課 | 衝堂檢查 | 課程評價 | ">
+	<meta name="keywords" content="明志科技大學,全校課表,預先排課,衝堂檢查,課程評價,課程總表">
 	<meta name="language" content="zh-tw">
 	<meta property="og:url" content="https://mcut.henrywu.tw/course/saved">
 	<meta property="og:image" content="https://mcut.henrywu.tw/res/logo.png">
@@ -187,6 +187,33 @@
 
 			.ts-content {
 				padding-right: .5rem;
+			}
+
+			.ts-container.is-navbar {
+				padding: 0;
+			}
+
+			.ts-tab .item {
+				flex-direction: column;
+				align-items: center;
+				gap: .3rem;
+				padding: .3rem 0 .1rem;
+				width: 33.33%;
+				font-size: 13px;
+			}
+
+			.ts-tab .item .ts-icon {
+				font-size: 1.2rem;
+				line-height: 1.2rem;
+			}
+
+			.ts-badge.is-dense.savedCourse_count {
+				font-size: 9px;
+				position: absolute;
+				left: 55%;
+				top: -10px;
+				background: #AAA;
+				padding: 0.1rem 0.3rem;
 			}
 		}
 	</style>
@@ -439,19 +466,19 @@
 		<div class="cell">
 			<div class="ts-container">
 				<div class="navbar">
-					<div class="row">
-						<div class="column">
-							<div class="ts-tab is-center-aligned">
-								<a href="./" class="item">
-									<span class="ts-icon is-magnifying-glass-icon"></span>
-									<div class="label">搜尋課程</div>
-								</a>
-								<a href="" class="item is-active">
-									<span class="ts-icon is-star-icon"></span>
-									<div class="label">儲存的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
-								</a>
-							</div>
-						</div>
+					<div class="ts-tab is-center-aligned">
+						<a href="./" class="item">
+							<span class="ts-icon is-magnifying-glass-icon"></span>
+							<div class="label">搜尋課程</div>
+						</a>
+						<a href="" class="item is-active">
+							<span class="ts-icon is-star-icon"></span>
+							<div class="label">儲存的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
+						</a>
+						<a href="./rule" class="item">
+							<span class="ts-icon is-file-lines-icon"></span>
+							<div class="label">課程總表</span></div>
+						</a>
 					</div>
 				</div>
 			</div>
