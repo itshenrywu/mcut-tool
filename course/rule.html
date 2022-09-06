@@ -250,9 +250,9 @@
 						$('main').html('').show();
 
 						$.each( res.data, function( k, v ) { // 第一大項
-							$('main').append('<div class="ts-box"><div class="ts-content is-tertiary is-dense" data-open_="'+k+'">'+v.name+'</div><div data-drawer="'+k+'"></div></div><br>');
+							$('main').append('<div class="ts-box"><div class="ts-content is-tertiary is-dense" data-open_="'+k+'">'+v.name.replace(/([\x00-\xFF]+)(?=[^\x00-\xff])/g, " $1 ")+'</div><div data-drawer="'+k+'"></div></div><br>');
 							$.each( v.data, function( k2, v2 ) {  // 第二大項
-								$('[data-drawer="'+k+'"]').append('<div class="ts-content is-secondary is-dense" data-open="'+k+'-'+k2+'">・ '+v2.name+'<span class="ts-icon is-angle-down-icon"></span></div><div data-drawer="'+k+'-'+k2+'"><table class="ts-table is-dense"><tbody></tbody></table></div>').show();
+								$('[data-drawer="'+k+'"]').append('<div class="ts-content is-secondary is-dense" data-open="'+k+'-'+k2+'">・ '+v2.name.replace(/([\x00-\xFF]+)(?=[^\x00-\xff])/g, " $1 ")+'<span class="ts-icon is-angle-down-icon"></span></div><div data-drawer="'+k+'-'+k2+'"><table class="ts-table is-dense"><tbody></tbody></table></div>').show();
 								$.each( v2.data, function( k3, d ) {
 									_open = '';
 									if(d.id.startsWith('AA')) _open = '<td>'+d.credit+' 學分</td><td><span class="ts-text is-description">外校開課</span></td>';
@@ -267,7 +267,7 @@
 										<td>'+d.name+'</td>\
 										<td>'+d.term+'</td>'+
 										_open+'\
-										<td>'+d.remark+'</td>'+
+										<td>'+d.remark.replace(/([\x00-\xFF]+)(?=[^\x00-\xff])/g, " $1 ")+'</td>'+
 									'</tr>');
 								})
 							})
