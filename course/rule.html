@@ -112,6 +112,10 @@
 
 		}
 
+		[data-show="course-comment"] .ts-badge:empty {
+			display: none;
+		}
+
 		@media (max-width: 768px) {
 			tfoot td {
 				width: 100%!important;
@@ -324,8 +328,7 @@
 				detail += '<tr class="loading"><td class="is-center-aligned" colspan="2"><br><div class="ts-header is-icon"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入更多資訊...</div><br></td></tr></tbody></table>';
 				$('.ts-modal .detail-content').html(detail);
 				viewing = id;
-				console.log(hasRate , id)
-				$('[data-show="course-comment"]').html('課程評價 <span class="ts-badge is-small is-dense">'+hasRate[id]+'</span>');
+				$('[data-show="course-comment"]').html('課程評價 <span class="ts-badge is-small is-dense">'+(hasRate[id] || '')+'</span>');
 				$.ajax({
 					url: 'https://bot.mcut.edu.tw/course/detail.php?id='+courseData[id].id,
 					dataType: 'json',
