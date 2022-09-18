@@ -378,7 +378,7 @@
 					$('[data-detail="'+v['id']+'"]').show();
 				})
 
-				if( ["通識中心四技","國文組-四技(日)","外文組-四技(日)","社會組-四技(日)","體育室-四技(日)","自然組-四技(日)","自然組(二)-四技(日)","工程學院","環資學院","管理暨設計學院"].includes($('#search-dept').val()) ||
+				if( ["通識中心四技","國文組-四技(日)","外文組-四技(日)","社會組-四技(日)","體育組-四技(日)","自然組-四技(日)","自然組(二)-四技(日)","工程學院","環資學院","管理暨設計學院"].includes($('#search-dept').val()) ||
 					$('#search-class').val() == '' ||
 					$('#main tbody tr:visible').length == 0 ||
 					(($('#search-type').val() != '必修' && $('#search-type').val() != ''))
@@ -487,7 +487,7 @@
 							cancelButtonText: '查看體育課可選課程'
 						}).then((result) => {
 							if (!result.isConfirmed) {
-								$('#search-dept').val('體育室-四技(日)');
+								$('#search-dept').val('體育組-四技(日)');
 								$('#search-course').val('');
 								$('#search-teacher').val('');
 								$('#search-class').val('2甲').trigger('change');
