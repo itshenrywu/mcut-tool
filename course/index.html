@@ -293,10 +293,10 @@
 				basic_data = $('[data-detail="'+id+'"]').find('td');
 				$('.ts-modal .ts-header').html(basic_data[1].innerHTML)
 				if($(this).hasClass('is-negative') && !savedCourse.includes(id)) $('.ts-modal .ts-header').append('　<span class="ts-badge is-negative"><span class="ts-icon is-end-spaced is-triangle-exclamation-icon"></span>衝堂</span>');
-				else $('.ts-modal .ts-header').append('　<label class="ts-chip is-dense is-small is-input is-secondary"><input type="checkbox" data-save="'+id+'" /><div class="content">儲存課程</div></label>');
+				else $('.ts-modal .ts-header').append('　<label class="ts-chip is-dense is-small is-input is-secondary"><input type="checkbox" data-save="'+id+'" /><div class="content">收藏課程</div></label>');
 				if(savedCourse.includes(id)) {
 					$('[data-save]').prop("checked", true)
-					$('[data-save]+.content').text('已儲存課程');
+					$('[data-save]+.content').text('已收藏課程');
 				}
 
 				detail = '';
@@ -427,9 +427,9 @@
 				if(!savedCourse.includes(thisid)) {
 					savedCourse.push(thisid);
 					$('[data-detail="'+thisid+'"]').addClass('is-indicated is-primary');
-					$(this).parent().find('.content').text('已儲存課程');
+					$(this).parent().find('.content').text('已收藏課程');
 					Swal.fire({
-						title: '「'+courseData[thisid]['name']+'」已儲存', icon: 'success', toast: true,
+						title: '「'+courseData[thisid]['name']+'」已收藏', icon: 'success', toast: true,
 						timer: 3000, timerProgressBar: true,
 						position: 'bottom-start', showConfirmButton: false,
 					})
@@ -456,8 +456,8 @@
 
 			$('.save_require').on('click',function(){
 				Swal.fire({
-					title: '儲存「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課程？',
-					text: "先前儲存的課程將會清空！",
+					title: '收藏「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課程？',
+					text: "先前收藏的課程將會清空！",
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: 'var(--ts-primary-600)',
@@ -481,8 +481,8 @@
 						else $('.savedCourse_count').hide();
 						updateTimeList();
 						Swal.fire({
-							title: '儲存成功', icon: 'success', confirmButtonText: 'OK', confirmButtonColor: 'var(--ts-primary-600)',
-							html: '已儲存「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課'+ ( ($('#search-class').val().substring(0,1) == 2 && $('#search-term').val().substring(0,3) == 111) ? '<br>大二體育課須自選，請自行查看':''),
+							title: '收藏成功', icon: 'success', confirmButtonText: 'OK', confirmButtonColor: 'var(--ts-primary-600)',
+							html: '已收藏「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課'+ ( ($('#search-class').val().substring(0,1) == 2 && $('#search-term').val().substring(0,3) == 111) ? '<br>大二體育課須自選，請自行查看':''),
 							showCancelButton: ($('#search-class').val().substring(0,1) == 2 && $('#search-term').val().substring(0,3) == 111),
 							cancelButtonText: '查看體育課可選課程'
 						}).then((result) => {
@@ -528,7 +528,7 @@
 			$('#search-term').on('change',function() {
 				Swal.fire({
 					title: '更換為「'+$('#search-term').val()+'」學期？',
-					text: "先前儲存的課程將會清空！",
+					text: "先前收藏的課程將會清空！",
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: 'var(--ts-primary-600)',
@@ -572,7 +572,7 @@
 						</a>
 						<a href="./saved" class="item">
 							<span class="ts-icon is-star-icon"></span>
-							<div class="label">儲存的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
+							<div class="label">收藏的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
 						</a>
 						<a href="./rule" class="item">
 							<span class="ts-icon is-file-lines-icon"></span>
@@ -645,7 +645,7 @@
 					<label class="ts-checkbox" style="margin-top:20px"><input type="checkbox" id="hide_conflict" />隱藏衝堂的課程</label>
 					<div class="ts-row">
 						<div class="column is-fluid">
-							<button class="ts-button is-small save_require" style="margin-top:20px;margin-right:20px">儲存本班必修課</button>
+							<button class="ts-button is-small save_require" style="margin-top:20px;margin-right:20px">收藏本班必修課</button>
 						</div>
 						<div class="column is-fluid is-minimal-only" style="text-align:right">
 							<button class="ts-button is-small is-outlined toggle-search" style="margin-top:20px">完成</button>
@@ -655,7 +655,7 @@
 				<div class="ts-notice is-outlined loading">
 					<div class="title">Tip!</div>
 					<div class="content">
-						您可以先<span class="is-minimal-only">在右上方的「篩選條件」</span>選擇自己的系所和班級，將必修課程儲存，再開始排課。<br>課程左邊標記藍色為已儲存，紅色為衝堂。
+						您可以先<span class="is-minimal-only">在右上方的「篩選條件」</span>選擇自己的系所和班級，將必修課程收藏，再開始排課。<br>課程左邊標記藍色為已收藏，紅色為衝堂。
 					</div>
 				</div>
 				<br>

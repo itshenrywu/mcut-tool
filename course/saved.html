@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>儲存的課程｜明志科大選課小幫手</title>
+	<title>收藏的課程｜明志科大選課小幫手</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
-	<meta name="title" content="儲存的課程｜明志科大選課小幫手">
+	<meta name="title" content="收藏的課程｜明志科大選課小幫手">
 	<meta name="description" content="全校課表 | 預先排課 | 衝堂檢查 | 課程評價 | 課程總表">
 	<meta name="keywords" content="明志科技大學,全校課表,預先排課,衝堂檢查,課程評價,課程總表">
 	<meta name="language" content="zh-tw">
@@ -318,10 +318,10 @@
 				$('[data-show="detail-content"]').click();
 				$('.ts-modal').addClass('is-visible');
 				basic_data = $('[data-detail="'+id+'"]').find('td');
-				$('.ts-modal .ts-header').html(basic_data[1].innerHTML + '　<label class="ts-chip is-dense is-small is-input is-secondary"><input type="checkbox" data-save="'+id+'" /><div class="content">儲存課程</div></label>');
+				$('.ts-modal .ts-header').html(basic_data[1].innerHTML + '　<label class="ts-chip is-dense is-small is-input is-secondary"><input type="checkbox" data-save="'+id+'" /><div class="content">收藏課程</div></label>');
 				if(savedCourse.includes(id)) {
 					$('[data-save]').prop("checked", true)
-					$('[data-save]+.content').text('已儲存課程');
+					$('[data-save]+.content').text('已收藏課程');
 				}
 
 				detail = '';
@@ -381,9 +381,9 @@
 					savedCourse.push(thisid);
 					$('[data-detail="'+thisid+'"]').show();
 					$('[data-detail-v="'+thisid+'"]').show();
-					$(this).parent().find('.content').text('已儲存課程')
+					$(this).parent().find('.content').text('已收藏課程')
 					Swal.fire({
-						title: '「'+courseData[thisid]['name']+'」已儲存', icon: 'success', toast: true,
+						title: '「'+courseData[thisid]['name']+'」已收藏', icon: 'success', toast: true,
 						timer: 3000, timerProgressBar: true,
 						position: 'bottom-start', showConfirmButton: false,
 					})
@@ -393,7 +393,7 @@
 					if (index > -1) savedCourse.splice(index, 1);
 					$('[data-detail="'+thisid+'"]').hide();
 					$('[data-detail-v="'+thisid+'"]').hide();
-					$(this).parent().find('.content').text('儲存課程')
+					$(this).parent().find('.content').text('收藏課程')
 					Swal.fire({
 						title: '「'+courseData[thisid]['name']+'」已移除', icon: 'success', toast: true,
 						timer: 3000, timerProgressBar: true,
@@ -439,7 +439,7 @@
 
 			$('body').on('click','#clear',function(){
 				Swal.fire({
-					title: '清除所有儲存的課程？',
+					title: '清除所有收藏的課程？',
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: 'var(--ts-primary-600)',
@@ -482,7 +482,7 @@
 						</a>
 						<a href="" class="item is-active">
 							<span class="ts-icon is-star-icon"></span>
-							<div class="label">儲存的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
+							<div class="label">收藏的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
 						</a>
 						<a href="./rule" class="item">
 							<span class="ts-icon is-file-lines-icon"></span>
@@ -505,7 +505,7 @@
 				</div><br>
 				<div class="ts-row is-middle-aligned" style="margin-block-end: 1.6em;">
 					<div class="column is-fluid">
-						<h1>儲存的課程</h1>
+						<h1>收藏的課程</h1>
 					</div>
 					<div class="column">
 						<button class="ts-button is-small is-negative is-outlined" id="clear" style="display:none"><span class="ts-icon is-end-spaced is-trash-icon"></span> 全部清除</button>
@@ -585,7 +585,7 @@
 									<br><br>
 									<div class="ts-header is-icon">
 										<span class="ts-icon is-circle-exclamation-icon"></span>
-										目前沒有已儲存的課程
+										目前沒有已收藏的課程
 									</div>
 									<br><br>
 								</td>

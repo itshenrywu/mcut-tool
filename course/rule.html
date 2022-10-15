@@ -302,10 +302,10 @@
 				$('#score').attr('src','rate.html?v8&id='+courseData[id].id);
 				$('[data-show="detail-content"]').click();
 				$('.ts-modal').addClass('is-visible');
-				$('.ts-modal .ts-header').html(courseData[id].name + '<!--　<label class="ts-chip is-dense is-small is-input is-secondary"><input type="checkbox" data-save="'+courseData[id].id+'" /><div class="content">儲存課程</div></label>-->');
+				$('.ts-modal .ts-header').html(courseData[id].name + '<!--　<label class="ts-chip is-dense is-small is-input is-secondary"><input type="checkbox" data-save="'+courseData[id].id+'" /><div class="content">收藏課程</div></label>-->');
 				if(savedCourse.includes(id)) {
 					$('[data-save]').prop("checked", true)
-					$('[data-save]+.content').text('已儲存課程');
+					$('[data-save]+.content').text('已收藏課程');
 				}
 
 				detail = '';
@@ -367,9 +367,9 @@
 				if(!savedCourse.includes(thisid)) {
 					savedCourse.push(thisid);
 					$('[data-detail="'+thisid+'"]').addClass('is-indicated is-primary');
-					$(this).parent().find('.content').text('已儲存課程');
+					$(this).parent().find('.content').text('已收藏課程');
 					Swal.fire({
-						title: '「'+courseData[thisid.substring(4,10)]['name']+'」已儲存', icon: 'success', toast: true,
+						title: '「'+courseData[thisid.substring(4,10)]['name']+'」已收藏', icon: 'success', toast: true,
 						timer: 3000, timerProgressBar: true,
 						position: 'bottom-start', showConfirmButton: false,
 					})
@@ -484,7 +484,7 @@
 						</a>
 						<a href="./saved" class="item">
 							<span class="ts-icon is-star-icon"></span>
-							<div class="label">儲存的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
+							<div class="label">收藏的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
 						</a>
 						<a href="" class="item is-active">
 							<span class="ts-icon is-file-lines-icon"></span>
