@@ -451,6 +451,7 @@
 					if(_v) $('#search-dept').val(_v);
 					else if(params['dept']) $('#search-dept').val(params['dept']);
 					else $('#search-dept').val($('#search-dept option:first').val());
+					if($('#search-dept').val() == null) $('#search-dept').val($('#search-dept option:first').val());
 					$('#search-dept').trigger('change');
 				}
 			});
