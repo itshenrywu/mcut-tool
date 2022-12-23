@@ -251,7 +251,7 @@
 				$('.loader').show();
 				$('main').hide();
 				$.ajax({
-					url: 'https://bot.mcut.edu.tw/course/rule/get.php?id='+i+'&name='+n,
+					url: 'https://mcut-bot.henrywu.tw/course/rule/get.php?id='+i+'&name='+n,
 					dataType: 'json',
 					success: function(res){
 						$('select').removeAttr('disabled');
@@ -330,7 +330,7 @@
 				viewing = id;
 				$('[data-show="course-comment"]').html('課程評價 <span class="ts-badge is-small is-dense">'+(hasRate[id] || '')+'</span>');
 				$.ajax({
-					url: 'https://bot.mcut.edu.tw/course/detail.php?id='+courseData[id].id,
+					url: 'https://mcut-bot.henrywu.tw/course/detail.php?id='+courseData[id].id,
 					dataType: 'json',
 					success: function(res){
 						if(res.length == 3) {
@@ -407,7 +407,7 @@
 
 			let courseRule = {};
 			$.ajax({
-				url: 'https://bot.mcut.edu.tw/course/rule/list.php',
+				url: 'https://mcut-bot.henrywu.tw/course/rule/list.php',
 				dataType: 'json',
 				success: function(res){
 					courseRule = res.list;

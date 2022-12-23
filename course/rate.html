@@ -96,7 +96,7 @@
 			});
 			function checkState() {
 				$.ajax({
-					url: 'https://bot.mcut.edu.tw/course/score/check_state.php?id='+params['id']+'&token='+(localStorage.getItem('course_token') || ''),
+					url: 'https://mcut-bot.henrywu.tw/course/score/check_state.php?id='+params['id']+'&token='+(localStorage.getItem('course_token') || ''),
 					dataType: 'json',
 					type: 'POST',
 					success: function(res){
@@ -208,7 +208,7 @@
 				}
 				$('button#login').addClass('is-loading').attr('disabled', 'disabled');
 				$.ajax({
-					url: 'https://bot.mcut.edu.tw/course/score/login.php',
+					url: 'https://mcut-bot.henrywu.tw/course/score/login.php',
 					dataType: 'json',
 					type: 'POST',
 					data: {
@@ -245,7 +245,7 @@
 				else if(star == 0) Swal.fire({confirmButtonColor: 'var(--ts-primary-600)', title: '請給予推薦指數（1~5 顆星）！', icon: 'error', confirmButtonText: 'OK'});
 				else {
 					$.ajax({
-						url: 'https://bot.mcut.edu.tw/course/score/update.php',
+						url: 'https://mcut-bot.henrywu.tw/course/score/update.php',
 						dataType: 'json',
 						type: 'POST',
 						data: {
@@ -277,7 +277,7 @@
 				}).then((result) => {
 					if (result.isConfirmed) {
 						$.ajax({
-							url: 'https://bot.mcut.edu.tw/course/score/update.php?del',
+							url: 'https://mcut-bot.henrywu.tw/course/score/update.php?del',
 							dataType: 'json',
 							type: 'POST',
 							data: {
