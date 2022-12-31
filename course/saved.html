@@ -262,7 +262,7 @@
 			if(savedCourse.length == 0) _term = '';
 			else _term = savedCourse[0].substring(0,3)+'-'+savedCourse[0].substring(3,4);
 			$.ajax({
-				url: 'https://bot.mcut.edu.tw/course/list.php?term='+_term,
+				url: 'https://mcut-bot.henrywu.tw/course/list.php?term='+_term,
 				dataType: 'json',
 				success: function(res){
 					$.each( res.course, function( k, v ) {
@@ -343,7 +343,7 @@
 				$('[data-show="course-comment"]').html('課程評價 <span class="ts-badge is-small is-dense">'+courseData[id]['rates']+'</span>');
 				if(!id.includes('ALT_')) {
 					$.ajax({
-						url: 'https://bot.mcut.edu.tw/course/detail.php?id='+id,
+						url: 'https://mcut-bot.henrywu.tw/course/detail.php?id='+id,
 						dataType: 'json',
 						success: function(res){
 							if(res.length == 3) {
