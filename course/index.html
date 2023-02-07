@@ -216,7 +216,7 @@
 			else link.href = 'https://cdn.jsdelivr.net/npm/@sweetalert2/themes@5.0.11/default/default.min.css';
 			document.head.appendChild(link);
 
-			const params = new Proxy(new URLSearchParams(localStorage.getItem('searchQuery') || ''), {
+			const params = new Proxy(new URLSearchParams(window.location.search || ''), {
 				get: (searchParams, prop) => searchParams.get(prop),
 			});
 			let savedCourse = JSON.parse(localStorage.getItem('savedCourse') || '[]');
@@ -228,7 +228,6 @@
 			let ctimes = ["0.5","1","2","3","4","4.5","5","6","7","8","8.5","9","10","11","12"];
 			let courseData = {};
 			let savedCourseTime = [];
-			let schoolCourse = {};
 			$.ajax({
 				url: 'https://mcut-bot.henrywu.tw/course/list.php?term='+getTerm,
 				dataType: 'json',
@@ -243,49 +242,40 @@
 						if(!select_list[v['dept']].includes(v['year']+v['class'])) select_list[v['dept']].push(v['year']+v['class']);
 						courseData[v['id']] = v;
 						courseData[v['id']]['rates'] = res.rates[v['id'].substring(4,10)] || '';
-						//if(!v['id'].includes('ALT_')) {
-							tr = '<tr data-detail="'+v['id']+'" class="';
-							if(savedCourse.includes(v['id'])) tr += ' is-indicated is-primary';
-							tr += '">';
-							tr += '<td>'+v['dept']+v['year']+v['class']+'</td>';
-							_icon = '';
-							if(v['dept'] == '體育組-四技(日)') {
-								if(v['name'].includes('排球')) _icon = '<span class="ts-icon is-secondary is-end-spaced is-volleyball-icon sp-icon"></span>';
-								else if(v['name'].includes('籃球')) _icon = '<span class="ts-icon is-basketball-icon sp-icon"></span>';
-								else if(v['name'].includes('桌球')) _icon = '<span class="ts-icon is-table-tennis-paddle-ball-icon sp-icon"></span>';
-								else if(v['name'].includes('健身雕塑')) _icon = '<span class="ts-icon is-dumbbell-icon sp-icon"></span>';
-								else if(v['name'].includes('防身術')) _icon = '<span class="ts-icon is-people-pulling-icon sp-icon"></span>';
-								else if(v['name'].includes('特工武術') || v['name'].includes('跆拳道')) _icon = '<span class="ts-icon is-people-robbery-icon sp-icon"></span>';
-								else if(v['name'].includes('身體律動')) _icon = '<span class="ts-icon is-child-reaching-icon sp-icon"></span>';
-								else if(v['name'].includes('羽球')) _icon = '<svg class="sp-icon-b" viewBox="0 0 24 24"><path fill="#787878" d="M12.3,2C11.33,2.03 10.58,2.84 10.61,3.8C10.62,4.04 10.67,4.27 10.77,4.5L11.06,5.14V5.14C11.1,5.27 11.03,5.41 10.89,5.45C10.8,5.5 10.7,5.45 10.63,5.37L10.21,4.82C9.88,4.4 9.38,4.14 8.85,4.13C7.88,4.11 7.08,4.88 7.06,5.84C7.05,6.26 7.19,6.66 7.45,7L7.87,7.5H7.88C7.96,7.63 7.93,7.79 7.82,7.87C7.73,7.94 7.61,7.94 7.53,7.87L7,7.45C6.66,7.19 6.25,7.05 5.84,7.06C4.88,7.08 4.11,7.88 4.13,8.85C4.14,9.38 4.4,9.88 4.82,10.21L5.39,10.65C5.5,10.75 5.5,10.91 5.38,11C5.31,11.07 5.21,11.09 5.12,11.05H5.11L4.5,10.77C4.27,10.68 4.04,10.62 3.8,10.61C2.84,10.58 2.03,11.34 2,12.31C2,13.03 2.4,13.69 3.06,13.97L14.45,19.04L19.04,14.45L13.97,3.06C13.69,2.39 13,1.97 12.3,2M13.13,6.1C13.55,6.09 13.93,6.33 14.09,6.71L17.14,13.55L13.19,9.61L12.26,7.5C11.96,6.87 12.42,6.12 13.13,6.1M9.85,8.85C10.12,8.85 10.37,8.95 10.56,9.15L15.37,13.96C15.77,14.34 15.78,14.97 15.4,15.37C15,15.77 14.38,15.78 13.96,15.37L9.15,10.56C8.75,10.18 8.74,9.54 9.13,9.15C9.32,8.95 9.58,8.85 9.85,8.85M7.13,12.17C7.26,12.17 7.4,12.21 7.5,12.26L9.63,13.2L13.57,17.14L6.71,14.09C5.69,13.65 6.03,12.14 7.13,12.17M20.28,16.04L16.04,20.28L16.89,21.13C17.65,21.88 18.75,22.17 19.78,21.9C20.81,21.62 21.62,20.81 21.9,19.78C22.17,18.75 21.88,17.65 21.13,16.89L20.28,16.04Z" /></svg>';
-							}
-							tr += '<td>'+_icon+v['name']+'</td>';
-							tr += '<td>';
-							$.each( v['time'], function( k2, t ) {
-								tr += '<span class="time">'+weekText[t[0]];
-								if(t[1].split('~')[0] == t[1].split('~')[1]) tr += '第 '+t[1].split('~')[0]+' 節</span>';
-								else tr += t[1]+' 節</span>';
-							});
-							tr += '</td>';
-							if(v['type'] == '必修') _type_class = '';
-							else if(v['type'] == '選修') _type_class = 'is-secondary';
-							else _type_class = 'is-outlined';
-							tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+( (v['otherinfo'] != null)?' | '+v['otherinfo'].substring(0,2):'' )+'</span>'+v['credit']+'</td>';
-							tr += '<td>'+v['teacher']+'</td>';
-							tr += '<td>';
-							if(v['rates'] != '') tr += '<span class="ts-badge is-end-spaced is-small is-dense is-outlined"><span class="ts-icon is-comment-icon"></span> '+v['rates']+' 評價</span> ';
-							tr += '<span class="comment">' + v['comment'] + '</span>';
-							tr += '</td>';
-							tr += '</tr>';
-							$('#main tbody').append(tr);
-
-							if(v['dept'] == '外文組-四技(日)' && v['type'] == '必修') {
-								if(v['name'].includes('生活與職場英文(') && v['year'] == 1) schoolCourse['生活與職場英文_'+v['comment'].substring(0,2)] = v['id'];
-								else if(v['name'].includes('英語聽講(') && v['year'] == 2) schoolCourse['英語聽講_'+v['comment'].substring(0,2)] = v['id'];
-								else if(v['name'].includes('英文實務(') && v['year'] == 2) schoolCourse['英文實務2_'+v['comment']] = v['id'];
-								else if(v['name'].includes('英文實務(') && v['year'] == 4) schoolCourse['英文實務4_'+v['comment']] = v['id'];
-							}
-						//}
+						tr = '<tr data-detail="'+v['id']+'" class="';
+						if(savedCourse.includes(v['id'])) tr += ' is-indicated is-primary';
+						tr += '">';
+						tr += '<td>'+v['dept']+v['year']+v['class']+'</td>';
+						_icon = '';
+						if(v['dept'] == '體育組-四技(日)') {
+							if(v['name'].includes('排球')) _icon = '<span class="ts-icon is-secondary is-end-spaced is-volleyball-icon sp-icon"></span>';
+							else if(v['name'].includes('籃球')) _icon = '<span class="ts-icon is-basketball-icon sp-icon"></span>';
+							else if(v['name'].includes('桌球')) _icon = '<span class="ts-icon is-table-tennis-paddle-ball-icon sp-icon"></span>';
+							else if(v['name'].includes('健身雕塑')) _icon = '<span class="ts-icon is-dumbbell-icon sp-icon"></span>';
+							else if(v['name'].includes('防身術')) _icon = '<span class="ts-icon is-people-pulling-icon sp-icon"></span>';
+							else if(v['name'].includes('特工武術') || v['name'].includes('跆拳道')) _icon = '<span class="ts-icon is-people-robbery-icon sp-icon"></span>';
+							else if(v['name'].includes('身體律動')) _icon = '<span class="ts-icon is-child-reaching-icon sp-icon"></span>';
+							else if(v['name'].includes('羽球')) _icon = '<svg class="sp-icon-b" viewBox="0 0 24 24"><path fill="#787878" d="M12.3,2C11.33,2.03 10.58,2.84 10.61,3.8C10.62,4.04 10.67,4.27 10.77,4.5L11.06,5.14V5.14C11.1,5.27 11.03,5.41 10.89,5.45C10.8,5.5 10.7,5.45 10.63,5.37L10.21,4.82C9.88,4.4 9.38,4.14 8.85,4.13C7.88,4.11 7.08,4.88 7.06,5.84C7.05,6.26 7.19,6.66 7.45,7L7.87,7.5H7.88C7.96,7.63 7.93,7.79 7.82,7.87C7.73,7.94 7.61,7.94 7.53,7.87L7,7.45C6.66,7.19 6.25,7.05 5.84,7.06C4.88,7.08 4.11,7.88 4.13,8.85C4.14,9.38 4.4,9.88 4.82,10.21L5.39,10.65C5.5,10.75 5.5,10.91 5.38,11C5.31,11.07 5.21,11.09 5.12,11.05H5.11L4.5,10.77C4.27,10.68 4.04,10.62 3.8,10.61C2.84,10.58 2.03,11.34 2,12.31C2,13.03 2.4,13.69 3.06,13.97L14.45,19.04L19.04,14.45L13.97,3.06C13.69,2.39 13,1.97 12.3,2M13.13,6.1C13.55,6.09 13.93,6.33 14.09,6.71L17.14,13.55L13.19,9.61L12.26,7.5C11.96,6.87 12.42,6.12 13.13,6.1M9.85,8.85C10.12,8.85 10.37,8.95 10.56,9.15L15.37,13.96C15.77,14.34 15.78,14.97 15.4,15.37C15,15.77 14.38,15.78 13.96,15.37L9.15,10.56C8.75,10.18 8.74,9.54 9.13,9.15C9.32,8.95 9.58,8.85 9.85,8.85M7.13,12.17C7.26,12.17 7.4,12.21 7.5,12.26L9.63,13.2L13.57,17.14L6.71,14.09C5.69,13.65 6.03,12.14 7.13,12.17M20.28,16.04L16.04,20.28L16.89,21.13C17.65,21.88 18.75,22.17 19.78,21.9C20.81,21.62 21.62,20.81 21.9,19.78C22.17,18.75 21.88,17.65 21.13,16.89L20.28,16.04Z" /></svg>';
+						}
+						tr += '<td>'+_icon+v['name']+'</td>';
+						tr += '<td>';
+						$.each( v['time'], function( k2, t ) {
+							tr += '<span class="time">'+weekText[t[0]];
+							if(t[1].split('~')[0] == t[1].split('~')[1]) tr += '第 '+t[1].split('~')[0]+' 節</span>';
+							else tr += t[1]+' 節</span>';
+						});
+						tr += '</td>';
+						if(v['type'] == '必修') _type_class = '';
+						else if(v['type'] == '選修') _type_class = 'is-secondary';
+						else _type_class = 'is-outlined';
+						tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+( (v['otherinfo'] != null)?' | '+v['otherinfo'].substring(0,2):'' )+'</span>'+v['credit']+'</td>';
+						tr += '<td>'+v['teacher']+'</td>';
+						tr += '<td>';
+						if(v['rates'] != '') tr += '<span class="ts-badge is-end-spaced is-small is-dense is-outlined"><span class="ts-icon is-comment-icon"></span> '+v['rates']+' 評價</span> ';
+						tr += '<span class="comment">' + v['comment'] + '</span>';
+						tr += '</td>';
+						tr += '</tr>';
+						$('#main tbody').append(tr);
 					});
 					$('#search-dept').html('<option value="">不限</option><optgroup label="全校"></optgroup><optgroup label="四技日間部"></optgroup><optgroup label="學院"></optgroup><optgroup label="碩士/碩專/博士/在職專班"></optgroup><optgroup label="進修部"></optgroup>');
 					$.each(select_list, function( k, v ) {
@@ -299,7 +289,73 @@
 							return ((parseInt(a)*10+['甲','乙','丙','暑','重'].indexOf(a.substring(1,2))) - (parseInt(b)*10+['甲','乙','丙','暑','重'].indexOf(b.substring(1,2))));
 						})
 					});
-					if(params['i']) $('[data-detail='+params['i']+']').click();
+					if(params['i']) {
+						if($('[data-detail='+params['i']+']').length >= 1) $('[data-detail='+params['i']+']').click();
+						else {
+							id = params['i'];
+
+							$('#score').attr('src','rate.html?v9&id='+id);
+							$('[data-show="detail-content"]').click();
+							$('.ts-modal').addClass('is-visible');
+							$('.ts-modal .detail-content').html('<div class="ts-header is-icon" style="height: 100%;"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入課程資訊...</div>');
+							$.ajax({
+								url: 'https://mcut-bot.henrywu.tw/course/detail.php?ver=full&id='+id,
+								dataType: 'json',
+								success: function(res){
+									if(res[3] == undefined) {
+										$('.ts-modal .detail-content').html('<br><div class="ts-header is-icon"><span class="ts-icon is-circle-exclamation-icon"></span>無法取得課程資料！</div><br>');
+										return;
+									}
+									$('.ts-modal .ts-header').html(res[3]['name'])
+
+									detail = '';
+									detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
+									<tr><td style="width: 7rem"><b>開課序號</b></td><td>'+id+'</td></tr>\
+									<tr><td><b>開課單位/班級</b></td><td>'+res[3]['dept']+res[3]['year']+res[3]['class']+'</td></tr>\
+									<tr><td><b>上課時間</b></td><td>';
+									$.each( res[3]['time'], function( k2, t ) {
+										detail += '<span class="time">'+weekText[t[0]];
+										if(t[1].split('~')[0] == t[1].split('~')[1]) detail += '第 '+t[1].split('~')[0]+' 節</span>';
+										else detail += t[1]+' 節</span>';
+									});
+									detail += '</td></tr><tr><td><b>修別/學分</b></td><td>'
+									if(res[3]['type'] == '必修') _type_class = '';
+									else if(res[3]['type'] == '選修') _type_class = 'is-secondary';
+									else _type_class = 'is-outlined';
+									detail += '<span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+res[3]['type']+( (res[3]['otherinfo'] != null)?' | '+res[3]['otherinfo'].substring(0,2):'' )+'</span>'+res[3]['credit']+' 學分</td></tr>\
+									<tr><td><b>授課老師</b></td><td>'+res[3]['teacher']+'</td></tr>';
+									if(res[3]['comment'] != '') detail += '<tr><td><b>備註</b></td><td>'+res[3]['comment']+'</td></tr>';
+									$('.ts-modal .detail-content').html(detail);
+									viewing = id;
+									$('[data-show="course-comment"]').html('課程評價 <span class="ts-badge is-small is-dense">'+(res[3]['rates'] || '')+'</span>');
+
+									if(res.length == 4) {
+										$.each( res[0], function( k, v ) {
+											$('#detail-table').append('<tr><td><b>'+v[0]+'</b></td><td>'+v[1]+'</td></tr>');
+										})
+										$('#detail-table').append('<tr><td><b>Office Time</b></td><td><div class="ts-list is-unordered"><div class="item">'+res[1].join('</div><div class="item">')+'</div></div></td></tr>');
+
+										timetable = '<div class="ts-accordion" style="border-top: 1px solid var(--ts-gray-300);padding-top: 5px"><div class="title" onclick="$(this).parent().toggleClass(\'is-active\')"><b>教學進度表 (點擊展開)</b></div><div class="content"><div class="ts-box"><div class="ts-content" style="padding-top:.5rem;padding-bottom:.5rem"><table class="ts-table is-sticked is-basic is-dense" id="detail-table"><tbody>';
+										$.each( res[2], function( k, v ) {
+											timetable += '<tr><td style="width:7.5rem">'+v[0]+' ';
+											if(v[1].split('~')[0] == v[1].split('~')[1]) timetable += '第 '+v[1].split('~')[0];
+											else timetable += v[1];
+											timetable += ' 節<br>'+v[2]+'</td>\
+											<td>'+v[3]+'<small>';
+											if(v[5]) timetable += '<br>'+v[5];
+											if(v[4]) timetable += '<br>作業：'+v[4];
+											if(v[6]) timetable += '<br>備註：'+v[6];
+											timetable += '</small></td></tr></div></div>';
+										})
+										timetable += '</tbody></table></div></div>';
+
+										$('.ts-modal .detail-content').append(timetable);
+
+									} else $('.ts-modal .detail-content').append('<br><div class="ts-header is-icon"><span class="ts-icon is-circle-exclamation-icon"></span>授課老師未填寫課程資料！</div><br>');
+								}
+							});
+						}
+					}
 					if(params['d'] && Object.keys(select_list).includes(params['d'])) $('#search-dept').val(params['d']).trigger('change');
 					if(params['c']) $('#search-class').val(params['c']);
 					if($('#search-class').val() === undefined|| $('#search-class').val() === null) $('#search-class').val('');
@@ -317,6 +373,7 @@
 			});
 			$('body').on('click','.ts-close',function(){
 				viewing = '';
+				history.replaceState({}, '', '/course/');
 				$('.ts-modal').removeClass('is-visible');
 			})
 
@@ -352,6 +409,7 @@
 				viewing = id;
 				$('[data-show="course-comment"]').html('課程評價 <span class="ts-badge is-small is-dense">'+courseData[id]['rates']+'</span>');
 				if(!id.includes('ALT_')) {
+					history.replaceState({}, '', '/course/?i='+id);
 					$.ajax({
 						url: 'https://mcut-bot.henrywu.tw/course/detail.php?id='+id,
 						dataType: 'json',
