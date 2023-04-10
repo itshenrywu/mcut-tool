@@ -105,6 +105,15 @@
 			display: none;
 		}
 
+		#remark ol {
+			margin-left: -15px;
+		}
+
+		#remark li {
+			padding: 2px 0;
+			line-height: 1.4rem;
+		}
+
 		@media (max-width: 768px) {
 			tfoot td {
 				width: 100%!important;
@@ -206,6 +215,10 @@
 				flex-direction: column;
 				gap: .25rem;
 			}
+
+			#remark ol {
+				margin-left: -10px;
+			}
 		}
 	</style>
 	<!-- Global site tag (gtag.js) - Google Analytics -->
@@ -284,16 +297,40 @@
 							$('main').append('<div class="ts-notice is-outlined" id="remark"><div class="title">說明</div></div><br>');
 							$.each( res.remark, function( k, v ) {
 								_remark = '';
+								_s = [];
 								_r = v.split('\r\n');
-								$.each( _r , function( k2, v2 ) {
-									if( v2.search(/\d\s/) === 0 ) _remark += '<li style="list-style-type:\''+v2.split(' ')[0]+'. \'">' + v2.slice(2) + '</li>';
-									else if( v2.search(/\d\d\s/) === 0 ) _remark += '<li style="list-style-type:\''+v2.split(' ')[0]+'. \'">' + v2.slice(3) + '</li>';
-									else if( v2.search(/\d\./) === 0 ) _remark += '<li style="list-style-type:\''+v2.split('.')[0]+'. \'">' + v2.slice(2) + '</li>';
-									else if( v2.search(/.\、/) === 0 ) _remark += '<li style="list-style-type:\''+v2.split('、')[0]+'、\'">' + v2.slice(2) + '</li>';
-									else if( v2.search(/\*/) === 0 ) _remark += '<li style="list-style-type:none"> • ' + v2.slice(2) + '</li>';
-									else _remark += '<li style="list-style-type:none">' + v2 + '</li>';
+								$.each( _r , function( k2, v2 ) { // Parse to ordered list (Ugly, Don't read)
+									if( v2.search(/\d{1,2}\s/) === 0 ) {
+										_remark += '<li class="li-s" style="list-style-type:\''+v2.split(' ')[0]+'. \'">' + v2.slice(v2.split(' ')[0].length+1) + '</li>';
+										if(!_s.includes('s')) _s.push('s');
+									}
+									else if( v2.search(/\d{1,2}\./) === 0 ) {
+										_remark += '<li class="li-d" style="list-style-type:\''+v2.split('.')[0]+'. \'">' + v2.slice(v2.split('.')[0].length+1) + '</li>';
+										if(!_s.includes('d')) _s.push('d');
+									}
+									else if( v2.search(/.{1,2}\、/) === 0 ) {
+										_remark += '<li class="li-c" style="list-style-type:\''+v2.split('、')[0]+'、\'">' + v2.slice(v2.split('、')[0].length+1) + '</li>';
+										if(!_s.includes('c')) _s.push('c');
+									}
+									else if( v2.search(/\*/) === 0) {
+										_remark += '<li class="li-c" style="list-style-type:\' • \'">' + v2.slice(1) + '</li>';
+										if(!_s.includes('c')) _s.push('c');
+									}
+									else if( v2.search(/\(\d{1,2}\)/) === 0 ) {
+										_remark += '<li class="li-q" style="list-style-type:\''+v2.split(')')[0]+') \'">' + v2.slice(v2.split(')')[0].length+1) + '</li>';
+										if(!_s.includes('q')) _s.push('q');
+									}
+									else {
+										_remark += '<li class="li-n" style="list-style-type:none">' + v2 + '</li>';
+										if(!_s.includes('n')) _s.push('n');
+									}
 								});
-								if(_r.length >= 2) $('#remark').append('<div class="content"><ol style="margin-left: -20px;">'+_remark+'</ol></div>');
+								if(_r.length >= 2) {
+									$('#remark').append('<div class="content"><ol>'+_remark+'</ol></div>');
+									$.each( _s, function( k2, v2 ) {
+										$('.li-'+v2).css('margin-left',(k2*18)+'px')
+									})
+								}
 								else $('#remark').append('<div class="content">'+v+'</div>');
 							})
 						}
