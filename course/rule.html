@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>課程總表｜明志科大選課小幫手</title>
+	<title>畢業學分門檻｜明志科大選課小幫手</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
-	<meta name="title" content="課程總表｜明志科大選課小幫手">
-	<meta name="description" content="全校課表 | 預先排課 | 衝堂檢查 | 課程評價 | 課程總表">
-	<meta name="keywords" content="明志科技大學,全校課表,預先排課,衝堂檢查,課程評價,課程總表">
+	<meta name="title" content="畢業學分門檻｜明志科大選課小幫手">
+	<meta name="description" content="全校課表 | 預先排課 | 衝堂檢查 | 課程評價 | 畢業門檻">
+	<meta name="keywords" content="明志科技大學,全校課表,預先排課,衝堂檢查,課程評價,畢業門檻">
 	<meta name="language" content="zh-tw">
 	<meta property="og:url" content="https://mcut.henrywu.tw/course/rule">
 	<meta property="og:image" content="https://mcut.henrywu.tw/res/logo.png">
@@ -283,7 +283,18 @@
 						if(res.remark.length > 0) {
 							$('main').append('<div class="ts-notice is-outlined" id="remark"><div class="title">說明</div></div><br>');
 							$.each( res.remark, function( k, v ) {
-								$('#remark').append('<div class="content">'+v+'</div>');
+								_remark = '';
+								_r = v.split('\r\n');
+								$.each( _r , function( k2, v2 ) {
+									if( v2.search(/\d\s/) === 0 ) _remark += '<li style="list-style-type:\''+v2.split(' ')[0]+'. \'">' + v2.slice(2) + '</li>';
+									else if( v2.search(/\d\d\s/) === 0 ) _remark += '<li style="list-style-type:\''+v2.split(' ')[0]+'. \'">' + v2.slice(3) + '</li>';
+									else if( v2.search(/\d\./) === 0 ) _remark += '<li style="list-style-type:\''+v2.split('.')[0]+'. \'">' + v2.slice(2) + '</li>';
+									else if( v2.search(/.\、/) === 0 ) _remark += '<li style="list-style-type:\''+v2.split('、')[0]+'、\'">' + v2.slice(2) + '</li>';
+									else if( v2.search(/\*/) === 0 ) _remark += '<li style="list-style-type:none"> • ' + v2.slice(2) + '</li>';
+									else _remark += '<li style="list-style-type:none">' + v2 + '</li>';
+								});
+								if(_r.length >= 2) $('#remark').append('<div class="content"><ol style="margin-left: -20px;">'+_remark+'</ol></div>');
+								else $('#remark').append('<div class="content">'+v+'</div>');
 							})
 						}
 						if(res.contact) {
@@ -425,11 +436,11 @@
 			$('#search-dept').on('change',function(){				
 				current_type = $('#search-type option:selected').text();
 				if( courseRule[$('#search-year').val()] ) {
-					$('#search-type').html('<optgroup label="跨領域"></optgroup><optgroup label="第二專長"></optgroup>');
+					$('#search-type').html('<optgroup label="跨領域學分學程"></optgroup><optgroup label="第二專長學分學程"></optgroup>');
 					$.each( courseRule[$('#search-year').val()], function( k, v ) {
 						if((v[2] == '四技(日)' || v[2] == '學士學位學程' || v[2] == '菁英班') && v[1] == $('#search-dept').val()) $('#search-type').prepend('<option value="'+v[0]+'">系所課程總表</option>');
-						else if(v[2] == '第二專長' && v[3] != $('#search-dept').val()) $('#search-type optgroup[label="第二專長"]').append('<option value="'+v[0]+'">'+v[1]+'</option>');
-						else if(v[2] == '跨領域') $('#search-type optgroup[label="跨領域"]').append('<option value="'+v[0]+'">'+v[1]+'</option>');
+						else if(v[2] == '第二專長' && v[3] != $('#search-dept').val()) $('#search-type optgroup[label="第二專長學分學程"]').append('<option value="'+v[0]+'">'+v[1]+'</option>');
+						else if(v[2] == '跨領域') $('#search-type optgroup[label="跨領域學分學程"]').append('<option value="'+v[0]+'">'+v[1]+'</option>');
 					})
 
 					_v = $('#search-type option').filter(function () { return $(this).text() == current_type; }).val();
@@ -461,10 +472,13 @@
 				$('[data-content="'+$(this).attr('data-show')+'"]').show();
 				$('[data-show]').removeClass('is-active');
 				$(this).addClass('is-active');
-			})
+			});
 			$('body').on('click','.ts-close',function(){
 				$('.ts-modal').removeClass('is-visible');
-			})
+			});
+			$('body').on('click','.toggle-info',function(){
+				$('#info').slideToggle();
+			});
 			$(document).keyup(function(e) {
 				if(e.key === "Escape") {
 					$('.ts-close').click();
@@ -488,8 +502,8 @@
 							<div class="label">收藏的課程 <span class="ts-badge is-small is-dense savedCourse_count" style="display:none"></span></div>
 						</a>
 						<a href="" class="item is-active">
-							<span class="ts-icon is-file-lines-icon"></span>
-							<div class="label">課程總表</span></div>
+							<span class="ts-icon is-graduation-cap-icon"></span>
+							<div class="label">畢業學分門檻</span></div>
 						</a>
 					</div>
 				</div>
@@ -498,20 +512,14 @@
 		<div class="cell is-secondary is-fluid is-scrollable">
 			<br>
 			<div class="ts-container">
-				<!--<div class="ts-box is-negative is-top-indicated">
-					<div class="ts-content">
-						<div class="ts header"><b>注意事項</b></div>
-						<div class="ts-list is-ordered">
-							<div class="item">107 年度起入學者，須任選一個學程修畢才能畢業</div>
-						</div>
-					</div>
-					<div class="symbol"><span class="ts-icon is-circle-exclamation-icon"></span></div>
-				</div><br>-->
 				<div class="ts-grid is-stackable">
-					<div class="column is-3-wide">
-						<h1 style="">課程總表</h1>
+					<div class="column is-4-wide">
+						<h1>
+							畢業學分門檻
+							<button data-tooltip="使用說明與注意事項" data-position="top" data-delay="0" class="ts-button is-ghost is-icon is-small toggle-info" style="color:#999"><span class="ts-icon is-circle-info-icon"></span></button>
+						</h1>
 					</div>
-					<div class="column is-13-wide">
+					<div class="column is-12-wide">
 						<div class="ts-grid">
 							<div class="column is-3-wide">
 								<label>入學學年度</label>
@@ -547,15 +555,27 @@
 					</div>
 				</div>
 				<br>
+				<div class="ts-box is-negative is-top-indicated" id="info" style="margin-bottom:25px">
+					<div class="ts-content">
+						<div class="ts header"><b>使用說明與注意事項</b></div>
+						<div class="ts-list is-ordered">
+							<div class="item">請先選擇<b>「入學學年度」</b>及<b>「入學系所/學程/組別」</b></div>
+							<div class="item">須修畢你的<b>「系所學程總表」</b>，並<b>任選一個學程</b>（跨領域或外系第二專長）才能畢業</div>
+							<div class="item">點擊各分類即可展開該分類課程。</div>
+							<div class="item">欲選課前切換<b>「欲選課學期」</b>，即可查看該學期是否有開課。</div>
+							<div class="item">此頁面僅提供<b>「畢業學分門檻」</b>，其他畢業門檻（如路跑、英文等）請見學校規定。</div>
+						</div>
+					</div>
+					<button class="ts-button is-ghost is-icon is-small toggle-info" style="color:#999;position:absolute;top:0;right:0"><span class="ts-icon is-x-icon"></span></button>
+					<div class="symbol"><span class="ts-icon is-circle-info-icon"></span></div>
+				</div>
 				<div class="ts-header is-icon loader"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入資料...</div>
 				<main style="display: none;"></main>
 			</div>
 			<br>
 		</div>
 		<div class="cell">
-			<div style="text-align:center;font-size:80%;padding:5px">
-				Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a>
-			</div>
+			<div style="text-align:center;font-size:80%;padding:5px">Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a> | <a href="https://line.me/R/ti/p/%40221oslxd" target="_blank">問題回報</a></div>
 		</div>
 	</div>
 	<div class="ts-modal is-big">
