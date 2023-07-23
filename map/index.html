@@ -208,6 +208,9 @@
 		// 學餐 販賣機 AED
 		const icon_vending = L.icon({iconUrl: 'https://i.imgur.com/MgeOIop.png', iconSize: [40, 40],});
 		$(function(){
+			var params = new Proxy(new URLSearchParams(window.location.search || ''), {
+				get: (searchParams, prop) => searchParams.get(prop),
+			});
 			$.each(data, function(i,v) {
 				$('#result').append('<a class="item" data-info="'+v+'" data-key="'+v[0]+v[2]+'" style="display:none">'+v[0]+'<span class="ts-icon is-angle-right-icon"></span></a>');
 			});
@@ -233,6 +236,8 @@
 				$('.leaflet-marker-icon').remove();
 				$('.leaflet-popup').remove();
 
+				history.replaceState({}, null, '?s='+$(this).text());
+
 				if((["販賣機","AED","學餐","學生餐廳"]).includes($(this).text())) {
 					if($(this).text() == '販賣機') {
 						for (const p of data_multi[0]) {
@@ -253,6 +258,10 @@
 					L.popup([info[3],info[4]], {  closeButton:false, content: '<b>'+$(this).text()+'</b><br>'+info[1] }).addTo(map);
 				}
 			});
+			if(params['s'] != '') {
+				$('#search').val(params['s']).trigger('input');
+				$('#result .item[data-key*="'+params['s']+'"]').click();
+			}
 		});
 	</script>
 </body>
