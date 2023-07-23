@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="is-large">
+<head>
+	<title>明志科大校園地圖</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.2.4/tocas.min.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+		}
+
+		#map {
+			width: 100%;
+			height: 60%;
+			background: #333;
+		}
+
+		#sidebar {
+			width: 100%;
+			height: 40%;
+			padding: 15px 0;
+			overflow-y: scroll;
+		}
+
+		#result .ts-box {
+			margin-bottom: 10px;
+			font-size: 18px;
+		}
+
+		.leaflet-popup-content {
+			margin: 6px 8px;
+			text-align: center;
+		}
+
+		.leaflet-popup-content::selection,
+		.leaflet-popup-content *::selection {
+			color: #FFF;
+			background: #777;
+		}
+
+		#trend {
+			margin: 5px 0 15px;
+		}
+
+		#footer {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			padding: 10px;
+			text-align: center;
+		}
+
+		@media screen and (min-width: 800px) { 
+			#map {
+				width: 80%;
+				height: 100%;
+				float: right;
+			}
+
+			#sidebar {
+				width: 20%;
+				height: 100%;
+				float: left;
+			}
+		}
+	</style>
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	<script src="https://unpkg.com/jquery"></script>
+</head>
+<body>
+	<div id="map"></div>
+	<div class="ts-box is-squared" id="sidebar">
+		<div class="ts-container is-very-narrow">
+			<div class="ts-input is-start-icon" style="margin-bottom:10px">
+				<span class="ts-icon is-magnifying-glass-icon"></span>
+				<input type="text" id="search" placeholder="輸入要找的地點…">
+			</div>
+			<small>熱門搜尋：</small>
+			<div class="ts-wrap is-compact" id="trend">
+				<button class="ts-chip is-circular is-outlined">販賣機</button>
+				<button class="ts-chip is-circular is-outlined">收發室</button>
+				<button class="ts-chip is-circular is-outlined">AED</button>
+				<button class="ts-chip is-circular is-outlined">學餐</button>
+			</div>
+			<div class="ts-menu is-end-icon is-separated" id="result"></div>
+		</div>
+		<div id="footer">
+			Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a> | <a href="https://line.me/R/ti/p/%40221oslxd" target="_blank">問題回報</a>
+		</div>
+	</div>
+	<script>
+		var width = 17;
+		if($('#map').width() >= 940) width = 18;
+		var map;
+		map = L.map('map',{
+			maxBounds: [
+				[25.037, 121.4175],
+				[25.047, 121.4241]
+			]
+		}).setView([25.042 , 121.4208], width);
+		
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+			minZoom: width
+		}).addTo(map);
+
+		var polygon = L.polygon([
+			[ [25.0481, 121.4139], [25.0355, 121.4139], [25.0355, 121.4288], [25.0481, 121.4288] ],
+			[ [25.040319, 121.4186125], [25.0401513, 121.4187034], [25.0400134, 121.4189763], [25.0383989, 121.4176619], [25.0380579, 121.4174776], [25.0378659, 121.4178026], [25.0382253, 121.4181364], [25.0397722, 121.4194123], [25.0399711, 121.4195955], [25.0400193, 121.4197444], [25.0400115, 121.4199001], [25.039992, 121.4202883], [25.0398686, 121.4205858], [25.0398022, 121.4207227], [25.0397271, 121.4209008], [25.039709, 121.4209572], [25.0397205, 121.4210418], [25.0398476, 121.421465], [25.0396378, 121.4218574], [25.039765, 121.4219531], [25.0395534, 121.4224716], [25.0394267, 121.4224009], [25.039346, 121.4226148], [25.0392771, 121.4225705], [25.0392345, 121.4226431], [25.0390148, 121.4226838], [25.0388602, 121.4220432], [25.0384005, 121.4217326], [25.0387484, 121.4211418], [25.0393521, 121.4215837], [25.0395431, 121.4212256], [25.0396621, 121.4213112], [25.0397032, 121.421343],			 [25.0398037, 121.4211846], [25.0398884, 121.4212886], [25.0400733, 121.4214332], [25.0402429, 121.4215645], [25.0403287, 121.4216636], [25.0403713, 121.4217402], [25.0404259, 121.4218899], [25.0404566, 121.4221486], [25.0405299, 121.4222254], [25.0406361, 121.4223369], [25.040722, 121.4224287], [25.040939, 121.4226369], [25.0410425, 121.4227498], [25.0411569, 121.4227525], [25.0414532, 121.4227193], [25.0415543, 121.4227224], [25.0417501, 121.4224311], [25.0422833, 121.4226795], [25.0425068, 121.422937], [25.0429443, 121.4230121], [25.0433235, 121.4233195], [25.0436718, 121.42292], [25.0438854, 121.4230574], [25.0444323, 121.4227225], [25.0446304, 121.4225491], [25.0450198, 121.4214631], [25.0451021, 121.4211882], [25.0449708, 121.4205578], [25.0445398, 121.4204138], [25.0444684, 121.4201309], [25.0445462, 121.4199283], [25.0435365, 121.4195152], [25.0435989, 121.419227], [25.043625, 121.419122], [25.0433852, 121.4191616], [25.0433489, 121.4190329], [25.042868, 121.4190623], [25.0428665, 121.4186347], [25.042518, 121.4186653], [25.0423816, 121.4188324], [25.0419865, 121.4188297], [25.0418328, 121.4191054], [25.0416238, 121.4191159], [25.04066, 121.4183665], [25.0404222, 121.4186271], [25.040319, 121.4186125] ]
+		]).addTo(map);
+		polygon.setStyle({fillColor: '#000000', fillOpacity: 0.6, weight: 0});
+
+		map.on('click', function(e) {
+			console.log( Math.round(e.latlng.lat*10000)/10000 + ', ' + Math.round(e.latlng.lng*10000)/10000 )
+		});
+
+		var data = [
+			["健身房", "體育館 B2", "", 25.04165, 121.42138],
+			["課外活動組", "體育館 B1", "課外組", 25.04165, 121.42138],
+			["學輔組", "體育館 B1", "學輔中心", 25.04165, 121.42138],
+			["郵局", "體育館 1F", "", 25.04165, 121.42138],
+			["學生事務處", "體育館 2F", "學務處", 25.04165, 121.42138],
+			["保健室", "體育館 2F", "衛保組健康中心保健室", 25.04165, 121.42138],
+			["生輔組", "體育館 2F", "生活輔導組", 25.04165, 121.42138],
+			["軍訓室", "體育館 2F", "教官室", 25.04165, 121.42138],
+			["羽球場", "體育館 3F", "", 25.04165, 121.42138],
+			["體育室", "體育館 3F", "", 25.04165, 121.42138],
+			["籃球場", "體育館 5F", "", 25.04165, 121.42138],
+			["排球場", "體育館 5F", "", 25.04165, 121.42138],
+			["桌球場", "體育館 5F", "", 25.04165, 121.42138],
+			["總務處", "教學大樓 1F", "", 25.04062, 121.42094],
+			["收發室", "教學大樓 1F", "", 25.04062, 121.42094],
+			["教務處", "教學大樓 3F", "", 25.04062, 121.42094],
+			["註冊組", "教學大樓 3F 教務處", "", 25.04062, 121.42094],
+			["課務組", "教學大樓 3F 教務處", "", 25.04062, 121.42094],
+			["招生組", "教學大樓 3F 教務處", "", 25.04062, 121.42094],
+			["通識中心", "教學大樓 4F", "", 25.04062, 121.42094],
+			["語言中心", "教學大樓 4F", "", 25.04062, 121.42094],
+			["影印室", "圖資大樓 1F", "", 25.04189, 121.42199],
+			["自習室", "圖資大樓 3F", "", 25.04189, 121.42199],
+			["圖書館", "圖資大樓 4F", "", 25.04189, 121.42199],
+			["電算中心", "圖資大樓 3F", "", 25.04189, 121.42199],
+			["警衛室", "校門口", "", 25.04054, 121.422432],
+
+			["九族公園", "", "", 25.0422, 121.4205],
+			["操場", "", "田徑場", 25.0434, 121.4206],
+			["籃排球場", "", "籃球場排球場", 25.0408, 121.4197],
+			["游泳池", "", "", 25.0417, 121.4194],
+			["花房咖啡廳", "", "", 25.0426, 121.4221],
+
+			["管理暨設計學院", "創新大樓 6F", "管設學院", 25.0392, 121.4219],
+			["工業工程與管理系", "創新大樓 6F", "工管系", 25.0392, 121.4219],
+			["經營管理系", "創新大樓 5F", "經管系", 25.0392, 121.4219],
+			["工業設計系", "創新大樓 4F", "工設系", 25.0392, 121.4219],
+			["視覺傳達設計系", "創新大樓 7F", "視傳系", 25.0392, 121.4219],
+			["數位行銷設計學士學位學程", "創新大樓 5F", "行設", 25.0392, 121.4219],
+
+			["環境資源學院", "綜合大樓 3F", "環資學院", 25.0392, 121.4219],
+			["材料工程系", "綜合大樓 2F", "", 25.0414, 121.4223],
+			["環境與安全衛生工程系", "綜合大樓 2F", "環安系環安衛系", 25.0414, 121.4223],
+			["環資跨領域實務菁英班", "綜合大樓 3F", "環實務", 25.0414, 121.4223],
+
+			["販賣機","","","",""],
+			["AED","","aed","",""],
+			["學生餐廳","","學餐","",""],
+		];
+		data_multi = [
+			[
+				[25.041, 121.4189, '舍監室前面'],
+				[25.04250, 121.41883, '五宿 1F'],
+				[25.0403, 121.4204, '化工館 2F'],
+				[25.0407, 121.4208, '教學大樓 1F 中間'],
+				[25.0412, 121.4213, '教學大樓 1F 110 教室旁'],
+				[25.0423, 121.4219, '電子館 1F'],
+				[25.0417, 121.4215, '體育館 1F 階梯教室前、2F 廣場'],
+				[25.0414, 121.4223, '綜合大樓 7F'],
+				[25.0393, 121.4219, '創新大樓 1F、6F 梯廳'],
+
+				[25.0432, 121.4229, '機械館 1F'],
+				[25.0406, 121.4199, '電機館 1F']
+			],
+			[
+				[25.04054, 121.422432, '警衛室'],
+				[25.0407, 121.4208, '教學大樓 1F 總務處門口'],
+				[25.0417, 121.4215, '體育館 3F 電梯口'],
+				[25.0393, 121.4219, '創新大樓 1F、6F 梯廳'],
+				[25.043, 121.4207, '操場器材室旁'],
+				[25.04250, 121.41883, '五宿 1F'],
+				[25.0414, 121.4223, '綜合大樓 7F'],
+				[25.0412, 121.4195, '二宿 1F'],
+
+				[25.0432, 121.4229, '機械館'],
+				[25.0406, 121.4199, '電機館']
+			],
+			[
+				[25.0408, 121.4192, '<b>第一餐廳</b><br>學一、二宿中間'],
+				[25.0419, 121.422, '<b>第二餐廳</b><br>圖資大樓 B1、B2']
+			]
+		]
+		// 學餐 販賣機 AED
+		const icon_vending = L.icon({iconUrl: 'https://i.imgur.com/MgeOIop.png', iconSize: [40, 40],});
+		$(function(){
+			$.each(data, function(i,v) {
+				$('#result').append('<a class="item" data-info="'+v+'" data-key="'+v[0]+v[2]+'" style="display:none">'+v[0]+'<span class="ts-icon is-angle-right-icon"></span></a>');
+			});
+			$('body').on('input', '#search', function(){
+				$('#result .item').hide();
+				$('#result .item[data-key*="'+$(this).val()+'"]').show();
+				if($(this).val() != '' && $('#result .item[data-key*="'+$(this).val()+'"]').length == 0) {
+					$.ajax({
+						url: 'https://mcut-bot.henrywu.tw/api/map.php?s='+$(this).val(),
+						method: 'GET',
+						success: function(res){console.log(res)}
+					});
+				}
+			});
+			$('body').on('click', '#trend button', function(){
+				$('#search').val($(this).text()).trigger('input');
+				$('#result .item[data-key*="'+$(this).text()+'"]').click();
+			});
+			$('body').on('click', '#result .item', function() {
+				$('#result .item').removeClass('is-active');
+				$(this).addClass('is-active');
+				var info = $(this).attr('data-info').split(',');
+				$('.leaflet-marker-icon').remove();
+				$('.leaflet-popup').remove();
+
+				if((["販賣機","AED","學餐","學生餐廳"]).includes($(this).text())) {
+					if($(this).text() == '販賣機') {
+						for (const p of data_multi[0]) {
+							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
+						}
+					}
+					else if($(this).text() == 'AED') {
+						for (const p of data_multi[1]) {
+							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
+						}
+					}
+					else if($(this).text() == '學餐' || $(this).text() == '學生餐廳') {
+						for (const p of data_multi[2]) {
+							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
+						}
+					}
+				} else {
+					L.popup([info[3],info[4]], {  closeButton:false, content: '<b>'+$(this).text()+'</b><br>'+info[1] }).addTo(map);
+				}
+			});
+		});
+	</script>
+</body>
+</html>
