@@ -233,7 +233,10 @@
 				dataType: 'json',
 				success: function(res){
 					$.each( res.term, function( k, v ) {
-						$('#search-term').append('<option value="'+v+'">'+v+( (v.includes('-3') || v.includes('-4')) ? ' (暑修)':'' )+'</option>');
+						if(v.includes('-3') || v.includes('-4')) $('#search-term').append('<option value="'+v+'">'+v+' (暑修)</option>');
+						else if(v.includes('-1')) $('#search-term').append('<option value="'+v+'">'+v+' (上學期/二升三暑期)</option>');
+						else if(v.includes('-2')) $('#search-term').append('<option value="'+v+'">'+v+' (下學期/實習期間)</option>');
+						else $('#search-term').append('<option value="'+v+'">'+v+' (暑修)</option>');
 					});
 					$('#search-term').val(res.course[0].id.substring(0,3)+'-'+res.course[0].id.substring(3,4));
 					select_list = {};
