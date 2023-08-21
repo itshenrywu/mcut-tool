@@ -511,8 +511,15 @@
 			$('body').on('change','#search-dept, #search-class, #search-type, #search-course, #search-teacher',function(){
 				updateSearch();
 			});
+			var delayed;
+			function delay_search(text){
+				delayed = setTimeout(function (x) {
+					updateSearch();
+				},500);
+			};
 			$('body').on('input','#search-course, #search-teacher',function(){
-				updateSearch();
+				clearTimeout(delayed);
+				delay_search();
 			});
 			$('body').on('change','#hide_conflict',function(){
 				updateSearch();
