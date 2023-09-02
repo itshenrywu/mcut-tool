@@ -191,6 +191,7 @@
 			["學生餐廳","","學餐","",""],
 			["機車棚","","","",""],
 			["洗衣精補充站","","","",""],
+			["i郵箱","","","",""],
 		];
 		data_multi = [
 			[
@@ -233,6 +234,10 @@
 				[25.0407, 121.4208, '教學大樓 1F'],
 				[25.0404, 121.4226, '公車站旁'],
 				[25.0408, 121.4192, '一、二宿中間']
+			],
+			[
+				[25.0395, 121.422, '<b>創新大樓 1F</b><br>24300 明志科大創新大樓ｉ郵箱'],
+				[25.0417, 121.4215, '<b>體育館 1F</b><br>24300 明志科大郵局ｉ郵箱'],
 			]
 		]
 		$(function(){
@@ -244,7 +249,7 @@
 			});
 			$('body').on('input', '#search', function(){
 				$('#result .item').hide();
-				$('#result .item[data-key*="'+$(this).val()+'"]').show();
+				$('#result .item[data-key*="'+$(this).val().replace(/\s/g,'').toLowerCase()+'"]').show();
 				if($(this).val() != '' && $('#result .item[data-key*="'+$(this).val()+'"]').length == 0) {
 					$.ajax({
 						url: 'https://mcut-bot.henrywu.tw/api/map.php?s='+$(this).val(),
@@ -266,7 +271,7 @@
 
 				history.replaceState({}, null, '?s='+$(this).text());
 
-				if((['販賣機','AED','學餐','學生餐廳','機車棚','洗衣精補充站']).includes($(this).text())) {
+				if((['販賣機','AED','學餐','學生餐廳','機車棚','洗衣精補充站','i郵箱']).includes($(this).text())) {
 					if($(this).text() == '販賣機') {
 						for (const p of data_multi[0]) {
 							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
@@ -289,6 +294,11 @@
 					}
 					else if($(this).text() == '洗衣精補充站') {
 						for (const p of data_multi[4]) {
+							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
+						}
+					}
+					else if($(this).text() == 'i郵箱') {
+						for (const p of data_multi[5]) {
 							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
 						}
 					}
