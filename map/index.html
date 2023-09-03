@@ -192,6 +192,7 @@
 			["機車棚","","","",""],
 			["洗衣精補充站","","","",""],
 			["i郵箱","","","",""],
+			["垃圾場","","回收場","",""],
 		];
 		data_multi = [
 			[
@@ -238,6 +239,11 @@
 			[
 				[25.0395, 121.422, '<b>創新大樓 1F</b><br>24300 明志科大創新大樓ｉ郵箱'],
 				[25.0417, 121.4215, '<b>體育館 1F</b><br>24300 明志科大郵局ｉ郵箱'],
+			],
+			[
+				[25.0401, 121.4206, '教學大樓旁'],
+				[25.0404, 121.4186, '第四宿舍旁'],
+				[25.0417, 121.4222, '綜合大樓旁 (定時開放)']
 			]
 		]
 		$(function(){
@@ -271,7 +277,7 @@
 
 				history.replaceState({}, null, '?s='+$(this).text());
 
-				if((['販賣機','AED','學餐','學生餐廳','機車棚','洗衣精補充站','i郵箱']).includes($(this).text())) {
+				if((['販賣機','AED','學餐','學生餐廳','機車棚','洗衣精補充站','i郵箱','垃圾場']).includes($(this).text())) {
 					if($(this).text() == '販賣機') {
 						for (const p of data_multi[0]) {
 							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
@@ -299,6 +305,11 @@
 					}
 					else if($(this).text() == 'i郵箱') {
 						for (const p of data_multi[5]) {
+							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
+						}
+					}
+					else if($(this).text() == '垃圾場') {
+						for (const p of data_multi[6]) {
 							L.popup([p[0],p[1]], { closeButton:false, content: p[2] }).addTo(map);
 						}
 					}
