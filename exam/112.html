@@ -160,7 +160,7 @@
 			position: fixed;
 			width:600px;
 			max-width:100%;
-			margin: 43px auto 0;
+			margin: 41px auto 0;
 			display: none
 		}
 
@@ -180,6 +180,61 @@
 
 		#loading {
 			padding: 40vh 0 38vh;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			* {
+				color: #FFF !important;
+			}
+
+			body {
+				background: #111;
+			}
+
+			.ts.segment {
+				background: #222;
+				border-color: #000 !important;
+			}
+
+			.ts.segment.secondary {
+				background: #333;
+			}
+
+			#menu {
+				background: #444 !important;
+			}
+
+			button {
+				background: #444 !important;
+				border: none !important;
+			}
+
+			.ts.button:not(.visible):not(.hidden):not(.active):not(:active):not(.opinion):hover,
+			button.active {
+				background: #222 !important;
+				color: #FFF !important;
+			}
+
+			footer {
+				background: #222 !important;
+				color: #FFF !important;
+			}
+
+			.swiper-scrollbar {
+				background: #333 !important;
+			}
+
+			.swiper-scrollbar-drag {
+				background: #FFF !important;
+			}
+
+			.ts.menu.pointing.secondary {
+				border-bottom: none !important;
+			}
+
+			a {
+				text-decoration: underline;
+			}
 		}
 	</style>
 </head>
