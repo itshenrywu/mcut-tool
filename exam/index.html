@@ -19,7 +19,7 @@
 		.swiper-slide {
 			height: 100vh;
 			overflow-y: scroll;
-			padding-bottom: 190px;
+			padding-bottom: 225px;
 		}
 
 		.swiper-scrollbar.swiper-scrollbar-horizontal {
@@ -65,8 +65,10 @@
 			</div>
 		</div>
 		<div class="cell">
-			<div class="ts-segment is-secondary  is-center-aligned" style="border:none;">
+			<div class="ts-segment is-secondary is-center-aligned" style="border:none;">
 				<div class="ts-container is-very-narrow">
+					<div class="ts-header is-center-aligned" id="date"></div>
+					<div class="ts-space is-small"></div>
 					<div class="ts-selection is-dense is-small">
 						<label class="item"><input type="radio" name="dept" value="管設" /><div class="text">管設</div>
 						</label>
@@ -120,8 +122,13 @@
 			url: 'https://mcut.henrywu.tw/exam/data.json?v=20231028',
 			dataType: 'json',
 			success: function(res) {
+				$('#date').html('<span class="ts-icon is-calendar-days-icon is-end-spaced"></span>' + res[0][3] + ' (二) ');
 				$.each(res, function(i, v) {
-					$('[data-list="'+v[1]+'"]').append('<div class="ts-box is-squared" data-sort="'+getSortId(v[0])+'" data-name="'+v[0]+'"><div class="ts-container is-very-narrow is-fitted"><div class="ts-content"><div class="ts-header">'+v[0].replace(/([\x00-\xFF]+)/g, " $1 ")+'</div><p><span class="ts-icon is-user-icon is-end-spaced"></span>'+v[2]+'　<span class="ts-icon is-location-dot-icon is-end-spaced"></span>'+v[5]+'</p></div></div></div>');
+					$('[data-list="'+v[1]+'"]').append('<div class="ts-box is-squared" data-sort="'+getSortId(v[0])+'" data-name="'+v[0]+'"><div class="ts-container is-very-narrow is-fitted"><div class="ts-content"><div class="ts-header">'+v[0].replace(/([\x00-\xFF]+)/g, " $1 ")+'</div><p>\
+						<span class="ts-icon is-user-icon is-end-spaced"></span>'+v[2]+'　\
+						<span class="ts-icon is-clock-icon is-end-spaced"></span>'+v[4]+'　\
+						<span class="ts-icon is-location-dot-icon is-end-spaced"></span>'+v[5]+'\
+						</p></div></div></div>');
 				});
 				$('[data-list="生活與職場英文"] .ts-box').sort(sortById).appendTo('[data-list="生活與職場英文"]');
 				$('[data-list="英語聽講"] .ts-box').sort(sortById).appendTo('[data-list="英語聽講"]');
