@@ -418,10 +418,8 @@
 				_c = 0; _h = 0;
 				$.each( savedCourse, function( k, v ) {
 					_c += parseInt(courseData[v]['credit'])
-					_h += parseInt(courseData[v]['hour'])
 				})
 				$('.savedCourse_credit').text(_c);
-				$('.savedCourse_hour').text(_h);
 				$('.savedCourse_count').text(savedCourse.length);
 
 				if(savedCourse.length > 0) {
@@ -503,7 +501,7 @@
 						<button class="ts-button is-small is-negative is-outlined" id="clear" style="display:none"><span class="ts-icon is-end-spaced is-trash-icon"></span> 全部清除</button>
 					</div>
 				</div>
-				<div class="ts-grid is-3-columns">
+				<div class="ts-grid is-2-columns">
 					<div class="column">
 						<div class="ts-box">
 							<div class="ts-content">
@@ -527,19 +525,6 @@
 							</div>
 							<div class="symbol">
 								<span class="ts-icon is-list-check-icon"></span>
-							</div>
-						</div>
-					</div>
-					<div class="column">
-						<div class="ts-box">
-							<div class="ts-content">
-								<div class="ts-statistic">
-									<div class="value savedCourse_hour">-</div>
-									<div class="comparison">小時</div>
-								</div>
-							</div>
-							<div class="symbol">
-								<span class="ts-icon is-clock-icon"></span>
 							</div>
 						</div>
 					</div>
