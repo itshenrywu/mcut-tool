@@ -239,6 +239,24 @@
 			const params = new Proxy(new URLSearchParams(window.location.search), {
 				get: (searchParams, prop) => searchParams.get(prop),
 			});
+
+			if(params.ids) {
+				Swal.fire({
+					title: '確定要匯入 ' +params.ids.split(',').length+ ' 門課程？',
+					text: '先前收藏的課程將會清空！',
+					confirmButtonText: '匯入',
+					showCancelButton: true,
+					cancelButtonText: '取消',
+					confirmButtonColor: 'var(--ts-primary-600)'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						localStorage.setItem('savedCourse', JSON.stringify(params.ids.split(',')));
+						localStorage.setItem('term', params.ids.substr(0,4));
+						location.href = './saved';
+					}
+				})
+			}
+
 			if(window.location.hash) {
 				_import = atob(window.location.hash.replace('#','')).split(',');
 				if(_import.length > 0) {
@@ -326,7 +344,7 @@
 
 				detail = '';
 				if(!id.includes('ALT_')) detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
-				<tr><td style="width: 7rem"><b>開課序號</b></td><td>'+id+'</td></tr>\
+				<tr><td style="width: 8rem"><b>開課序號</b></td><td>'+id+'</td></tr>\
 				<tr><td><b>開課單位/班級</b></td><td>'+basic_data[0].innerHTML+'</td></tr>\
 				<tr><td><b>上課時間</b></td><td>'+basic_data[2].innerHTML+'</td></tr>\
 				<tr><td><b>修別/學分</b></td><td>'+basic_data[3].innerHTML+' 學分</td></tr>\
@@ -453,6 +471,34 @@
 				});
 			});
 
+			$('body').on('click','#share',function(){
+				Swal.fire({
+					title: '匯出 ' +savedCourse.length+ ' 門收藏的課程',
+					text: '請複製以下網址後到其他裝置貼上！',
+					input: 'text',
+					inputValue: 'https://mcut.henrywu.tw/course/saved?ids='+savedCourse.join(','),
+					inputAttributes: {
+						autocapitalize: 'off'
+					},
+					confirmButtonText: '複製',
+					showCancelButton: true,
+					cancelButtonText: '關閉',
+					confirmButtonColor: 'var(--ts-primary-600)'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						var ip = document.getElementById('swal2-input');
+						ip.select();
+						document.execCommand('copy');
+						Swal.fire({
+							title: '已複製網址，請貼上到其他裝置！', icon: 'success', toast: true,
+							timer: 3000, timerProgressBar: true,
+							position: 'bottom-start', showConfirmButton: false,
+						})
+					}
+				});
+				document.getElementById('swal2-input').setSelectionRange(0,0);
+			});
+
 			$('[data-show]').on('click',function(){
 				$('[data-content]').hide();
 				$('[data-content="'+$(this).attr('data-show')+'"]').show();
@@ -498,7 +544,8 @@
 						<h1>收藏的課程</h1>
 					</div>
 					<div class="column">
-						<button class="ts-button is-small is-negative is-outlined" id="clear" style="display:none"><span class="ts-icon is-end-spaced is-trash-icon"></span> 全部清除</button>
+						<button class="ts-button is-small is-negative is-outlined" id="clear" style="display:none"><span class="ts-icon is-end-spaced is-trash-icon"></span> 全部清除</button>　
+						<button class="ts-button is-small is-outlined" id="share" style="display:none"><span class="ts-icon is-end-spaced is-file-export-icon"></span> 匯出</button>
 					</div>
 				</div>
 				<div class="ts-grid is-2-columns">
