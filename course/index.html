@@ -398,7 +398,7 @@
 				if(!id.includes('ALT_')) detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
 				<tr><td style="width: 8rem"><b>開課序號</b></td><td>'+id+'</td></tr>\
 				<tr><td><b>開課單位/班級</b></td><td>'+basic_data[0].innerHTML+'</td></tr>\
-				<tr><td><b>上課時間</b></td><td>'+basic_data[2].innerHTML+'</td></tr>\
+				'+(params.ht!=null?'':'<tr><td><b>上課時間</b></td><td>'+basic_data[2].innerHTML+'</td></tr>')+'\
 				<tr><td><b>修別/學分</b></td><td>'+basic_data[3].innerHTML+' 學分</td></tr>\
 				<tr><td><b>授課老師</b></td><td>'+basic_data[4].innerHTML+'</td></tr>';
 				else detail += '<table class="ts-table is-sticked is-basic" id="detail-table"><tbody>\
