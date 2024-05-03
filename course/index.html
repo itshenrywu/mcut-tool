@@ -11,7 +11,7 @@
 	<meta property="og:url" content="https://mcut.henrywu.tw/course">
 	<meta property="og:image" content="https://mcut.henrywu.tw/res/logo.png">
 	<link rel="shortcut icon" type="image/png" href="https://mcut.henrywu.tw/res/logo.png" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.4/tocas.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.2.5/tocas.min.css">
 	<style>
 		.ts-table .ts-badge {
 			margin-top: -0.25rem!important;
@@ -90,6 +90,10 @@
 			}
 		}
 
+		#term-dropdown {
+			z-index: 1000;
+		}
+
 		@media (max-width: 768px) {
 			thead {
 				display: none;
@@ -122,10 +126,6 @@
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				height: 1.4rem;
-			}
-
-			#main td:nth-child(6) {
-				//display: none;
 			}
 
 			.detail-content td {
@@ -233,12 +233,16 @@
 				dataType: 'json',
 				success: function(res){
 					$.each( res.term, function( k, v ) {
-						if(v.includes('-3') || v.includes('-4')) $('#search-term').append('<option value="'+v+'">'+v+' (暑修)</option>');
-						else if(v.includes('-1')) $('#search-term').append('<option value="'+v+'">'+v+' (上學期/二升三暑期)</option>');
-						else if(v.includes('-2')) $('#search-term').append('<option value="'+v+'">'+v+' (下學期/實習期間)</option>');
-						else $('#search-term').append('<option value="'+v+'">'+v+' (暑修)</option>');
+						desc = '';
+						if(v.includes('-3') || v.includes('-4')) desc = ' 暑修</option>';
+						else if(v.includes('-1')) desc = ' 上學期 / 二升三暑期';
+						else if(v.includes('-2')) desc = ' 下學期 / 大三實習期間';
+						$('#term-dropdown').append('<button class="item" data-term="'+v+'">'+v+'<span class="description">'+desc+'</span></button>');
+						$('#search-term').append('<option value="'+v+'">'+v+'</option>');
 					});
 					$('#search-term').val(res.course[0].id.substring(0,3)+'-'+res.course[0].id.substring(3,4));
+					$('#term-title').html(res.course[0].id.substring(0,3)+'-'+res.course[0].id.substring(3,4));
+					$('#term-dropdown .item[data-term="'+res.course[0].id.substring(0,3)+'-'+res.course[0].id.substring(3,4)+'"]').addClass('is-selected');
 					select_list = {};
 					$.each( res.course, function( k, v ) {
 						if(!select_list[v['dept']]) select_list[v['dept']] = [];
@@ -374,6 +378,16 @@
 					updateTimeList();
 				}
 			});
+
+			$('body').on('click','#term-select',function(){
+				$(this).toggleClass('is-active');
+			});
+
+			$('body').on('click','#term-dropdown .item',function(){
+				$('#search-term').val($(this).attr('data-term'))
+				$('#search-term').trigger('change');
+			})
+			
 			$('body').on('click','.ts-close',function(){
 				viewing = '';
 				history.replaceState({}, '', '/course/');
@@ -645,7 +659,9 @@
 						localStorage.setItem('term', $('#search-term').val());
 						localStorage.setItem('filterOpen', 'true');
 						location.reload();
-					} else $('#search-term').val(Object.keys(courseData)[0].substring(0,3)+'-'+Object.keys(courseData)[0].substring(3,4));
+					} else {
+						$('#search-term').val(Object.keys(courseData)[0].substring(0,3)+'-'+Object.keys(courseData)[0].substring(3,4));
+					}
 				});
 			});
 
@@ -698,13 +714,15 @@
 					</div>
 				</div>
 				<div class="ts-header is-icon loader"><span class="ts-icon is-spinning is-spinner-icon"></span>正在載入課表...</div>
-				<div class="ts-segment is-secondary loading" id="search-box" style="margin-block-end: 1.6em;">
+				<div class="ts-segment is-secondary loading" id="search-box" style="margin-block-end: 1.6em;overflow:visible;">
 					<div class="ts-grid is-stackable">
 						<div class="column is-2-wide">
 							<label>學年/學期</label>
-							<div class="ts-select is-fluid">
-								<select id="search-term"></select>
+							<div class="ts-select is-fluid" id="term-select">
+								<div class="content" id="term-title"></div>
+								<div class="ts-dropdown is-bottom" id="term-dropdown"></div>
 							</div>
+							<select id="search-term" style="display:none;"></select>
 						</div>
 						<div class="column is-3-wide">
 							<label>開課單位</label>
