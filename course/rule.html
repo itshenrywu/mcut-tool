@@ -60,11 +60,6 @@
 			content: '';
 		}
 
-		.ts-content.is-dense {
-			/*padding-bottom: 0.2rem;
-			padding-top: 0.2rem;*/
-		}
-
 		[data-open] {
 			cursor: pointer;
 		}
@@ -95,10 +90,6 @@
 
 		main [data-detail] td:nth-child(4) {
 			width: 10rem;
-		}
-
-		main [data-detail] td:nth-child(5) {
-
 		}
 
 		[data-show="course-comment"] .ts-badge:empty {
@@ -180,8 +171,9 @@
 				padding: .2rem 0 !important;
 			}
 
-			.column .ts-grid .column {
-				grid-column: auto/span 8;
+			.ts-grid.is-stackable .ts-grid .column {
+				max-width: var(--ts-grid-8-wide);
+				width: var(--ts-grid-8-wide);
 			}
 
 			.ts-container.is-navbar {

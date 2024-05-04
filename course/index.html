@@ -161,7 +161,8 @@
 			}
 
 			.ts-grid.is-stackable .column {
-				grid-column: auto/span 8;
+				max-width: var(--ts-grid-8-wide);
+				width: var(--ts-grid-8-wide);
 			}
 
 			.ts-container.is-navbar {
@@ -386,13 +387,22 @@
 			$('body').on('click','#term-dropdown .item',function(){
 				$('#search-term').val($(this).attr('data-term'))
 				$('#search-term').trigger('change');
-			})
+			});
 			
 			$('body').on('click','.ts-close',function(){
 				viewing = '';
 				history.replaceState({}, '', '/course/');
 				$('.ts-modal').removeClass('is-visible');
-			})
+			});
+
+			$('body').on('click',function(e){
+				if($(e.target).attr('id')) {
+					if(
+						$(e.target).attr('id') != 'term-select' &&
+						$(e.target).attr('id') != 'term-title'
+					) $('#term-select').removeClass('is-active');
+				} else $('#term-select').removeClass('is-active');
+			});
 
 			$('body').on('click','[data-detail]',function(){
 				id = $(this).attr('data-detail');
