@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>明志科技大學行事曆</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+	<meta name="language" content="zh-tw">
+	<meta property="og:url" content="https://mcut-bot.henrywu.tw/calendar">
+	<meta property="og:image" content="https://mcut.henrywu.tw/res/logo.png">
+	<link rel="shortcut icon" type="image/png" href="https://mcut.henrywu.tw/res/logo.png" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.2.5/tocas.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.13/index.global.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/4.2.5/tocas.min.js"></script>
+	<style>
+		.fc-theme-standard .fc-scrollgrid {
+			border: none;
+		}
+
+		.fc .fc-scrollgrid-section-sticky > * {
+			background: transparent;
+		}
+
+		.fc-theme-standard td,
+		.fc-theme-standard th {
+			background: transparent;
+			border-color: var(--ts-gray-300);
+		}
+
+		.fc-theme-standard td:last-child,
+		.fc-theme-standard th:last-child {
+			border-right: none;
+		}
+
+		.ts-app-topbar {
+			padding-top: 0;
+			padding-bottom: 0;
+			min-height: 30px;
+			background: var(--ts-gray-300);
+			color: var(--ts-gray-900)!important;
+		}
+
+		.fc .fc-daygrid-day.fc-day-today {
+			background-color: var(--ts-gray-200);
+		}
+
+		.fc .fc-list-day-cushion {
+			background-color: var(--ts-gray-100);
+		}
+
+		.fc.fc-list {
+			border: none;
+		}
+
+		.ts-app-topbar:first-child .item.is-text {
+			font-size: .9rem;
+		}
+
+		.ts-app-topbar:first-child .ts-icon {
+			font-size: .85rem;
+		}
+
+		.fc .fc-list-empty {
+			background-color: transparent;
+		}
+
+		.fc .fc-list-empty-cushion {
+			margin: 40vh 0;
+		}
+
+		.fc .fc-listMonth-view {
+			border: none!important
+		}
+
+		.fc .fc-listMonth-view th {
+			border: none
+		}
+
+		.fc .fc-listMonth-view td {
+			border-top: none;
+		}
+
+		.fc .fc-list-event:hover td {
+			background-color: transparent
+		}
+
+		.fc-daygrid-day-top a {
+			font-size: .8rem;
+		}
+
+		.fc-event {
+			height: 20px;
+		}
+
+		.fc-event-title {
+			font-size: 12px !important;
+			line-height: 16px;
+			padding: 0;
+		}
+
+		.loading {
+			background: var(--ts-gray-50);
+			color: var(--ts-gray-900);
+			opacity: .8;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			height: 100dvh;
+			overflow: hidden;
+			z-index: 1000;
+		}
+
+		.ts-close {
+			position: absolute;
+			right: 8px;
+			top: 8px;
+			z-index: 1000;
+		}
+
+		.ts-modal .ts-icon {
+			width: 1.5rem;
+			display: inline-block;
+		}
+
+		.fc-list-event-title small {
+			color: var(--ts-gray-600)
+		}
+
+		.fc-list-event-graphic {
+			padding: 0!important;
+		}
+
+		.ts-modal a {
+			color: #577a9d
+		}
+
+		.ts-app-topbar .item a {
+			text-decoration: none;
+		}
+
+		.ts-app-topbar .item a.disabled {
+			color: var(--ts-gray-500) !important
+		}
+	</style>
+	<script>
+	$(function(){
+		var type = localStorage.getItem('calendar_type') || '大一';
+		var view = localStorage.getItem('calendar_view') || 'dayGridMonth';
+		$('#text-type').text(type);
+		if(type.includes('大') || type.includes('研究')) $('[data-action="export"]').attr('href', 'https://mcut-bot.henrywu.tw/calendar/ics.php?openExternalBrowser=1&type='+type).show();
+		if(view != 'dayGridMonth') $('#text-view').text('清單檢視');
+		var calendar = new FullCalendar.Calendar(document.querySelector('#calendar'), {
+			eventSources: ['https://mcut-bot.henrywu.tw/calendar/api.php?type='+type],
+			lazyFetching: false,
+			initialView: view,
+			headerToolbar: false,
+			height: $('.cell.is-fluid').height()+'px',
+			locale: 'en',
+			displayEventTime: false,
+			eventBackgroundColor: '#34495e',
+			eventBorderColor: '#34495e',
+			dayHeaderContent: function(arg) {
+				if(arg.view.type == 'dayGridMonth') return ['日','一','二','三','四','五','六'][arg.date.getDay()];
+				else if(arg.view.type == 'listMonth') return (arg.date.getMonth()+1) + ' 月 '+arg.date.getDate()+' 日 (' + ['日','一','二','三','四','五','六'][arg.date.getDay()]+')';
+			},
+			views: {
+				dayGridMonth: {
+					titleFormat: function(d) {return d.date.year + ' 年 ' + (d.date.month+1) + ' 月'}
+				},
+				listMonth: {
+					titleFormat: function(d) {return d.date.year + ' 年 ' + (d.date.month+1) + ' 月'},
+					noEventsContent : '本月沒有任何事項'
+				}
+			},
+			eventClick: function(info) {
+				if(info.view.type == 'dayGridMonth') {
+					$('#modal').addClass('is-visible');
+					$('#modal .ts-content').html('\
+						<div class="ts-header is-large" style="margin-bottom:.5rem">'+info.event.title+'</div>' +
+						(info.event.extendedProps.g ? '<span class="ts-icon is-users-icon"></span> ' + 
+							(
+								info.event.extendedProps.g.split(',').length != 5 ?
+								info.event.extendedProps.g.split(',').map(n => ({'g1':'大一','g2':'大二','g3':'大三','g4':'大四','m':'研究所'})[n]).join('、') : '所有學生'
+							)
+						 + '<br>':'') +
+						'<span class="ts-icon is-clock-icon"></span> ' + info.event.extendedProps.d +
+						(info.event.extendedProps.l?'<br><span class="ts-icon is-location-dot-icon"></span> ' + info.event.extendedProps.l:'')+
+						(info.event.extendedProps.r?'<br><br>'+info.event.extendedProps.r:'')
+					);
+				}
+			},
+			loading: function(l) {
+				if(!l) $('.loading').hide();
+			},
+			eventDidMount: function(info) {
+				if(info.view.type == 'listMonth' && info.event.extendedProps.l) {
+					$(info.el).find('.fc-list-event-title').append('<br><small>'+info.event.extendedProps.l+'<small>');
+				}
+				$(info.el).find('.fc-list-event-graphic').css('background',info.event.backgroundColor != '' ? info.event.backgroundColor : '#34495e');
+			}
+		});
+
+		calendar.render();
+		$('#title').html(calendar.currentData.viewTitle);
+		
+		$('[data-action]').on('click', function(){
+			act = $(this).attr('data-action');
+			if(act == 'next') calendar.next();
+			else if(act == 'prev') calendar.prev();
+			else if(act == 'today') calendar.today();
+			$('#title').html(calendar.currentData.viewTitle);
+			d = new Date();
+			c = calendar.getDate();
+			c = c.getFullYear()*100+c.getMonth()+1;
+			d = d.getFullYear()*100+d.getMonth()+1;
+
+			if(c > d) $('[data-action="today"]').html('<span class="ts-icon is-arrow-rotate-left-icon"></span> 回本月').removeClass('disabled');
+			else if(c < d) $('[data-action="today"]').html('<span class="ts-icon is-arrow-rotate-right-icon"></span> 回本月').removeClass('disabled');
+			else $('[data-action="today"]').addClass('disabled');
+		});
+
+		$('[data-type]').on('click', function(){
+			if(type != $(this).text()) {
+				type = $(this).attr('data-type');
+				$('#text-type').text(type);
+				localStorage.setItem('calendar_type', type);
+				calendar.getEventSources()[0].remove();
+				calendar.addEventSource('https://mcut-bot.henrywu.tw/calendar/api.php?type='+type);
+				$('.loading').show();
+				if(type.includes('大') || type.includes('研究')) {
+					$('[data-action="export"]').attr('href', 'https://mcut-bot.henrywu.tw/calendar/ics.php?openExternalBrowser=1&type='+type).show();
+				} else $('[data-action="export"]').hide();
+			}
+		})
+
+		$('[data-view]').on('click', function(){
+			$('#text-view').text($(this).text());
+			calendar.changeView($(this).attr('data-view'));
+			localStorage.setItem('calendar_view', $(this).attr('data-view'));
+		});
+
+		$('.ts-close').on('click', function(){
+			$('.ts-modal').removeClass('is-visible');
+		});
+
+		$('body').on('click','.ts-modal',function(e){
+			if(e.target.id == 'modal') $('#modal').removeClass('is-visible');
+		})
+
+		$(document).keyup(function(e) {
+			if(e.key === "Escape") {
+				$('#modal').removeClass('is-visible');
+			}
+		});
+	});
+	</script>
+</head>
+<body>
+	<div class="ts-app-layout is-full is-vertical">
+		<div class="cell" style="background: var(--ts-gray-300);">
+			<div class="ts-app-topbar">
+				<div class="start">
+					<a class="item is-text" data-dropdown="dropdown-type">
+						<span id="text-type"></span>
+						<span class="ts-icon is-angle-down-icon"></span>
+					</a>
+				</div>
+				<div class="center">
+					<div class="item is-text">
+						<div class="ts-wrap">
+							<a data-action="today" class="disabled">
+								<span class="ts-icon is-arrow-rotate-left-icon"></span> 回本月
+							</a>
+							<a data-action="export" style="display:none;">
+								<span class="ts-icon is-file-export-icon"></span> 匯出
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="end">
+					<a class="item is-text" data-dropdown="dropdown-view">
+						<span id="text-view">月曆檢視</span>
+						<span class="ts-icon is-angle-down-icon"></span>
+					</a>
+				</div>
+			</div>
+			<div class="ts-dropdown" data-name="dropdown-type" data-position="bottom-start">
+				<button class="item" data-type="大一">大一</button>
+				<button class="item" data-type="大二">大二</button>
+				<button class="item" data-type="大三">大三</button>
+				<button class="item" data-type="大四">大四</button>
+				<button class="item" data-type="研究所">研究所</button>
+				<button class="item" data-type="社團活動">課外組 - 社團活動</button>
+				<button class="item" data-type="體育室">體育室 - 場地借用</button>
+			</div>
+			<div class="ts-dropdown" data-name="dropdown-view" data-position="bottom-end">
+				<button class="item" data-view="dayGridMonth">月曆檢視</button>
+				<button class="item" data-view="listMonth">清單檢視</button>
+			</div>
+			<div class="ts-app-topbar">
+				<div class="start">
+					<a class="item" data-action="prev">
+						<span class="ts-icon is-chevron-left-icon"></span>
+					</a>
+				</div>
+				<div class="center">
+					<div class="item is-text" id="title"></div>
+				</div>
+				<div class="end">
+					<a class="item" data-action="next">
+						<span class="ts-icon is-chevron-right-icon"></span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="cell is-fluid">
+			<div id="calendar"></div>
+		</div>
+		<div class="cell" style="background: var(--ts-gray-300);">
+			<div style="text-align:center;font-size:80%;padding:5px">Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a> | <a href="https://line.me/R/ti/p/%40221oslxd" target="_blank">問題回報</a></div>
+			</div>
+		</div>
+	</div>
+	<div class="ts-modal is-big" id="modal">
+		<div class="content">
+			<button class="ts-close is-big"></button>
+			<div class="ts-content"></div>
+		</div>
+	</div>
+	<div class="loading">
+		<div class="ts-center">
+			<div class="ts-loading is-large"></div>
+		</div>
+	</div>
+</body>
+</html>

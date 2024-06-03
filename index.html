@@ -4,30 +4,19 @@
 	<meta charset="utf-8">
 	<title>MCUT Tools｜明志科大小工具</title>
 	<link rel="icon" type="image/png" href="res/logo.png">
-	<meta property="og:description" content="Powered by MCUT Bot / Henry Wu">
+	<meta property="og:description" content="MCUT tools powered by MCUT Bot / Henry Wu">
 	<meta property="og:image" content="https://mcut.henrywu.tw/res/logo.png">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.2/tocas.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/4.2.5/tocas.css">
 	<style>
-		html {
-			min-height: 100vh;
-			height: -webkit-fill-available;
-		}
-		body {
-			display: flex;
-			justify-content: center;
-			flex-direction: column;
-			min-height: 100vh;
-			min-height: -webkit-fill-available;
-		}
-		a {
-			color:#e74c3c;
-			text-decoration:none
-		}
-		a:hover,
-		a:active {
-			color:#c0392b;
-			text-decoration:none
+		@media screen and (max-width: 767px) {
+			.ts-grid.is-3-columns > .column {
+				flex: var(--8-wide);
+				max-width: var(--8-wide);
+			}
+			.ts-grid.is-relaxed {
+				--gap: 1rem
+			}
 		}
 	</style>
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZHZ6VYR7M"></script>
@@ -35,45 +24,85 @@
 		window.dataLayer = window.dataLayer || [];
 		function gtag(){dataLayer.push(arguments);}
 		gtag('js', new Date());
-
 		gtag('config', 'G-DZHZ6VYR7M');
 	</script>
 </head>
 <body>
-	<div class="ts narrow container">
-		<div class="ts center aligned big header">
-			MCUT Tools
-			<div class="sub header">明志科大小工具</div>
+	<div class="ts-center">
+		<div class="ts-container is-narrow">
+			<div class="ts-header is-center-aligned is-massive">MCUT Tools</div>
+			<div class="ts-header is-center-aligned is-large">明志科大小工具</div>
+			<br><br>
+			<div class="ts-grid is-relaxed is-3-columns">
+				<div class="column">
+					<a class="ts-box is-elevated" href="https://bot.mcut.edu.tw">
+						<div class="ts-image is-16-by-9 is-covered">
+							<img src="https://henrywu.tw/img/portfolio/bot.jpg">
+						</div>
+						<div class="ts-content">
+							<div class="ts-header is-center-aligned">MCUT Bot <span class="ts-badge is-negative is-small is-dence is-start-spaced">Hot</span></div>
+							<p>用 LINE 查詢學餐菜單、課表、缺曠、成績、請假</p>
+						</div>
+					</a>
+				</div>
+				<div class="column">
+					<a class="ts-box is-elevated" href="/course">
+						<div class="ts-image is-16-by-9 is-covered">
+							<img src="https://henrywu.tw/img/portfolio/course.jpg">
+						</div>
+						<div class="ts-content">
+							<div class="ts-header is-center-aligned">選課小幫手</div>
+							<p>更人性化的全校課表查詢、預先排課、課程評價</p>
+						</div>
+					</a>
+				</div>
+				<div class="column">
+					<a class="ts-box is-elevated" href="/exam">
+						<div class="ts-image is-16-by-9 is-covered">
+							<img src="https://henrywu.tw/img/portfolio/exam.jpg">
+						</div>
+						<div class="ts-content">
+							<div class="ts-header is-center-aligned">英文段考時間及考場</div>
+							<p>不用下載 PDF，直接透過網頁查詢時間及考場</p>
+						</div>
+					</a>
+				</div>
+				<div class="column">
+					<a class="ts-box is-elevated" href="/ip">
+						<div class="ts-image is-16-by-9 is-covered">
+							<img src="https://henrywu.tw/img/portfolio/ip.jpg">
+						</div>
+						<div class="ts-content">
+							<div class="ts-header is-center-aligned">宿舍有線網路 IP</div>
+							<p>不用下載 PDF，直接透過網頁查詢 IP 及設定方式</p>
+						</div>
+					</a>
+				</div>
+				<div class="column">
+					<a class="ts-box is-elevated" href="/map">
+						<div class="ts-image is-16-by-9 is-covered">
+							<img src="https://henrywu.tw/img/portfolio/map.jpg">
+						</div>
+						<div class="ts-content">
+							<div class="ts-header is-center-aligned">校園地圖</div>
+							<p>查詢校內販賣機、AED 、收發室及各處室位置</p>
+						</div>
+					</a>
+				</div>
+				<div class="column">
+					<a class="ts-box is-elevated" href="/calendar">
+						<div class="ts-image is-16-by-9 is-covered">
+							<img src="https://henrywu.tw/img/portfolio/calendar.jpg">
+						</div>
+						<div class="ts-content">
+							<div class="ts-header is-center-aligned">行事曆 <span class="ts-badge is-negative is-small is-dence is-start-spaced">New!</span></div>
+							<p>不用下載 PDF 直接查各單位行事曆，還可以加到手機</p>
+						</div>
+					</a>
+				</div>
+			</div>
+			<div style="text-align:center;margin-top:100px">Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a></div>
 		</div>
-		<br><br>
-		<div class="ts stackable four cards">
-			<a class="ts card" href="https://bot.mcut.edu.tw">
-				<div class="center aligned content">
-					<div class="header">MCUT Bot</div>
-					<div class="description">用 LINE 查詢學餐菜單、課表、缺曠、成績！</div>
-				</div>
-			</a>
-			<a class="ts card" href="/course">
-				<div class="center aligned content">
-					<div class="header">選課小幫手</div>
-					<div class="description">更人性化的全校課表查詢、預先排課、課程評價！</div>
-				</div>
-				<div class="ts top right attached negative label">New!</div>
-			</a>
-			<a class="ts card" href="/exam">
-				<div class="center aligned content">
-					<div class="header">英文段考時間及考場</div>
-					<div class="description">不用下載 PDF，直接透過網頁查詢時間及考場</div>
-				</div>
-			</a>
-			<a class="ts card" href="/ip">
-				<div class="center aligned content">
-					<div class="header">宿舍有線網路 IP</div>
-					<div class="description">不用下載 PDF，直接透過網頁查詢 IP 及設定方式</div>
-				</div>
-			</a>
-		</div>
-		<div style="text-align:center;margin-top:100px">Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a></div>
 	</div>
 </body>
 </html>
