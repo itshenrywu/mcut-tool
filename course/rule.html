@@ -27,8 +27,7 @@
 
 		.remark {
 			float: right;
-			color: #666;
-			display: inline-block;
+			color: #666
 		}
 
 		.ts-accordion .title:before {
@@ -280,7 +279,7 @@
 										<td>'+d.name+'</td>\
 										<td>'+d.term+'</td>'+
 										_open+'\
-										<td>'+d.remark.replace(/([\x00-\xFF]+)(?=[^\x00-\xff])/g, " $1 ")+'</td>'+
+										<td>'+d.remark.replace(/([\x00-\xFF]+)(?=[^\x00-\xff])/g, " $1 ")+'&nbsp;</td>'+
 									'</tr>');
 								})
 							})
@@ -447,7 +446,7 @@
 
 			let courseRule = {};
 			$.ajax({
-				url: 'https://mcut-bot.henrywu.tw/course/rule/list.php',
+				url: 'https://mcut-bot.henrywu.tw/course/rule/list.php?v2',
 				dataType: 'json',
 				success: function(res){
 					courseRule = res.list;
@@ -465,17 +464,29 @@
 			$('#search-dept').on('change',function(){				
 				current_type = $('#search-type option:selected').text();
 				if( courseRule[$('#search-year').val()] ) {
-					$('#search-type').html('<optgroup label="跨領域學分學程"></optgroup><optgroup label="第二專長學分學程"></optgroup>');
-					$.each( courseRule[$('#search-year').val()], function( k, v ) {
-						if((v[2] == '四技(日)' || v[2] == '學士學位學程' || v[2] == '菁英班') && v[1] == $('#search-dept').val()) $('#search-type').prepend('<option value="'+v[0]+'">系所課程總表</option>');
-						else if(v[2] == '第二專長' && v[3] != $('#search-dept').val()) $('#search-type optgroup[label="第二專長學分學程"]').append('<option value="'+v[0]+'">'+v[1]+'</option>');
-						else if(v[2] == '跨領域') $('#search-type optgroup[label="跨領域學分學程"]').append('<option value="'+v[0]+'">'+v[1]+'</option>');
-					})
+					dept = $('#search-dept option:selected').text();
+					if( dept.includes('博士') || dept.includes('碩士') || dept.includes('在職專班') || dept.includes('國際學生專班') || dept.includes('菁英班') || dept.includes('學位學程')  ) {
+						$('#otext').html('');
+						$('#search-type').html('');
+						$.each( courseRule[$('#search-year').val()], function( k, v ) {
+							if(['碩士班','博士班','國際學生專班','博士學位學程','碩士學位學程','在職專班','菁英班','學士學位學程'].includes(v[2]) && v[1] == $('#search-dept').val()) $('#search-type').prepend('<option value="'+v[0]+'">系所課程總表</option>');
+						});
+					} else {
+						$('#otext').html('，並須<b>任選一個學分學程（跨領域或第二專長）</b>');
+						$('#search-type').html('<optgroup label="跨領域學分學程"></optgroup><optgroup label="第二專長學分學程"></optgroup>');
+						$.each( courseRule[$('#search-year').val()], function( k, v ) {
+							if(['四技(日)','學士學位學程','菁英班','四技進修部'].includes(v[2]) && v[1] == $('#search-dept').val()) $('#search-type').prepend('<option value="'+v[0]+'">系所課程總表</option>');
+							else if(v[2] == '榮譽學分學程') $('#search-type optgroup[label="院開學分學程"]').prepend('<option value="'+v[0]+'">'+v[1]+'</option>');
+							else if(v[2] == '第二專長' && v[3] != $('#search-dept').val()) $('#search-type optgroup[label="第二專長學分學程"]').append('<option value="'+v[0]+'">'+v[1]+'</option>');
+							else if(v[2] == '跨領域') $('#search-type optgroup[label="跨領域學分學程"]').append('<option value="'+v[0]+'">'+v[1]+'</option>');
+						});
+					}
 
 					_v = $('#search-type option').filter(function () { return $(this).text() == current_type; }).val();
 					if(_v) $('#search-type').val(_v);
 					else $('#search-type').val($('#search-type option:first').val());
-					$('#search-type').trigger('change');
+					$('#search-type').trigger('change'); 
+
 					localStorage.setItem('ruleQuery', '?dept='+$('#search-dept').val()+'&year='+$('#search-year').val()+'&type='+$('#search-type').val()+'&term='+$('#search-term').val());
 				}
 			});
@@ -483,9 +494,14 @@
 			$('#search-year').on('change',function(){
 				current_dept = $('#search-dept').val();
 				if(deptOfYear[$('#search-year').val()]) {
-					$('#search-dept').html('');
+					$('#search-dept').html('<optgroup label="四技日間部"></optgroup><optgroup label="碩士/碩專/博士/在職專班"></optgroup><optgroup label="進修部"></optgroup>');
 					$.each( deptOfYear[$('#search-year').val()], function( k, v ) {
-						$('#search-dept').append('<option>'+v+'</option>');
+						var _s = '其他';
+						if(v.includes('進修部')) _s = '進修部';
+						else if(v.includes('學院')) _s = '學院';
+						else if(v.includes('碩') || v.includes('博') || v.includes('在職專班')) _s = '碩士/碩專/博士/在職專班';
+						else if(v.includes('系') || v.includes('學士學位學程') || ['環資實務菁英班','數位行銷設計實務專班'].includes(v)) _s = '四技日間部';
+						$('optgroup[label="'+_s+'"]').append('<option>'+v+'</option>');
 					});
 					_v = $('#search-dept option').filter(function () { return $(this).val() == current_dept; }).val();
 					if(_v) $('#search-dept').val(_v);
@@ -586,8 +602,8 @@
 					<div class="ts-content">
 						<div class="ts header"><b>使用說明與注意事項</b></div>
 						<div class="ts-list is-ordered">
-							<div class="item">請先選擇<b>「入學學年度」</b>及<b>「入學系所/學程/組別」</b></div>
-							<div class="item">須修畢你的<b>「系所學程總表」</b>，並<b>任選一個學程</b>（跨領域或外系第二專長）才能畢業</div>
+							<div class="item">請先選擇<b>「入學學年度」</b>及<b>「入學系所/學程/組別」</b>。</div>
+							<div class="item">須修畢你的<b>「系所學程總表」</b><span id="otext"></span>才能畢業。</div>
 							<div class="item">點擊各分類即可展開該分類課程。</div>
 							<div class="item">欲選課前切換<b>「欲選課學期」</b>，即可查看該學期是否有開課。</div>
 							<div class="item">此頁面僅提供<b>「畢業學分門檻」</b>，其他畢業門檻（如路跑、英文等）請見學校規定。</div>
