@@ -609,12 +609,11 @@
 						else $('.savedCourse_count').hide();
 						updateTimeList();
 						Swal.fire({
-							title: '收藏成功', icon: 'success', confirmButtonText: 'OK', confirmButtonColor: 'var(--ts-primary-600)',
+							title: '收藏成功', icon: 'success', confirmButtonText: '查看體育課可選課程', confirmButtonColor: 'var(--ts-gray-500)', cancelButtonText: 'OK', cancelButtonColor: 'var(--ts-primary-600)',
 							html: '已收藏「'+$('#search-dept').val()+$('#search-class').val()+'」的必修課'+ ( ($('#search-class').val().substring(0,1) == 2 && $('#search-term').val().substring(0,3) >= 111) ? '<br>大二體育課須自選，請自行查看':''),
-							showCancelButton: ($('#search-class').val().substring(0,1) == 2 && $('#search-term').val().substring(0,3) >= 111),
-							cancelButtonText: '查看體育課可選課程'
+							showConfirmButton: ($('#search-class').val().substring(0,1) == 2 && $('#search-term').val().substring(0,3) >= 111), reverseButtons: true, showCancelButton: true
 						}).then((result) => {
-							if (!result.isConfirmed) {
+							if (result.isConfirmed) {
 								$('#search-dept').val('體育組-四技(日)');
 								$('#search-course').val('');
 								$('#search-teacher').val('');
