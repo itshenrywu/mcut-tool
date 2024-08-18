@@ -138,6 +138,11 @@
 	</script>
 	<script>
 		$(function(){
+			let savedCourse = JSON.parse(localStorage.getItem('savedCourse') || '[]');
+			let getTerm = localStorage.getItem('term') || '';
+			if(savedCourse.length > 0) $('.savedCourse_count').text(savedCourse.length).show();
+			else $('.savedCourse_count').hide();
+			
 			function conventTime(arr) {
 					const formatDateTime = (dateTime) => {
 					const date = new Date(dateTime);
