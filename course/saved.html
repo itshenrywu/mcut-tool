@@ -432,7 +432,7 @@
 			function updateCount() {
 				_c = 0; _h = 0;
 				$.each( savedCourse, function( k, v ) {
-					_c += parseInt(courseData[v]['credit'])
+					if(courseData[v]) _c += parseInt(courseData[v]['credit'])
 				})
 				$('.savedCourse_credit').text(_c);
 				$('.savedCourse_count').text(savedCourse.length);
