@@ -298,7 +298,7 @@
 							if(v['type'] == '必修') _type_class = '';
 							else if(v['type'] == '選修') _type_class = 'is-secondary';
 							else _type_class = 'is-outlined';
-							tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+( (v['otherinfo'] != null)?'['+v['otherinfo'].substring(0,2)+']':'' )+'</span>'+v['credit']+'</td>';
+							tr += '<td><span class="ts-badge is-end-spaced is-small is-dense '+_type_class+'">'+v['type']+( (v['otherinfo'] != null)?' | '+v['otherinfo'].substring(0,2):'' )+'</span>'+v['credit']+'</td>';
 							tr += '<td>'+v['teacher']+'</td>';
 							tr += '<td>';
 							if(v['rates'] != '') tr += '<span class="ts-badge is-end-spaced is-small is-dense is-outlined"><span class="ts-icon is-comment-icon"></span> '+v['rates']+' 評價</span> ';
@@ -432,7 +432,7 @@
 			function updateCount() {
 				_c = 0; _h = 0;
 				$.each( savedCourse, function( k, v ) {
-					if(courseData[v]) _c += parseInt(courseData[v]['credit'])
+					if(courseData[v]) _c += parseFloat(courseData[v]['credit']*10)/10
 				})
 				$('.savedCourse_credit').text(_c);
 				$('.savedCourse_count').text(savedCourse.length);
