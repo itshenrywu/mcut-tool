@@ -1,653 +1,412 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>明志科技大學宿舍網路 IP 查詢</title>
 	<meta charset="utf-8">
-	<title>明志科大宿舍分機 / 網路 IP 查詢</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-	<meta property="og:description" content="Powered by MCUT Bot / Henry Wu">
+	<meta name="language" content="zh-tw">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+	<meta name="description" content="MCUT Dormitory Network IP">
+	<meta property="og:url" content="https://mcut-bot.henrywu.tw/ip">
 	<meta property="og:image" content="https://mcut.henrywu.tw/res/logo.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="format-detection" content="telephone=no">
-	<link rel="icon" type="image/png" href="../res/logo.png">
-	<link rel="stylesheet" href="tocas.css">
+	<link rel="shortcut icon" type="image/png" href="https://mcut.henrywu.tw/res/logo.png" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/5.0.1/tocas.min.css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.16/vue.min.js"></script>
 	<style>
+		html {
+			font-size: 16px;
+		}
+
 		body {
-			background: #F8F8F8
+			height: 100vh;
+			height: 100dvh;
+			touch-action: manipulation;
 		}
 
-		.ts.top.menu .item {
-			padding-left: 10px !important;
-			padding-right: 10px !important
+		.ts-app-layout.is-fullscreen {
+			height: 100vh;
+			height: 100dvh;
+			overflow: hidden;
+			padding-bottom: env(safe-area-inset-bottom);
 		}
 
-		.ts.menu .small.item {
-			padding-left: 0 !important;
-			padding-right: 0 !important
+		.header {
+			padding: .8rem 0;
 		}
 
-		.chevron.right.icon,
-		.phone.icon {
-			color: #CCC !important
-		}
-
-		.welcome i,
-		[data-room] i {
-			float: right
-		}
-
-		.ts.center.aligned.header {
-			margin-top: 25px !important;
-			margin-bottom: 5px !important
-		}
-
-		.ts.dropdown > .text + .icon {
-			margin-left: 0.25rem!important
-		}
-
-		.welcome > div {
-			margin: 15px 0
-		}
-
-		#tutorial img {
-			max-width: 100%
-		}
-
-		@media (max-width: 767px) {
-			#tutorial .menu .tab_ {
-				margin-left: 0 !important;
-				margin-right: 0 !important;
-			}
-		}
-
-		#tutorial ol {
-			padding-left: 20px;
-		}
-
-		#tutorial em,
-		#tutorial b {
-			color: #000;
-		}
-
-		#tutorial b {
+		.header .column.is-fluid {
+			text-align: center;
 			font-weight: bold;
 		}
 
-		#tutorial .borderless .item {
-			padding-top: 5px;
-			padding-bottom: 5px;
+		.header .column:last-child {
+			text-align: right;
+			font-size: .8rem;
+			line-height: 1.8rem;
 		}
 
 		footer {
-			padding: 5px 0;
+			padding: .2rem 0;
+			font-size: .8rem;
 			text-align: center;
-			font-size: 90%;
-			color: #666;
-			position: fixed;
-			bottom: 0;
-			left: 0;
-			width: 100%;
-			background: #FFF;
-			z-index: 1000;
+		}
+
+		.ts-menu .item {
+			border-bottom: 1px solid var(--ts-gray-100);
+		}
+
+		.ts-menu .item:hover {
+			background: unset;
+		}
+
+		span.is-caret-right-icon {
+			margin: 0 .15rem;
+			color: var(--ts-gray-400);
+		}
+
+		@media screen and (max-width: 768px) {
+			html {
+				font-size: 14px;
+			}
+			
 		}
 	</style>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.2/tocas.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZHZ6VYR7M"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-
-		gtag('config', 'G-DZHZ6VYR7M');
-	</script>
-	<script>
-		$(function() {
-			var intToText = ["", "一", "二", "三", "四", "五", "六", "七", "八"];
-			var current_building = 1;
-			var current_floor = 1;
-			var ip;
-			var gw;
-			var phone;
-
-			function pad(i) {
-				if (i < 10) return "0" + i;
-				return "" + i;
-			}
-			$('[data-building]').on('click', function() {
-				$('.welcome').hide();
-				$('.fixed').show();
-				$('#select-building').text(intToText[$(this).attr('data-building')] + '宿');
-				//if ($(this).attr('data-building') == 7) $('#select-building').text('研究交流會館');
-				if ($(this).attr('data-building') == 8) $('#select-building').text('學人會館');
-				if ($(this).attr('data-building') == 9) {
-					$('#select-building').text('舍監室分機 & 緊急電話');
-					$('.toggleAdmin').hide();
-				} else $('.toggleAdmin').show();
-				current_floor = 1;
-				if ($(this).attr('data-building') >= 1 && $(this).attr('data-building') <= 4 || $(this).attr('data-building') == 7 || $(this).attr('data-building') == 8) {
-					$('[data-floor=1]').show();
-					$('[data-floor=2]').show();
-					$('[data-floor=3]').show();
-					$('[data-floor=4]').hide();
-					$('[data-floor=5]').hide();
-					$('[data-floor=6]').hide();
-					$('[data-floor=7]').hide();
-				} else if ($(this).attr('data-building') == 5) {
-					$('[data-floor=1]').show();
-					$('[data-floor=2]').show();
-					$('[data-floor=3]').show();
-					$('[data-floor=4]').show();
-					$('[data-floor=5]').show();
-					$('[data-floor=6]').hide();
-					$('[data-floor=7]').hide();
-				} else if ($(this).attr('data-building') == 6) {
-					$('[data-floor=1]').hide();
-					$('[data-floor=2]').hide();
-					$('[data-floor=3]').hide();
-					$('[data-floor=4]').show();
-					$('[data-floor=5]').show();
-					$('[data-floor=6]').show();
-					$('[data-floor=7]').show();
-					current_floor = 4;
-				}
-				$('#select-floor').text(current_floor + 'F');
-				current_building = $(this).attr('data-building');
-				$('[data-floor=' + current_floor + ']').click();
-				$('#data').hide();
-				$('#list').show();
-				$('.toggleroom').hide();
-			});
-
-			function appendToList(a, b) {
-				$('#list').append('<a class="item" data-room="' + a + '"><div class="ts very narrow container">' + b + '<i class="chevron right icon"></i></div></a>');
-			}
-			$('[data-bf]').on('click', function() {
-				$('[data-building=' + $(this).attr('data-bf').substr(0, 1) + ']').click();
-				$('[data-floor=' + $(this).attr('data-bf').substr(1, 1) + ']').click();
-			});
-			$('[data-floor]').on('click', function() {
-				current_floor = $(this).attr('data-floor');
-				$('#select-floor').text($(this).attr('data-floor') + 'F');
-				$('#list').html('');
-				var bf = parseInt(current_building + "" + current_floor);
-				switch (bf) {
-					case 11:
-						for (i = 1; i <= 13; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						for (i = 15; i <= 17; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						for (i = 20; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 12:
-						for (i = 1; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 13:
-						for (i = 1; i <= 23; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 21:
-						for (i = 1; i <= 19; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 22:
-					case 23:
-						for (i = 1; i <= 24; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 31:
-						for (i = 1; i <= 14; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						appendToList(3116, 116);
-						for (i = 21; i <= 26; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 32:
-					case 33:
-						for (i = 1; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 41:
-						for (i = 1; i <= 7; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						for (i = 9; i <= 20; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						for (i = 22; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 42:
-					case 43:
-						for (i = 1; i <= 29; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 51:
-						for (i = 1; i <= 16; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 52:
-					case 53:
-					case 54:
-					case 55:
-						for (i = 1; i <= 32; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 64:
-					case 65:
-					case 66:
-						for (i = 1; i <= 39; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 67:
-						for (i = 1; i <= 35; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						for (i = 38; i <= 40; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 71:
-						for (i = 1; i <= 18; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 72:
-					case 73:
-						for (i = 1; i <= 21; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 81:
-						for (i = 1; i <= 13; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 82:
-						for (i = 1; i <= 17; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-					case 83:
-						for (i = 1; i <= 18; i++) appendToList(bf + pad(i), current_floor + pad(i));
-						break;
-
-					case 91:
-						$('#list').append('<div class="item" style="border-bottom:10px solid #F8F8f8!important;padding:.6em 1.14286em"><div class="ts very narrow container" style="text-align:center;font-size:90%">點選以下電話即可直接撥打</div></div><a href="tel:0229089899" class="item"><div class="ts very narrow container">學校總機<div style="float:right;color:#888">2908-9899</div></div></a>');
-						for (i = 1; i <= 6; i++) $('#list').append('<a href="tel:0229089899,433' + i + '" class="item"><div class="ts very narrow container">' + intToText[i] + '宿舍監室分機<div style="float:right;color:#888">#433' + i + '</div></div></a>');
-						$('#list').append('<a href="tel:0229038713" class="item" style="border-top:10px solid #F8F8f8!important"><div class="ts very narrow container">24 小時校安中心緊急聯絡電話<div style="float:right;color:#888">2903-8713</div></div></a>');
-						break;
-				}
-				$('#data').hide();
-				$('#list').show();
-				$('.toggleroom').hide();
-				window.scrollTo(0, 0);
-			});
-			$('#list').on('click', 'a[data-room]', function() {
-				var bf = parseInt(current_building + "" + current_floor);
-				var rm = parseInt($(this).attr('data-room'));
-				rrm = parseInt($(this).attr('data-room').substr(2, 2));
-				ip = '';
-				gw = '';
-				phone = '';
-				if (current_building == 1) {
-					if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
-					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
-					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
-					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
-					else ip = (rrm - 1) * 4 + 1 + 32;
-					gw = '10' + (3 + parseInt($(this).attr('data-room').substr(1, 1)));
-
-					phone = 1100 + parseInt(rrm);
-					if (current_floor != 1) phone += (24 * (current_floor - 1));
-					if (rm == 1324) phone = '無';
-				}
-				if (current_building == 2) {
-					if ($(this).attr('data-room').substr(1, 1) == 1) {
-						if (rrm <= 1) ip = (rrm - 1) * 4 + 1 + 108;
-						else if (rrm <= 6) ip = (rrm - 1) * 4 + 1 - 4;
-						else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 4;
-						else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 20;
-						else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 28;
-						else ip = (rrm - 1) * 4 + 1 + 36;
-					}
-					if ($(this).attr('data-room').substr(1, 1) == 2 || $(this).attr('data-room').substr(1, 1) == 3) {
-						if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
-						else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
-						else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
-						else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
-						else ip = (rrm - 1) * 4 + 1 + 32;
-					}
-					gw = '1' + pad((7 + parseInt($(this).attr('data-room').substr(1, 1))))
-
-					phone = 1200 + parseInt(rrm);
-					if (current_floor != 1) phone += (24 * (current_floor - 1)) - 4;
-				}
-				if (current_building == 3) {
-					if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
-					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
-					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
-					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
-					else ip = (rrm - 1) * 4 + 1 + 32;
-					gw = '1' + pad((11 + parseInt($(this).attr('data-room').substr(1, 1))));
-
-					phone = 1300 + parseInt(rrm);
-					if (current_floor != 1) phone += (29 * (current_floor - 1)) - 3;
-				}
-				if (current_building == 4) {
-					if (rrm <= 6) ip = (rrm - 1) * 4 + 1;
-					else if (rrm <= 12) ip = (rrm - 1) * 4 + 1 + 8;
-					else if (rrm <= 18) ip = (rrm - 1) * 4 + 1 + 16;
-					else if (rrm <= 24) ip = (rrm - 1) * 4 + 1 + 24;
-					else ip = (rrm - 1) * 4 + 1 + 32;
-					gw = '1' + pad((15 + parseInt($(this).attr('data-room').substr(1, 1))));
-
-					phone = 1400 + parseInt(rrm);
-					if (current_floor != 1) phone += (29 * (current_floor - 1)) - 1;
-				}
-				if (current_building == 5) {
-					ip = 2 * ((rrm - 1) % 16 * 4 + 4);
-					gw = '1' + pad((19 + parseInt($(this).attr('data-room').substr(1, 1)) * 2 - 1));
-					if (rrm > 16) gw = '1' + pad((19 + parseInt($(this).attr('data-room').substr(1, 1)) * 2));
-					if ($(this).attr('data-room').substr(1, 1) == 1) gw = 121;
-
-					phone = 1500 + parseInt(rrm);
-					if (current_floor != 1) phone += (32 * (current_floor - 1) - 16);
-				}
-				if (current_building == 6) {
-					ip = (rrm - 1) % 20 * 8 + 8;
-					gw = '1' + pad((25 + parseInt($(this).attr('data-room').substr(1, 1)) * 2 - 1));
-					if (rrm > 20) gw = '1' + pad((25 + parseInt($(this).attr('data-room').substr(1, 1)) * 2));
-					phone = rm;
-				}
-				if (current_building == 7) {
-					ip = (rrm - 1) * 8 + 8;
-					gw = '1' + (47 + parseInt($(this).attr('data-room').substr(1, 1)));
-					phone = 1800 + parseInt(rrm);
-					if (current_floor == 2) phone += 13;
-					if (current_floor == 3) phone += 30;
-				}
-
-				$('#list').hide();
-				$('#data').show();
-				$('.toggleroom').show();
-				$('#topbar-room').text($(this).attr('data-room').substr(1, 3));
-				$('#phone').text(phone);
-				$('#data-inner').html('<div class="ts big center aligned header">\
-						<div class="sub header">IP 位置</div>\
-						192.168.' + gw + '.<span id="ip_d">' + ip + '</span>\
-						</div>\
-						<div class="ts big center aligned header">\
-						<div class="sub header">子網路遮罩</div>\
-						255.255.255.0<br>\
-						<div class="sub header">或輸入首碼長度：<b style="font-weight:bold">24</b>（如果有）</div>\
-						</div>\
-						<div class="ts big center aligned header">\
-						<div class="sub header">預設閘道 / 路由器</div>\
-						192.168.' + gw + '.254\
-						</div>\
-						<div class="ts big center aligned header">\
-						<div class="sub header">慣用 DNS 伺服器</div>\
-						210.240.232.1<br>\
-						210.240.232.2\
-						</div><br>\
-						<small style="font-size:87%;color:#AAA">本工具僅供參考，實際以學校最新公告為準。</small><br><br>\
-						<a class="ts tiny info basic fluid button toggle-tutorial">網路設定教學</a>\
-						<a class="ts tiny negative basic fluid button" href="https://line.me/R/ti/p/%40221oslxd" style="margin-top:10px">資料有誤？</a>\
-						<br>');
-				$('[data-bed]').removeClass('active');
-				$('[data-bed=1]').addClass('active');
-				$('[data-bulidings]').hide();
-				if (current_building == 6) {
-					$('[data-bulidings="6"]').show();
-				} else if (current_building == 7 || current_building == 8) {
-					$('[data-bulidings="78"]').show();
-				} else {
-					$('[data-bulidings="n6"]').show();
-				}
-			});
-			$('#close-data').on('click', function() {
-				$('.toggleroom').hide();
-				$('#data').hide();
-				$('#list').show();
-			});
-			$('[data-bed]').on('click', function() {
-				$('[data-bed]').removeClass('active');
-				$(this).addClass('active');
-				$('#ip_d').text(parseInt(ip) + parseInt($(this).attr('data-bed') - 1));
-				if (current_building == 5 || current_building == 7 || current_building == 8) $('#ip_d').text(parseInt(ip) + parseInt($(this).attr('data-bed') * 2 - 2));
-			});
-			$('body').on('click', '.toggle-tutorial', function() {
-				$('#tutorial').scrollTop(0);
-				$('#tutorial').toggle();
-			});
-			$('[data-tab]').on('click', function() {
-				$('[data-tab]').removeClass('active');
-				$(this).addClass('active');
-				$('#tutorial ol').hide();
-				$('#tutorial-'+$(this).attr('data-tab')).show();
-				$('#tutorial').scrollTop(0);
-			});
-			if (navigator.share) { $('#share').show(); }
-			$('#share a').on('click', function() {
-				navigator.share({
-					title: '明志科大宿舍分機 / 網路 IP 查詢',
-					text: '',
-					url: 'https://mcut.henrywu.tw/ip',
-				}).then(() => console.log('Successful share'))
-				.catch((error) => console.log('Error sharing', error));
-			});
-		});
-	</script>
 </head>
-<body style="padding-top:46px">
-	<div class="ts top fixed borderless large menu" class="welcome">
-		<div class="ts container">
-			<div class="item" style="justify-content:center;width:100%">明志科大宿舍分機 / 網路 IP 查詢</div>
-		</div>
-	</div>
-	<div class="ts top fixed borderless large menu" style="display:none">
-		<div class="ts very narrow container">
-			<div class="ts item dropdown" style="padding-left:20px!important">
-				<div class="text" id="select-building">一宿</div>
-				<i class="dropdown icon"></i>
-				<div class="menu">
-					<a class="item" data-building="1">第一宿舍</a>
-					<a class="item" data-building="2">第二宿舍</a>
-					<a class="item" data-building="3">第三宿舍（新生男宿）</a>
-					<a class="item" data-building="4">第四宿舍</a>
-					<a class="item" data-building="5">第五宿舍（新生男宿）</a>
-					<a class="item" data-building="6">第六宿舍（新生女宿）</a>
-					<a class="item" data-building="7">第七宿舍（研究交流會館）</a>
-					<a class="item" data-building="9">🏠 舍監室分機 & 緊急電話</a>
-					<a class="item toggle-tutorial">⚙️ 網路設定教學</a>
+<body>
+	<div id="app" class="ts-app-layout is-vertical is-fullscreen">
+		<div class="cell">
+			<div class="ts-container is-very-narrow">
+				<div class="ts-grid is-compact header">
+					<div class="column is-2-wide">
+						<span class="ts-icon is-chevron-left-icon" v-if="currentGroup!=''" @click="back()"></span>
+					</div>
+					<div class="column is-fluid">
+						<div class="item is-text" v-if="currentGroup==''">{{ text.title[is_en] }}</div>
+						<div class="item is-text" v-else>
+							{{ currentDorm.name[is_en?2:0] }}
+							<span class="ts-icon is-caret-right-icon"></span>
+							{{ currentGroup }}
+							<template v-if="currentRoom!=''">
+								<span class="ts-icon is-caret-right-icon"></span>
+								<template v-if="currentGroup.includes('F')">{{ currentGroup.replace('F','') + currentRoom.toString().padStart(2, '0') }}</template>
+								<template v-else>{{ currentRoom + 'F' }}</template>
+							</template>
+						</div>
+					</div>
+					<div class="column is-2-wide" @click="switchLang">
+						<template v-if="is_en==1">[中文]</template>
+						<template v-else>[English]</template>
+					</div>
 				</div>
 			</div>
-			<div class="small item toggleAdmin"><i class="chevron right icon"></i></div>
-			<div class="ts item dropdown dropdown-floor toggleAdmin">
-				<div class="text" id="select-floor">1F</div>
-				<i class="dropdown icon"></i>
-				<div class="menu">
-					<a class="item" data-floor="1">一樓 1F</a>
-					<a class="item" data-floor="2">二樓 2F</a>
-					<a class="item" data-floor="3">三樓 3F</a>
-					<a class="item" data-floor="4" style="display:none">四樓 4F</a>
-					<a class="item" data-floor="5" style="display:none">五樓 5F</a>
-					<a class="item" data-floor="6" style="display:none">六樓 6F</a>
-					<a class="item" data-floor="7" style="display:none">七樓 7F</a>
+		</div>
+		<div class="cell is-scrollable is-fluid is-secondary">
+			<div v-if="currentGroup==''" class="ts-container is-very-narrow has-vertically-padded">
+				<div class="ts-wrap is-vertical">
+					<div v-for="dorm of dorms" :key="dorm.id">
+						<div class="ts-header has-bottom-padded-small">{{ dorm.name[is_en] }}</div>
+						<div class="ts-wrap is-compact">
+							<button class="ts-button is-secondary is-small is-dense is-short" v-for="(room, group) in dorm.rooms" @click="showGroup(dorm, group)">{{ group }}</button>
+						</div>
+					</div>
+					<br>
+					<a class="ts-button is-fluid" href="./set">{{ text.howto[is_en] }}</a>
 				</div>
 			</div>
-			<div class="small item toggleroom" style="display:none"><i class="chevron right icon"></i></div>
-			<div class="item toggleroom" id="topbar-room" style="display:none;padding-right:5px!important"></div>
-			<div class="item small toggleroom" id="close-data" style="display:none"><i class="x icon" style="color:#DDD"></i></div>
-		</div>
-	</div>
-	<div class="welcome ts very narrow container">
-		<div>
-			第一宿舍<br>
-			<button class="ts tiny button" data-bf="11">1F</button>
-			<button class="ts tiny button" data-bf="12">2F</button>
-			<button class="ts tiny button" data-bf="13">3F</button>
-		</div>
-		<div>
-			第二宿舍<br>
-			<button class="ts tiny button" data-bf="21">1F</button>
-			<button class="ts tiny button" data-bf="22">2F</button>
-			<button class="ts tiny button" data-bf="23">3F</button>
-		</div>
-		<div>
-			第三宿舍（新生男宿）<br>
-			<button class="ts tiny button" data-bf="31">1F</button>
-			<button class="ts tiny button" data-bf="32">2F</button>
-			<button class="ts tiny button" data-bf="33">3F</button>
-		</div>
-		<div>
-			第四宿舍<br>
-			<button class="ts tiny button" data-bf="41">1F</button>
-			<button class="ts tiny button" data-bf="42">2F</button>
-			<button class="ts tiny button" data-bf="43">3F</button>
-		</div>
-		<div>
-			第五宿舍（新生男宿）<br>
-			<button class="ts tiny button" data-bf="51">1F</button>
-			<button class="ts tiny button" data-bf="52">2F</button>
-			<button class="ts tiny button" data-bf="53">3F</button>
-			<button class="ts tiny button" data-bf="54">4F</button>
-			<button class="ts tiny button" data-bf="55">5F</button>
-		</div>
-		<div>
-			第六宿舍（新生女宿）<br>
-			<button class="ts tiny button" data-bf="64">4F</button>
-			<button class="ts tiny button" data-bf="65">5F</button>
-			<button class="ts tiny button" data-bf="66">6F</button>
-			<button class="ts tiny button" data-bf="67">7F</button>
-		</div>
-		<div>
-			第七宿舍（研究交流會館）<br>
-			<button class="ts tiny button" data-bf="71">1F</button>
-			<button class="ts tiny button" data-bf="72">2F</button>
-			<button class="ts tiny button" data-bf="73">3F</button>
-		</div>
-		<br>
-		<a class="ts tiny basic fluid button" data-building="9">舍監室分機 & 緊急電話</a>
-		<a class="ts tiny info basic fluid button toggle-tutorial" style="margin-top:10px">網路設定教學</a>
-	</div>
-	<div id="list" class="ts vertical fluid large menu" style="display:none"></div>
-	<div id="data" class="ts very narrow container" style="display:none;text-align:center">
-		<div class="ts large center aligned header">
-			<div class="sub header" style="font-size:70%">寢室分機</div>
-			<span id="phone"></span>
-		</div>
-		<br>
-		<div data-bulidings="6" style="text-align:center;margin-bottom:5px;">選擇床位</div>
-		<div data-bulidings="n6" style="text-align:center;margin-bottom:5px;">選擇床位</div>
-		<div data-bulidings="78" style="text-align:center;margin-bottom:5px;">選擇網路盒編號</div>
-		<div class="ts icon small buttons" data-bulidings="6">
-			<button class="ts button" data-bed="1">1 床</button>
-			<button class="ts button" data-bed="2">2 床</button>
-			<button class="ts button" data-bed="3">3 床</button>
-			<button class="ts button" data-bed="6">4 床</button>
-			<button class="ts button" data-bed="5">5 床</button>
-			<button class="ts button" data-bed="4">6 床</button>
-		</div>
-		<div class="ts icon small buttons" data-bulidings="n6" style="display:none">
-			<button class="ts button" data-bed="1">1 床</button>
-			<button class="ts button" data-bed="2">2 床</button>
-			<button class="ts button" data-bed="3">3 床</button>
-			<button class="ts button" data-bed="4">4 床</button>
-		</div>
-		<div class="ts icon small buttons" data-bulidings="78" style="display:none">
-			<button class="ts button" data-bed="1">1 號</button>
-			<button class="ts button" data-bed="2">2 號</button>
-			<button class="ts button" data-bed="3">3 號</button>
-			<button class="ts button" data-bed="4">4 號</button>
-		</div><br>
-		<div id="data-inner"></div>
-	</div>
-	<div id="tutorial" style="position:fixed;top:0;left:0;width:100%;height:100%;overflow-y:scroll;background:#FFF;z-index:200;display:none;">
-		<div class="ts top fixed borderless menu">
-			<div class="ts very narrow container">
-				<div class="item">　</div>
-				<div class="item" style="justify-content:center;width:100%">網路設定教學</div>
-				<a class="right item toggle-tutorial">✕</a>
+			<div v-else-if="currentRoom == ''" class="ts-container is-very-narrow is-fitted">
+				<div class="ts-menu is-large">
+					<div class="item" v-for="room in rooms" @click="showRoom(room);">
+						<template v-if="currentGroup.includes('F')">{{ currentGroup.replace('F','') + room.toString().padStart(2, '0') }}</template>
+						<template v-else>{{ currentGroup + ' - ' + room + 'F' }}</template>
+					</div>
+				</div>
+			</div>
+			<div v-else class="ts-container is-very-narrow has-vertically-padded">
+				<div style="display: flex; justify-content: center; flex-direction: column; align-items: center;">
+					<div class="ts-text is-description">
+						{{ (currentDorm.id<=6 ? text.choose1[is_en] : text.choose2[is_en]) }}
+					</div>
+					<div class="ts-selection is-dense is-small has-bottom-spaced">
+						<label class="item" v-for="bed of currentDorm.beds" :key="bed[0]" >
+							<input type="radio" name="bed" v-bind:value="bed[1]" v-model="currentBed" />
+							<div class="text">{{ is_en ? bed[0].split(' ')[0] : bed[0] }}</div>
+						</label>
+					</div>
+					<br>
+					<div class="ts-text is-description">{{ text.ip[is_en] }}</div>
+					<div class="ts-header is-huge">192.168.{{ gw }}.{{ ip + parseInt(currentBed) }}</div>
+					<br>
+					<div class="ts-text is-description">{{ text.mask[is_en] }}</div>
+					<div class="ts-header is-huge">255.255.255.{{ mask }}</div>
+					<br>
+					<div class="ts-text is-description">{{ text.gw[is_en] }}</div>
+					<div class="ts-header is-huge" v-if="currentDorm.id != 8">192.168.{{ gw }}.254</div>
+					<div class="ts-header is-huge" v-else>192.168.{{ gw }}.{{ gw2 }}</div>
+					<br>
+					<div class="ts-text is-description">{{ text.dns[is_en] }}</div>
+					<div class="ts-header is-huge">210.240.232.1</div>
+					<div class="ts-header is-huge">210.240.232.2</div>
+					<br>
+					<a class="ts-button is-fluid" href="./set">{{ text.howto[is_en] }}</a>
+				</div>
 			</div>
 		</div>
-		<div class="ts top fixed pointing secondary evenly divided menu" style="background:#FFF;top:33px;">
-			<div class="ts very narrow container tab_">
-				<a class="active item" data-tab="windows">Windows</a>
-				<a class="item" data-tab="macos">MacOS</a>
-				<a class="item" data-tab="wifi">分享器/路由器</a>
-			</div>
-		</div>
-		<div class="ts very narrow container">
-			<br><br><br>
-			<ol id="tutorial-windows">
-				<li>
-					<p>
-						用網路線連接電腦與座位上的網路孔。<br />
-						若電腦本身無網路孔，請<a href="https://www.google.com/search?q=USB+%E8%BD%89+RJ45" target="_blank">購買轉換器</a>。
-					</p>
-				</li>
-				<li>
-					<p>
-						點擊左下角的「開始」，再點擊「<b>設定</b>」<br />
-						<img src="https://i.imgur.com/c5t1Ikt.png" />
-					</p>
-				</li>
-				<li>
-					<p>
-						點擊「<b>網路與網際網路</b>」<br />
-						<img src="https://i.imgur.com/iYkIN1q.png" />
-					</p>
-				</li>
-				<li>
-					<p>
-						點擊「<b>乙太網路</b>」，再點擊「<b>網路</b>」<br />
-						<img src="https://i.imgur.com/hXVxjbu.png" />
-					</p>
-				</li>
-				<li>
-					<p>
-						滑到底下找到「IP 設定」，點擊「<b>編輯</b>」<br />
-						<img src="https://i.imgur.com/ya4lw2c.png" />
-					</p>
-				</li>
-				<li>
-					<p>
-						選擇「<b>手動</b>」，並將 IPv4 「<b>開啟</b>」<br />
-						輸入剛剛查到的 <b>IP 位置、子網路首碼長度、閘道</b>與 <b>DNS 伺服器</b>，並點擊「<b>儲存</b>」即可！<br />
-						<img src="https://i.imgur.com/yqdwsDH.png" />
-					</p>
-				</li>
-			</ol>
-			<ol id="tutorial-macos" style="display:none">
-				<li>
-					<p>
-						用網路線連接電腦與座位上的網路孔。<br />
-						若電腦本身無網路孔，請<a href="https://www.google.com/search?q=USB+%E8%BD%89+RJ45" target="_blank">購買轉換器</a>。
-					</p>
-				</li>
-				<li>
-					<p>
-						點擊左上角的蘋果圖示，點擊「<b>系統設定</b>」，點擊「<b>網路</b>」，再點擊「<b>乙太網路</b>」<br />
-						註：若使用 USB、Thunderbolt 或 Type C 網路轉接線，請選擇相對應的選項<br />
-						<img src="https://i.imgur.com/D99y6Zk.png" />
-					</p>
-				</li>
-				<li>
-					<p>
-						點擊「詳細資訊」
-						<img src="https://i.imgur.com/qUfHJNI.png" />
-					</p>
-				</li>
-				<li>
-					<p>
-						點擊「<b>TCP/IP</b>」，將「<b>設定 IPv4</b>」選為「手動」<br />
-						輸入剛剛查到的 <b>IP、子網路遮罩、路由器</b><br />
-						<img src="https://i.imgur.com/yYBl887.png" />
-					</p>
-				</li>
-				<li>
-					<p>
-						點擊「<b>DNS</b>」，輸入 DNS 伺服器，再點擊「<b>好</b>」<br />
-						<img src="https://i.imgur.com/okcCjjk.png" />
-					</p>
-				</li>
-			</ol>
-			<ol id="tutorial-wifi" style="display:none">
-				<li>
-					<p>
-						用網路線將座位上的網路孔接到分享器/路由器上的 <b>WAN</b> 孔。
-					</p>
-				</li>
-				<li>
-					<p>
-						依各廠牌分享器/路由器的說明書設定<b>外部網路</b>的<b>固定 IP</b>。<br>
-						電腦連接 Wi-Fi 後則不用設定外部網路 IP。
-					</p>
-				</li>
-				註：各廠牌分享器/路由器設定方式皆不同，請自行在 Google 搜尋該型號的說明書。<br>
-				範例：<a href="https://www.asus.com/tw/support/FAQ/1011715/">ASUS 路由器設定方式</a>
-			</ol>
-			<br>
+		<div class="cell">
+			<footer>
+				Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a>
+			</footer>
 		</div>
 	</div>
-	<br><br>
-	<footer>
-		Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a><span id="share" style="display:none">・<a>分享</a></span>
-	</footer>
 	<script>
-		ts('.ts.dropdown:not(.basic)').dropdown();
+		let app = new Vue({
+			el: '#app',
+			data: {
+				is_en: localStorage.getItem('is_en') == 1 ? 1 : 0,
+				text: {
+					title: ['明志科技大學宿舍網路 IP', 'MCUT Dormitory Network IP'],
+					ip: ['IP 地址', 'IP Address'],
+					mask: ['子網路遮罩', 'Subnet Mask'],
+					gw: ['預設閘道', 'Default Gateway'],
+					dns: ['DNS 伺服器', 'DNS Server'],
+					choose1: ['請選擇床位', 'Please choose your bed'],
+					choose2: ['請選擇網路盒編號', 'Please choose your network box number'],
+					howto: ['如何設定網路？', 'How to set up network?']
+				},
+				dorms: [
+					{
+						id: '1',
+						name: ['一宿', 'First Dormitory', '1st Dorm'],
+						type: '男宿',
+						rooms: {
+							'1F': [
+								[1, 24]
+							],
+							'2F': [
+								[1, 24]
+							],
+							'3F': [
+								[1, 24]
+							]
+						},
+						beds: [ ['1 床', 0], ['2 床', 1], ['3 床', 2], ['4 床', 3] ]
+					},{
+						id: '2',
+						name: ['二宿', 'Second Dormitory', '2nd Dorm'],
+						type: '男宿',
+						rooms: {
+							'1F': [
+								[1, 19]
+							],
+							'2F': [
+								[1, 24]
+							],
+							'3F': [
+								[1, 24]
+							]
+						},
+						beds: [ ['1 床', 0], ['2 床', 1], ['3 床', 2], ['4 床', 3] ]
+					},{
+						id: '3',
+						name: ['三宿', 'Third Dormitory', '3rd Dorm'],
+						type: '男宿',
+						rooms: {
+							'1F': [
+								[1, 14],
+								[16, 16],
+								[21, 26]
+							],
+							'2F': [
+								[1, 29]
+							],
+							'3F': [
+								[1, 29]
+							]
+						},
+						beds: [ ['1 床', 0], ['2 床', 1], ['3 床', 2], ['4 床', 3] ]
+					},{
+						id: '4',
+						name: ['四宿', 'Fourth Dormitory', '4th Dorm'],
+						type: '男宿',
+						rooms: {
+							'1F': [
+								[1, 7],
+								[9, 20],
+								[22, 29]
+							],
+							'2F': [
+								[1, 29]
+							],
+							'3F': [
+								[1, 29]
+							]
+						},
+						beds: [ ['1 床', 0], ['2 床', 1], ['3 床', 2], ['4 床', 3] ]
+					},{
+						id: '5',
+						name: ['五宿', 'Fifth Dormitory', '5th Dorm'],
+						type: '男宿',
+						rooms: {
+							'1F': [
+								[1, 16]
+							],
+							'2F': [
+								[1, 32]
+							],
+							'3F': [
+								[1, 32]
+							],
+							'4F': [
+								[1, 32]
+							],
+							'5F': [
+								[1, 32]
+							]
+						},
+						beds: [ ['1 床', 0], ['2 床', 2], ['3 床', 4], ['4 床', 6] ]
+					},{
+						id: '6',
+						name: ['六宿', 'Sixth Dormitory', '6th Dorm'],
+						type: '女宿',
+						rooms: {
+							'4F': [
+								[1, 39]
+							],
+							'5F': [
+								[1, 39]
+							],
+							'6F': [
+								[1, 39]
+							],
+							'7F': [
+								[1, 35],
+								[38, 40]
+							]
+						},
+						beds: [ ['1 床', 0], ['2 床', 1], ['3 床', 2], ['4 床', 5], ['5 床', 4], ['6 床', 3] ]
+					},{
+						id: '7',
+						name: ['國際學生宿舍', 'International Student Dormitory', 'Intrenational Dorm'],
+						rooms: {
+							'1F': [
+								[1, 13]
+							],
+							'2F': [
+								[1, 17]
+							],
+							'3F': [
+								[1, 18]
+							]
+						},
+						beds: [ ['1 號', 0], ['2 號', 2], ['3 號', 4], ['4 號', 6] ]
+					},{
+						id: '8',
+						name: ['研究交流會館', 'Research and Exchange Hall', 'Research Hall'],
+						rooms: {
+							'No. 50': [
+								[1, 6]
+							],
+							'No. 52': [
+								[1, 6]
+							],
+							'No. 54': [
+								[1, 6]
+							],
+							'No. 56': [
+								[1, 6]
+							]
+						},
+						beds: []
+					}
+				],
+				rooms: [],
+				currentDorm: '',
+				currentGroup: '',
+				currentRoom: '',
+				currentBed: 0,
+				ip: '',
+				mask: '',
+				gw: '',
+				gw2: '' 
+			},
+			methods: {
+				switchLang: function() {
+					this.is_en = this.is_en == 1 ? 0 : 1;
+					localStorage.setItem('is_en', this.is_en);
+				},
+				showGroup: function(dorm, group) {
+					this.currentDorm = dorm;
+					this.currentGroup = group;
+					this.currentRoom = '';
+					this.rooms = [];
+					dorm.rooms[group].forEach((room) => {
+						for (let i = room[0]; i <= room[1]; i++) {
+							this.rooms.push(i);
+						}
+					});
+				},
+				showRoom: function(room) {
+					this.currentRoom = parseInt(room);
+					this.mask = this.currentDorm.id == '8' ? '240' : '0';
+					this.currentBed = 0;
+					let floor = parseInt(this.currentGroup);
+					switch (this.currentDorm.id) {
+						case '1':
+							this.ip = (room - 1) * 4 + 1 + Math.floor((room - 1) / 6) * 8;
+							this.gw = 103 + floor;
+							break;
+						case '2':
+							if(floor == 1) {
+								if(room == 1) this.ip = 109;
+								else if(room <= 7) this.ip = (room - 2) * 4 + 1;
+								else if(room <= 12) this.ip = (room - 2) * 4 + 1 + 8;
+								else if(room <= 17) this.ip = (room - 2) * 4 + 1 + 24;
+								else this.ip = (room - 2) * 4 + 1 + 32;
+							} else {
+								this.ip = (room - 1) * 4 + 1 + Math.floor((room - 1) / 6) * 8;
+							}
+							this.gw = 107 + floor;
+							break;
+						case '3':
+							this.ip = (room - 1) * 4 + 1 + Math.floor((room - 1) / 6) * 8;
+							this.gw = 111 + floor;
+							break;
+						case '4':
+							this.ip = (room - 1) * 4 + 1 + Math.floor((room - 1) / 6) * 8;
+							this.gw = 115 + floor;
+							break;
+						case '5':
+							this.ip = 2 * ((room - 1) % 16 * 4 + 4);
+							this.gw = 121 + (floor-1) * 2 + (room <= 16 ? 0 : 1) + (floor >= 2 ? -1 : 0);
+							break;
+						case '6':
+							this.ip = (room - 1) % 20 * 8 + 8;
+							this.gw = 132 + (floor*2-8) + (room <= 20 ? 0 : 1);
+							break;
+						case '7':
+							this.ip = room * 8;
+							this.gw = 147 + floor;
+							break;
+						case '8':
+							floor = parseInt(this.currentGroup.split('.')[1]);
+							if(floor == 50 || floor == 52) {
+								this.currentDorm.beds = [ ['1A', 0], ['1B', 1], ['2A', 2], ['2B', 3], ['3A', 4], ['4A', 5] ];
+								this.gw = 14;
+							}
+							else {
+								this.currentDorm.beds = [ ['1A', 0], ['1B', 1], ['1C', 2], ['2A', 3], ['2B', 4], ['3A', 5], ['4A', 6] ];
+								this.gw = 13;
+							}
+							if(floor == 52 && room == 1) this.currentDorm.beds = [ ['1A', 0], ['1B', 1], ['2A', 2], ['3A', 3] ];
+							this.ip = (room - 1) * 32 + 1 + ((floor==50||floor==54)?0:16);
+							this.gw2 = (room - 1) * 32 + 1 + ((floor==50||floor==54)?0:16) + 13;
+							break;
+					}
+				},
+				back: function() {
+					if(this.currentRoom) this.currentRoom = '';
+					else if(this.currentGroup) this.currentGroup = '';
+				}
+			}
+		});
 	</script>
 </body>
 </html>

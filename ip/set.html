@@ -3,15 +3,20 @@
 <head>
 	<title>明志科大宿舍有線網路設定教學</title>
 	<meta charset="utf-8">
+	<meta name="language" content="zh-tw">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
-	<meta property="og:description" content="Powered by MCUT Bot / Henry Wu">
+	<meta name="description" content="MCUT Dormitory Network Setup">
+	<meta property="og:url" content="https://mcut-bot.henrywu.tw/ip/set">
 	<meta property="og:image" content="https://mcut.henrywu.tw/res/logo.png">
-	<link rel="icon" type="image/png" href="../res/logo.png">
+	<link rel="shortcut icon" type="image/png" href="https://mcut.henrywu.tw/res/logo.png" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.2.4/tocas.min.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.3/swiper-bundle.min.css" />
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.3/swiper-bundle.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<style>
+		html {
+			font-size: 16px;
+		}
+
 		.cell.is-fluid {
 			overflow: hidden;
 		}
@@ -43,6 +48,7 @@
 		.footer {
 			padding: 5px 0;
 			text-align: center;
+			font-size: .8rem;
 		}
 
 		ol {
@@ -56,6 +62,22 @@
 		img {
 			max-width: 100%;
 		}
+
+		.lang_en,
+		.is_en .lang_zh {
+			display: none;
+		}
+
+		.is_en .lang_en {
+			display: block;
+		}
+
+		@media screen and (max-width: 768px) {
+			html {
+				font-size: 14px;
+			}
+			
+		}
 	</style>
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZHZ6VYR7M"></script>
 	<script>
@@ -67,12 +89,12 @@
 </head>
 <body>
 	<div class="ts-app-layout is-full is-vertical">
-		<div class="cell is-secondary">
+		<div class="cell">
 			<div class="ts-container is-very-narrow is-fitted">
 				<div class="ts-tab is-fluid">
 					<a class="item" data-view="0">Windows</a>
 					<a class="item" data-view="1">MacOS</a>
-					<a class="item" data-view="2">路由器/分享器</a>
+					<a class="item" data-view="2">分享器 AP</a>
 				</div>
 				<div class="swiper-scrollbar"></div>
 			</div>
@@ -82,109 +104,209 @@
 				<div class="swiper-wrapper">
 					<div class="swiper-slide">
 						<div class="ts-container is-very-narrow">
-							<ol>
-								<li>
-									<p>
-										用網路線連接電腦與座位上的網路孔。<br />
-										若電腦本身無網路孔，請<a href="https://www.google.com/search?q=USB+%E8%BD%89+RJ45" target="_blank">購買轉換器</a>。
-									</p>
-								</li>
-								<li>
-									<p>
-										點擊左下角的「開始」，再點擊「<b>設定</b>」<br />
-										<img src="https://i.imgur.com/c5t1Ikt.png" />
-									</p>
-								</li>
-								<li>
-									<p>
-										點擊「<b>網路與網際網路</b>」<br />
-										<img src="https://i.imgur.com/iYkIN1q.png" />
-									</p>
-								</li>
-								<li>
-									<p>
-										點擊「<b>乙太網路</b>」，再點擊「<b>網路</b>」<br />
-										<img src="https://i.imgur.com/hXVxjbu.png" />
-									</p>
-								</li>
-								<li>
-									<p>
-										滑到底下找到「IP 指派」，點擊「<b>編輯</b>」<br />
-										<img src="https://i.imgur.com/ya4lw2c.png" />
-									</p>
-								</li>
-								<li>
-									<p>
-										選擇「<b>手動</b>」，並將 IPv4 「<b>開啟</b>」<br />
-										輸入剛剛查到的 <b>IP 位置、子網路首碼長度、閘道</b>與 <b>DNS 伺服器</b>，並點擊「<b>儲存</b>」即可！<br />
-										<img src="https://i.imgur.com/yqdwsDH.png" />
-									</p>
-								</li>
-							</ol>
+							<div class="lang_zh">
+								<br>
+								<a class="switch_lang">[Switch to English]</a>
+								<ol>
+									<li>
+										<p>
+											用網路線連接電腦與座位上的網路孔。<br />
+											若電腦本身無網路孔，請<a href="https://www.google.com/search?q=USB+%E8%BD%89+RJ45" target="_blank">購買轉換器</a>。
+										</p>
+									</li>
+									<li>
+										<p>
+											對網路圖示點擊右鍵，再點擊「<b>開啟網路與網際網路設定</b>」<br />
+											<img src="https://i.imgur.com/dN9H189.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											在「<b>變更您的網路設定</b>」下，點擊「<b>變更介面卡選項</b>」<br />
+											<img src="https://i.imgur.com/EgoXw0P.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											點擊「<b>乙太網路</b>」兩下，點擊底下的「<b>內容</b>」，再點選「<b>網際網路通訊協定第 4 版</b>」兩下
+											<br>註：乙太網路也可能顯示為「有線網路」或「區域網路」<br />
+											<img src="https://i.imgur.com/t4KD4iD.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											點選「使用下列的 IP 位置」與「使用下列的 DNS 伺服器位置」 輸入你自己的 IP、子網路遮罩、預設閘道與 DNS 伺服器，並點擊「確定」即可！<br />
+											<img src="https://i.imgur.com/EYxX6V9.png" />
+										</p>
+									</li>
+								</ol>
+							</div>
+							<div class="lang_en">
+								<br>
+								<a class="switch_lang">[切換為中文]</a>
+								<ol>
+									<li>
+										<p>
+											Use a network cable to connect your computer to the network port at your seat.<br />
+											If your computer doesn’t have a network port, please <a href="https://www.google.com/search?q=USB+to+RJ45" target="_blank">purchase an adapter</a>.
+										</p>
+									</li>
+									<li>
+										<p>
+											Right-click the network icon, then click "<b>Open Network & Internet settings</b>".<br />
+											<img src="https://i.imgur.com/dN9H189.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											Under "<b>Change your network settings</b>", click "<b>Change adapter options</b>".<br />
+											<img src="https://i.imgur.com/EgoXw0P.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											Double-click on "<b>Ethernet</b>", then click "<b>Properties</b>" at the bottom, and double-click "<b>Internet Protocol Version 4</b>".<br />
+											Note: Ethernet may also appear as "Wired Network" or "Local Area Network".<br />
+											<img src="https://i.imgur.com/t4KD4iD.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											Select "<b>Use the following IP address</b>" and "<b>Use the following DNS server addresses</b>", enter your own IP, Subnet Mask, Default Gateway, and DNS server, then click "OK"!<br />
+											<img src="https://i.imgur.com/EYxX6V9.png" />
+										</p>
+									</li>
+								</ol>
+							</div>
 						</div>
 					</div>
 					<div class="swiper-slide">
 						<div class="ts-container is-very-narrow">
-							<ol>
-								<li>
-									<p>
-										用網路線連接電腦與座位上的網路孔。<br />
-										若電腦本身無網路孔，請<a href="https://www.google.com/search?q=USB+%E8%BD%89+RJ45" target="_blank">購買轉換器</a>。
-									</p>
-								</li>
-								<li>
-									<p>
-										點擊左上角的蘋果圖示，點擊「<b>系統設定</b>」，點擊「<b>網路</b>」，再點擊「<b>乙太網路</b>」<br />
-										註：若使用 USB、Thunderbolt 或 Type C 網路轉接線，請選擇相對應的選項<br />
-										<img src="https://i.imgur.com/D99y6Zk.png" />
-									</p>
-								</li>
-								<li>
-									<p>
-										點擊「詳細資訊」
-										<img src="https://i.imgur.com/qUfHJNI.png" />
-									</p>
-								</li>
-								<li>
-									<p>
-										點擊「<b>TCP/IP</b>」，將「<b>設定 IPv4</b>」選為「手動」<br />
-										輸入剛剛查到的 <b>IP、子網路遮罩、路由器</b><br />
-										<img src="https://i.imgur.com/yYBl887.png" />
-									</p>
-								</li>
-								<li>
-									<p>
-										點擊「<b>DNS</b>」，輸入 DNS 伺服器，再點擊「<b>好</b>」<br />
-										<img src="https://i.imgur.com/okcCjjk.png" />
-									</p>
-								</li>
-							</ol>
+							<div class="lang_zh">
+								<br>
+								<a class="switch_lang">[Switch to English]</a>
+								<ol>
+									<li>
+										<p>
+											用網路線連接電腦與座位上的網路孔。<br />
+											若電腦本身無網路孔，請<a href="https://www.google.com/search?q=USB+%E8%BD%89+RJ45" target="_blank">購買轉換器</a>。
+										</p>
+									</li>
+									<li>
+										<p>
+											點擊左上角的蘋果圖示，點擊「<b>系統設定</b>」，點擊「<b>網路</b>」，再點擊「<b>乙太網路</b>」<br />
+											註：若使用 USB、Thunderbolt 或 Type C 網路轉接線，請選擇相對應的選項<br />
+											<img src="https://i.imgur.com/D99y6Zk.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											點擊「詳細資訊」
+											<img src="https://i.imgur.com/qUfHJNI.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											點擊「<b>TCP/IP</b>」，將「<b>設定 IPv4</b>」選為「手動」<br />
+											輸入剛剛查到的 <b>IP、子網路遮罩、路由器</b><br />
+											<img src="https://i.imgur.com/yYBl887.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											點擊「<b>DNS</b>」，輸入 DNS 伺服器，再點擊「<b>好</b>」<br />
+											<img src="https://i.imgur.com/okcCjjk.png" />
+										</p>
+									</li>
+								</ol>
+							</div>
+							<div class="lang_en">
+								<br>
+								<a class="switch_lang">[切換到中文]</a>
+								<ol>
+									<li>
+										<p>
+											Use a network cable to connect your computer to the network port at your seat.<br />
+											If your computer doesn’t have a network port, please <a href="https://www.google.com/search?q=USB+to+RJ45" target="_blank">purchase an adapter</a>.
+										</p>
+									</li>
+									<li>
+										<p>
+											Click the Apple icon in the top left corner, click "<b>System Settings</b>", click "<b>Network</b>", then click "<b>Ethernet</b>".<br />
+											Note: If using a USB, Thunderbolt, or Type C network adapter, please select the corresponding option.<br />
+											<img src="https://i.imgur.com/D99y6Zk.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											Click "Details"
+											<img src="https://i.imgur.com/qUfHJNI.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											Click "<b>TCP/IP</b>", set "<b>Configure IPv4</b>" to "Manually".<br />
+											Enter the <b>IP, Subnet Mask, and Router</b> you found earlier.<br />
+											<img src="https://i.imgur.com/yYBl887.png" />
+										</p>
+									</li>
+									<li>
+										<p>
+											Click "<b>DNS</b>", enter the DNS server, and then click "<b>OK</b>".<br />
+											<img src="https://i.imgur.com/okcCjjk.png" />
+										</p>
+									</li>
+								</ol>
+							</div>							
 						</div>
 					</div>
 					<div class="swiper-slide">
 						<div class="ts-container is-very-narrow">
-							<ol>
-								<li>
-								<p>
-									用網路線將座位上的網路孔接到分享器/路由器上的 <b>WAN</b> 孔。
-								</p>
-								</li>
-								<li>
+							<div class="lang_zh">
+								<br>
+								<a class="switch_lang">[Switch to English]</a>
+								<ol>
+									<li>
 									<p>
-										依各廠牌分享器/路由器的說明書設定<b>外部網路</b>的<b>固定 IP</b>。<br>
-										電腦連接 Wi-Fi 後則不用設定外部網路 IP。
+										用網路線將座位上的網路孔接到分享器/路由器上的 <b>WAN</b> 孔。
 									</p>
-								</li>
-							</ol>
-							註：各廠牌分享器/路由器設定方式皆不同，請自行在 Google 搜尋該型號的說明書。<br>
-							範例：<a href="https://www.asus.com/tw/support/FAQ/1011715/">ASUS 路由器設定方式</a>
+									</li>
+									<li>
+										<p>
+											依各廠牌分享器/路由器的說明書設定<b>外部網路</b>的<b>固定 IP</b>。<br>
+											電腦連接 Wi-Fi 後則不用設定外部網路 IP。
+										</p>
+									</li>
+								</ol>
+								註：各廠牌分享器/路由器設定方式皆不同，請自行在 Google 搜尋該型號的說明書。<br>
+								範例：<a href="https://www.asus.com/tw/support/FAQ/1011715/">ASUS 路由器設定方式</a>
+							</div>
+							<div class="lang_en">
+								<br>
+								<a class="switch_lang">[切換為中文]</a>
+								<ol>
+									<li>
+										<p>
+											Use a network cable to connect the network port at your seat to the <b>WAN</b> port on the router.
+										</p>
+									</li>
+									<li>
+										<p>
+											Set up the <b>external network</b> with a <b>static IP</b> according to the instructions for your specific brand of router. <br>
+											After connecting to Wi-Fi, you don’t need to set up the external network IP.
+										</p>
+									</li>
+								</ol>
+								Note: Each brand of router has a different setup process, please search for the manual for your specific model on Google. <br>
+								Example: <a href="https://www.asus.com/tw/support/FAQ/1011715/">ASUS Router Setup Guide</a>
+							</div>							
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="cell footer">
-			Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a> | <a href="https://line.me/R/ti/p/%40221oslxd" target="_blank">問題回報</a><span id="share" style="display:none"> | <a href="#!">分享</a></span>
+		<div class="cell is-secondary footer">
+			Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a></span>
 		</div>
 	</div>
 	<script>
@@ -192,20 +314,22 @@
 			scrollbar: {el: '.swiper-scrollbar'}
 		});
 
-		$('.ts-tab .item').on('click',function(){
-			$('.swiper-slide').animate({scrollTop: 0}, 500);
-			swiper.slideTo(parseInt($(this).attr('data-view')));
+		document.querySelectorAll('.ts-tab .item').forEach(function(item) {
+			item.addEventListener('click', function() {
+				document.querySelector('.swiper-slide').scrollTo({ top: 0, behavior: 'smooth' });
+				swiper.slideTo(parseInt(this.getAttribute('data-view')));
+			});
 		});
 
-		if (navigator.share) { $('#share').show(); }
-		$('#share a').on('click', function() {
-			navigator.share({
-				title: '明志科大宿舍有線網路設定教學',
-				text: '',
-				url: 'https://mcut.henrywu.tw/ip/set',
-			}).then(() => console.log('Successful share'))
-			.catch((error) => console.log('Error sharing', error));
+		document.querySelectorAll('a.switch_lang').forEach(function(item) {
+			item.addEventListener('click', function() {
+				document.body.classList.toggle('is_en');
+				localStorage.setItem('is_en', document.body.classList.contains('is_en') ? 1 : 0);
+			});
 		});
+		if (localStorage.getItem('is_en') == 1) {
+			document.body.classList.add('is_en');
+		}
 	</script>
 </body>
 </html>
