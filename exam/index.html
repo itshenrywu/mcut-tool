@@ -59,7 +59,7 @@
 			<div class="ts-container is-very-narrow is-fitted">
 				<div class="ts-tab is-fluid">
 					<a class="item" data-view="0">大一生活與職場英文</a>
-					<a class="item" data-view="1">大二英文聽講</a>
+					<a class="item" data-view="1">大二英語聽講</a>
 				</div>
 				<div class="swiper-scrollbar"></div>
 			</div>
@@ -70,13 +70,17 @@
 					<div class="ts-header is-center-aligned" id="date"></div>
 					<div class="ts-space is-small"></div>
 					<div class="ts-selection is-dense is-small">
-						<label class="item"><input type="radio" name="dept" value="管設" /><div class="text">管設</div>
+						<label class="item">
+							<input type="radio" name="dept" value="管設" /><div class="text">管設</div>
 						</label>
-						<label class="item"><input type="radio" name="dept" value="環資" /><div class="text">環資</div>
+						<label class="item">
+							<input type="radio" name="dept" value="環資" /><div class="text">環資</div>
 						</label>
-						<label class="item"><input type="radio" name="dept" value="電機電子" /><div class="text">電機電子 AI</div>
+						<label class="item">
+							<input type="radio" name="dept" value="電機電子" /><div class="text">電機電子</div>
 						</label>
-						<label class="item"><input type="radio" name="dept" value="機械" /><div class="text">機械</div>
+						<label class="item">
+							<input type="radio" name="dept" value="機械" /><div class="text">機械 AI</div>
 						</label>
 					</div>
 					<div class="ts-space is-small"></div>
@@ -102,26 +106,32 @@
 			</div>
 		</div>
 		<div class="cell footer">
-			Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a> | <a href="https://line.me/R/ti/p/%40221oslxd" target="_blank">問題回報</a><span id="share" style="display:none"> | <a href="#!">分享</a></span>
+			Powered by <a href="https://line.me/R/ti/p/%40ptq1966v" target="_blank">MCUT Bot</a> / <a href="https://henrywu.tw" target="_blank">Henry Wu</a> | <a href="https://line.me/R/ti/p/%40221oslxd" target="_blank">問題回報</a>
 		</div>
 	</div>
 	<script>
-		var swiper = new Swiper('.swiper', {
-			scrollbar: {el: '.swiper-scrollbar'}
-		});
+		$(function(){
+			var swiper = new Swiper('.swiper', {
+				scrollbar: {el: '.swiper-scrollbar'}
+			});
 
-		function sortById(a, b) {
-			return ($(a).attr('data-sort') > $(b).attr('data-sort')) ? 1 : -1;
-		}
+			function sortById(a, b) {
+				return ($(a).attr('data-sort') > $(b).attr('data-sort')) ? 1 : -1;
+			}
 
-		function getSortId(text) {
-			return text.replace(' ','').replace('管設',1).replace('環資',2).replace('電機電子AI',3).replace('機械',4).replace('初',1).replace('中',2).replace('高',3).replace('菁英',4).replace('A',1).replace('B',2).replace('C',3).replace('D',4).replace('E',5).replace('F',6);
-		}
+			function getSortId(text) {
+				return text.replace(' ','').replace('管設',1).replace('環資',2).replace('電機電子AI',3).replace('機械',4).replace('初',1).replace('中',2).replace('高',3).replace('菁英',4).replace('A',1).replace('B',2).replace('C',3).replace('D',4).replace('E',5).replace('F',6);
+			}
 
-		$.ajax({
-			url: 'https://mcut.henrywu.tw/exam/data.json?v=20231028',
-			dataType: 'json',
-			success: function(res) {
+			$.ajax({
+				url: 'data.json?v=20241030',
+				dataType: 'json',
+				success: function(res) {
+					processData(res);
+				}
+			});
+
+			function processData(res) {
 				$('#date').html('<span class="ts-icon is-calendar-days-icon is-end-spaced"></span>' + res[0][3] + ' (二) ');
 				$.each(res, function(i, v) {
 					$('[data-list="'+v[1]+'"]').append('<div class="ts-box is-squared" data-sort="'+getSortId(v[0])+'" data-name="'+v[0]+'"><div class="ts-container is-very-narrow is-fitted"><div class="ts-content"><div class="ts-header">'+v[0].replace(/([\x00-\xFF]+)/g, " $1 ")+'</div><p>\
@@ -133,11 +143,26 @@
 				$('[data-list="生活與職場英文"] .ts-box').sort(sortById).appendTo('[data-list="生活與職場英文"]');
 				$('[data-list="英語聽講"] .ts-box').sort(sortById).appendTo('[data-list="英語聽講"]');
 			}
-		});
 
-		$('input[type="radio"]').on('click',function(){
-			if($(this).hasClass('clicked')) {
-				$(this).removeClass('clicked').prop('checked', false);
+			$('input[type="radio"]').on('click',function(){
+				if($(this).hasClass('clicked')) {
+					$(this).removeClass('clicked').prop('checked', false);
+					$('.ts-box').hide();
+					$('.ts-box').each(function(i,e){
+						if(
+							$(this).attr('data-name').includes($('[name="dept"]:checked').val() || '') &&
+							$(this).attr('data-name').includes($('[name="level"]:checked').val() || '')
+						) {
+							$(e).show();
+						}
+					});
+					$('.swiper-slide').animate({scrollTop: 0}, 500);
+				}
+			})
+
+			$('input[type="radio"]').on('change',function(){
+				$(this).parent().parent().find('input').removeClass('clicked');
+				$(this).addClass('clicked');
 				$('.ts-box').hide();
 				$('.ts-box').each(function(i,e){
 					if(
@@ -148,37 +173,22 @@
 					}
 				});
 				$('.swiper-slide').animate({scrollTop: 0}, 500);
-			}
-		})
+			});
 
-		$('input[type="radio"]').on('change',function(){
-			$(this).parent().parent().find('input').removeClass('clicked');
-			$(this).addClass('clicked');
-			$('.ts-box').hide();
-			$('.ts-box').each(function(i,e){
-				if(
-					$(this).attr('data-name').includes($('[name="dept"]:checked').val() || '') &&
-					$(this).attr('data-name').includes($('[name="level"]:checked').val() || '')
-				) {
-					$(e).show();
+			$('.ts-tab .item').on('click',function(){
+				$('.swiper-slide').animate({scrollTop: 0}, 500);
+				swiper.slideTo(parseInt($(this).attr('data-view')));
+			});
+
+			swiper.on('slideChange', function () {
+				if(swiper.activeIndex == 0) {
+					$('input[name="dept"][value="電機電子"] + .text').text('電機電子');
+					$('input[name="dept"][value="機械"] + .text').text('機械 AI');
+				} else {
+					$('input[name="dept"][value="電機電子"] + .text').text('電機電子 AI');
+					$('input[name="dept"][value="機械"] + .text').text('機械');
 				}
 			});
-			$('.swiper-slide').animate({scrollTop: 0}, 500);
-		});
-
-		$('.ts-tab .item').on('click',function(){
-			$('.swiper-slide').animate({scrollTop: 0}, 500);
-			swiper.slideTo(parseInt($(this).attr('data-view')));
-		});
-
-		if (navigator.share) { $('#share').show(); }
-		$('#share a').on('click', function() {
-			navigator.share({
-				title: '明志科大英文段考考場、考試時間',
-				text: '',
-				url: 'https://mcut.henrywu.tw/exam',
-			}).then(() => console.log('Successful share'))
-			.catch((error) => console.log('Error sharing', error));
 		});
 	</script>
 </body>
