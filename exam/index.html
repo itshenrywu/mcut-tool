@@ -16,6 +16,12 @@
 			overflow: hidden;
 		}
 
+		body, 
+		.ts-app-layout.is-full {
+			height: 100vh;
+			height: 100dvh;
+		}
+
 		.swiper-slide {
 			height: 100vh;
 			height: 100dvh;
@@ -125,6 +131,7 @@
 			}
 
 			$.ajax({
+				//url: 'https://mcut.henrywu.tw/exam/data.json?v=20241030',
 				url: 'data.json?v=20241030',
 				dataType: 'json',
 				success: function(res) {
