@@ -130,14 +130,18 @@
 				return text.replace(' ','').replace('管設',1).replace('環資',2).replace('電機電子AI',3).replace('機械',4).replace('初',1).replace('中',2).replace('高',3).replace('菁英',4).replace('A',1).replace('B',2).replace('C',3).replace('D',4).replace('E',5).replace('F',6);
 			}
 
-			$.ajax({
-				//url: 'https://mcut.henrywu.tw/exam/data.json?v=20241030',
-				url: 'data.json?v=20241030',
-				dataType: 'json',
-				success: function(res) {
-					processData(res);
-				}
-			});
+			if (window.location.protocol === "file:") {
+				let test_data = '';
+				processData(JSON.parse(test_data));
+			} else {
+				$.ajax({
+					url: 'data.json?v=20250517',
+					dataType: 'json',
+					success: function(res) {
+						processData(res);
+					}
+				});
+			}
 
 			function processData(res) {
 				$('#date').html('<span class="ts-icon is-calendar-days-icon is-end-spaced"></span>' + res[0][3] + ' (二) ');
