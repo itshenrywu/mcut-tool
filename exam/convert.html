@@ -42,6 +42,8 @@
 				$('#minify').val('');
 				$('#count').text('');
 				$.each($('#raw').val().
+					replace(/ AI /g,'AI').
+					replace(/A 教/g,'A教').
 					replace(/綜多/g,'綜 多').
 					replace(/費安/g,'費　安').
 					replace(/羅琳/g,'羅　琳').
@@ -55,13 +57,47 @@
 						x[label[2]],
 						x[label[3]]+'/'+x[label[3]+2],
 						x[label[4]].replace(/-/g,'~'),
-						x[label[5]]+' '+x[label[5]+1]
+						x[label[5]]+' '+x[label[5]+1],
+						x[0]
 					]);
 				});
 				if(result.length == 0) result = [];
 				else $('#count').text('('+result.length+')');
 				$('#result').val(JSON.stringify(result,null,'\t'));
-				$('#minify').val(toUnicode(JSON.stringify(result)));
+				let minResult = result.map(row => [row[0], row[1], row[2], row[3], row[4], row[5]]);
+				$('#minify').val(toUnicode(JSON.stringify(minResult)));
+
+				let error = [];
+				for(var i=0;i<result.length;i++) {
+					// 檢查是否有資料異常
+					let row = result[i];
+					// row[1] 只能是 "英語聽講" 或 "生活與職場英文"
+					if(row[1] != '英語聽講' && row[1] != '生活與職場英文') {
+						error.push(row[6]);
+					}
+					if(!/^\d{1,2}\/\d{1,2}$/.test(row[3])) {
+						error.push(row[6]);
+					} else {
+						let [month, day] = row[3].split('/').map(Number);
+						let daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+						if(month < 1 || month > 12 || day < 1 || day > daysInMonth[month-1]) {
+							error.push(row[6]);
+						}
+					}
+
+					if(row[4] != '17:20~18:20' && row[4] != '16:10~17:10') {
+						error.push(row[6]);
+					}
+				}
+				// remove duplicate error
+				error = error.filter(function(item, index, self) {
+					return self.indexOf(item) === index;
+				});
+				if(error.length > 0) {
+					$('#error').html('<span style="color:red;">請檢查 '+error.join('、')+'</span>');
+				} else {
+					$('#error').html('');
+				}
 			});
 			$('#minify').on('click',function(){
 				$('#minify').select();
@@ -79,20 +115,23 @@
 					<div class="column">
 						<div class="field">
 							<label>Raw Data</label>
-							<textarea style="height:76vh" id="raw" placeholder="英文"></textarea>
+							<textarea style="height:75vh" id="raw" placeholder="英文"></textarea>
 						</div>
 						<div class="field">
-							<label>Label</label>
+							<label>Label position</label>
 							<input id="label" value="1,3,4,8,12,13" style="font-family:monospace;">
 						</div>
 					</div>
 					<div class="column">
 						<div class="field">
-							<label>Result <span id="count"></span></label>
-							<textarea readonly style="height:76vh" id="result">[]</textarea>
+							<label>
+								Result <span id="count"></span>
+								<span id="error"></span>
+							</label>
+							<textarea readonly style="height:75vh" id="result">[]</textarea>
 						</div>
 						<div class="field">
-							<label>Minify <a target="_blank" href="https://github.com/itshenrywu/mcut-tool/edit/main/exam/data.json">Edit</a></label>
+							<label>Minified</label>
 							<input readonly id="minify" value="[]">
 						</div>
 					</div>
